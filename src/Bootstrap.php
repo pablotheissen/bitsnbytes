@@ -4,12 +4,9 @@ declare(strict_types=1);
 
 namespace Bitsbytes;
 
-use FastRoute\Dispatcher;
-use FastRoute\RouteCollector;
+use AltoRouter;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
-
-use function FastRoute\simpleDispatcher;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -34,44 +31,38 @@ if ($environment !== 'production') {
 }
 $whoops->register();
 
-$config = include_once(__DIR__ . '/../config/config.php');
+$config = include __DIR__ . '/../config/config.php';
 date_default_timezone_set($config['timezone']);
-$injector = include('Dependencies.php');
-
+$injector = include 'Dependencies.php';
 
 $request = $injector->make('Http\HttpRequest');
 $response = $injector->make('Http\HttpResponse');
 
-$routeDefinitionCallback = function (RouteCollector $r) {
-    $routes = include('Routes.php');
-    foreach ($routes as $route) {
-        $r->addRoute($route[0], $route[1], $route[2]);
+$router = new AltoRouter();
+$router->setBasePath(''); // TODO: add basePath to config
+
+$routes = include('Routes.php');
+foreach ($routes as $route) {
+    if (!isset($route[3])) {
+        $route[3] = null;
     }
-};
-
-$dispatcher = simpleDispatcher($routeDefinitionCallback);
-
-$routeInfo = $dispatcher->dispatch($request->getMethod(), $request->getPath());
-
-switch ($routeInfo[0]) {
-    case Dispatcher::NOT_FOUND:
-        $response->setContent('404 - Page not found');
-        $response->setStatusCode(404);
-        break;
-    case Dispatcher::METHOD_NOT_ALLOWED:
-        $response->setContent('405 - Method not allowed');
-        $response->setStatusCode(405);
-        break;
-    case Dispatcher::FOUND:
-        $className = $routeInfo[1][0];
-        $method = $routeInfo[1][1];
-        $vars = $routeInfo[2];
-
-        $class = $injector->make($className);
-        $class->$method($vars);
-        break;
+    $router->map($route[0], $route[1], $route[2], $route[3]);
 }
 
+$match = $router->match();
+
+// call closure or throw 404 status
+if (is_array($match)) {
+    $className = $match['target'][0];
+    $method = $match['target'][1];
+
+    $class = $injector->make($className);
+    $class->$method($match['params']);
+} else {
+    // no route was matched
+    $response->setContent('404 - Page not found');
+    $response->setStatusCode(404);
+}
 
 foreach ($response->getHeaders() as $header) {
     header($header, false);

@@ -2,25 +2,28 @@
 
 declare(strict_types=1);
 
+
 return [
     [
         'GET',
         '/',
-        ['Bitsbytes\Controllers\EntryController', 'showLatest']
+        ['Bitsbytes\Controllers\EntryController', 'showLatest'],
+        'home'
     ],
     [
         'GET',
-        '/entry/{slug}',
+        '/entry/[a:slug]',
         ['Bitsbytes\Controllers\EntryController', 'showBySlug']
     ],
     [
         'GET',
-        '/entry/{slug}/edit',
-        ['Bitsbytes\Controllers\EntryController', 'editformBySlug']
+        '/entry/[a:slug]/edit',
+        ['Bitsbytes\Controllers\EntryController', 'editformBySlug'],
+        'edit-entry'
     ],
     [
         'POST',
-        '/entry/{slug}/edit',
+        '/entry/[a:slug]/edit',
         ['Bitsbytes\Controllers\EntryController', 'saveEntry']
     ],
 ];

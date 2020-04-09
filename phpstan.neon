@@ -5,3 +5,5 @@ parameters:
 		  path: src/Bootstrap.php
 	autoload_files:
 		- src/Helper.php
+		- config/config.php
+		#- src/Bootstrap.php

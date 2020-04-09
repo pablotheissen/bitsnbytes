@@ -102,7 +102,7 @@ class EntryRepository extends Model
         $stmt->bindParam(':date', $date_atom, PDO::PARAM_STR);
         $stmt->execute();
 
-        if($stmt->errorInfo()[0] = '00000') {
+        if($stmt->errorInfo()[0] === '00000') {
             return true;
         }
         throw new Exception($stmt->errorInfo()[2]);
