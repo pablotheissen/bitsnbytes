@@ -1,0 +1,33 @@
+{{> head }}
+{{%FILTERS}}
+<form action="" method="POST">
+    <div class="wrapper-input wrapper-title">
+        <label for="inpt-title">Title</label>
+        <input id="inpt-title" type="text" name="title" value="{{ title }}">
+    </div>
+    <div class="wrapper-input wrapper-slug">
+        <label for="inpt-slug">Slug</label>
+        <input id="inpt-slug" type="text" name="slug" value="{{ slug }}">
+    </div>
+    <div class="wrapper-input wrapper-url">
+        <label for="inpt-url">URL</label>
+        <input id="inpt-url" type="text" name="url" value="{{ url }}">
+    </div>
+    <div class="wrapper-input wrapper-text">
+        <label for="inpt-text">Content</label>
+        <textarea id="inpt-text" name="text" rows="5">{{ text }}</textarea>
+    </div>
+    <div class="wrapper-input wrapper-datetime">
+        <div class="wrapper-input-inner wrapper-date">
+            <label for="inpt-date">Date</label>
+            <input id="inpt-date" type="date" name="date" value="{{ date | format_date.atom_date }}">
+        </div>
+        <div class="wrapper-input-inner wrapper-time">
+            <label for="inpt-time">Time</label>
+            <input id="inpt-time" type="time" name="time" value="{{ date | format_date.atom_time }}">
+        </div>
+    </div>
+    <button type="submit">Save</button>
+</form>
+
+{{> foot }}

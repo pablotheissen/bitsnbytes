@@ -1,0 +1,36 @@
+{
+  "name": "Bits'n'Bytes",
+  "description": "Simple link blog",
+  "authors": [
+    {
+      "name": "Pablo Theissen",
+      "email": "bb@24p.eu",
+      "role": "Creator / Main Developer"
+    }
+  ],
+  "require": {
+    "php": ">=7.4",
+    "filp/whoops": "2.7.1",
+    "patricklouys/http": "v1.4.0",
+    "nikic/fast-route": "v1.3.0",
+    "rdlowrey/auryn": "v1.4.2",
+    "mustache/mustache": "v2.13.0",
+    "ext-pdo": "*",
+    "ext-intl": "*",
+    "ext-mbstring": "*"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^9.1",
+    "phpstan/phpstan": "0.12.18"
+  },
+  "autoload": {
+    "psr-4": {
+      "Bitsbytes\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Tests\\": "tests/"
+    }
+  }
+}

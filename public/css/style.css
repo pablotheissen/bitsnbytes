@@ -1,0 +1,163 @@
+* {
+    padding: 0;
+    margin: 0;
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+html {
+    line-height: 1.15;
+    height: 100%;
+}
+
+html {
+    font-size: 14px
+}
+
+@media (min-width: 420px) {
+    html {
+        font-size: 16px
+    }
+}
+
+
+:root {
+    /* https://coolors.co/e63946-f1faee-a8dadc-457b9d-1d3557 */
+    --main-100: #E7F9FE;
+    --main-200: #C6EAF7;
+    --main-300: #99CDE4;
+    --main-400: #68A6C6;
+    --main-500: #457b9d;
+    --main-600: #365B77;
+    --main-700: #273E52;
+    --main-800: #1A2633;
+    --main-900: #121921;
+    --accent: #e63946;
+    --light-100: #FCFFFA;
+    --light-300: #F8FDF6;
+    --light-500: #F1FAEE;
+    --medium-500: #a8dadc;
+    --dark-500: #1d3557;
+}
+
+:root {
+    --border-radius-input: .25rem;
+    --border-radius-boxes: 10px;
+}
+
+/**
+ * LAYOUT
+ */
+body {
+    display: flex;
+    height: 100%;
+}
+header {
+    flex: 0 1 33%;
+    max-width: 300px;
+    height: 100%;
+    /*position: fixed;*/
+}
+main {
+    flex: 1;
+    height: 100%;
+}
+@media (max-width: 600px) {
+    body {
+        flex-direction: column;
+    }
+    header {
+        height: auto;
+        width: 100%;
+        max-width: 100%;
+        flex: 0;
+    }
+    main {
+        height: auto;
+        width: 100%;
+    }
+}
+
+/**
+ * FORMS
+ */
+input, button, textarea {
+    border-radius: var(--border-radius-input);
+    line-height: 1.25;
+    padding: .5rem .75rem;
+}
+
+input[type=text], input[type=search], input[type=date], input[type=time], textarea {
+    border: 1px solid #edf2f7;
+    background: #edf2f7;
+    color: #4a5568;
+    width: 100%;
+}
+input[type=text]:focus, input[type=search]:focus, input[type=date]:focus, input[type=time]:focus, textarea:focus {
+    outline: 0 !important;
+    border-color: #a0aec0;
+    border-color: var(--main);
+    background-color: #fff;
+}
+textarea {
+    min-height: 10rem;
+}
+input[type=submit], button {
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06) !important;
+    padding: .5rem 1rem;
+    background: var(--main-600);
+    color: white;
+    font-weight: bold;
+    border: none;
+}
+input[type=submit]:hover, button:hover {
+    background-color: var(--main-500);
+}
+input[type=submit]:focus, button:focus {
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, .5) !important;
+}
+label {
+    color: #6d7585;
+    margin-bottom: .3rem;
+    font-size: 95%;
+    font-weight: bold;
+    display: block;
+}
+.wrapper-input {
+    margin-bottom: 1.5rem;
+}
+.wrapper-datetime {
+    display: flex;
+}
+.wrapper-datetime .wrapper-input-inner {
+    flex: 1;
+    margin-right: 1.5rem;
+}
+.wrapper-datetime .wrapper-input-inner:last-child {
+    margin-right: 0;
+}
+
+/**
+ * COLORS & SPACING
+ */
+body {
+    color: #1a202c;
+}
+
+header {
+    background: var(--main-600);
+    padding: 1rem;
+}
+
+header h1 {
+    color: var(--light-500);
+}
+header h1 a, header h1 a:hover, header h1 a:focus {
+    text-decoration: none;
+    color: inherit;
+}
+
+main {
+    /*background: var(--light-300);*/
+    padding: 1rem;
+}
