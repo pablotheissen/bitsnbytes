@@ -3,7 +3,9 @@ parameters:
 		- message: '#Else branch is unreachable because previous condition is always true.#'
 		  count: 1
 		  path: src/Bootstrap.php
+		- message: '#Undefined variable: \$config#'
+		  count: 4
+		  path: src/Dependencies.php
 	autoload_files:
-		- src/Helper.php
 		- config/config.php
-		#- src/Bootstrap.php
+		- src/Helper.php

@@ -8,22 +8,33 @@ return [
         'GET',
         '/',
         ['Bitsbytes\Controllers\EntryController', 'showLatest'],
-        'home'
+        'home',
+    ],
+    [
+        'GET',
+        '/entry/new',
+        ['Bitsbytes\Controllers\EntryController', 'newform'],
+        'new-entry',
+    ],
+    [
+        'POST',
+        '/entry/new',
+        ['Bitsbytes\Controllers\EntryController', 'saveEntry'],
     ],
     [
         'GET',
         '/entry/[a:slug]',
-        ['Bitsbytes\Controllers\EntryController', 'showBySlug']
+        ['Bitsbytes\Controllers\EntryController', 'showBySlug'],
     ],
     [
         'GET',
         '/entry/[a:slug]/edit',
         ['Bitsbytes\Controllers\EntryController', 'editformBySlug'],
-        'edit-entry'
+        'edit-entry',
     ],
     [
         'POST',
         '/entry/[a:slug]/edit',
-        ['Bitsbytes\Controllers\EntryController', 'saveEntry']
+        ['Bitsbytes\Controllers\EntryController', 'saveEntry'],
     ],
 ];

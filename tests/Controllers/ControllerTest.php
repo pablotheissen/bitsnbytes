@@ -121,6 +121,10 @@ class ControllerTest extends TestCase
     {
         return [
             [
+                '',
+                ''
+            ],
+            [
                 '2020-01-01',
                 '2020-01-01'
             ],
@@ -171,6 +175,10 @@ class ControllerTest extends TestCase
     {
         return [
             [
+                '',
+                ''
+            ],
+            [
                 '10:10',
                 '10:10:00'
             ],
@@ -212,4 +220,5 @@ class ControllerTest extends TestCase
         $sanitizedTime = $this->controller->filterTime($inputTime);
         $this->assertEquals($expectedSanitizedTime, $sanitizedTime);
     }
+
 }

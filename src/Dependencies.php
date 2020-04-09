@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 use Auryn\Injector;
 
+
 $injector = new Injector();
+$injector->share('Auryn\Injector');
 
 //$injector->share('CONFIG');
 //$injector->define('CONFIG',
@@ -42,24 +44,35 @@ $injector->define(
             ),
             'helpers' => [
                 'format_date' => [
-                    'atom' => function (DateTimeInterface $value) {
+                    'atom' => function ($value) {
                         return $value->format(DateTimeInterface::ATOM);
                     },
-                    'atom_date' => function (DateTimeInterface $value) {
-                        // TODO: Zeitzone aus DateTime rausrechnen, zB. für fall 2020-01-01T00:01:00+02:00
-                        return $value->format('Y-m-d');
+                    'atom_date' => function ($value): ?string {
+                        if ($value instanceof DateTimeInterface) {
+                            return $value->format('Y-m-d');
+                        }
+                        return null;
                     },
-                    'atom_time' => function (DateTimeInterface $value) {
-                        // TODO: Zeitzone aus DateTime rausrechnen, zB. für fall 2020-01-01T00:01:00+02:00
-                        return $value->format('H:i:s');
+                    'atom_time' => function ($value): ?string {
+                        if ($value instanceof DateTimeInterface) {
+                            return $value->format('H:i:s');
+                        }
+                        return null;
                     },
-                    'short' => function(DateTimeInterface $value) use ($config) {
-                        return $value->format($config['date_formats']['short']);
+                    'short' => function ($value) use ($config): ?string {
+                        if ($value instanceof DateTimeInterface) {
+                            return $value->format($config['date_formats']['short']);
+                        }
+                        return null;
                     },
                 ],
                 'case' => [
-                    'lower' => function($value) { return strtolower((string) $value); },
-                    'upper' => function($value) { return strtoupper((string) $value); },
+                    'lower' => function ($value) {
+                        return strtolower((string)$value);
+                    },
+                    'upper' => function ($value) {
+                        return strtoupper((string)$value);
+                    },
                 ],
             ],
         ]
@@ -76,5 +89,6 @@ $injector->define(
     ]
 );
 
+$injector->share('AltoRouter');
 
 return $injector;

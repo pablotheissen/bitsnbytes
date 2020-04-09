@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Bitsbytes\Controllers;
 
 
-use _HumbugBox09702017065e\Nette\Neon\Exception;
+use Exception;
 use Bitsbytes\Template\Renderer;
 use DateTime;
 use Http\Request;
@@ -81,10 +81,13 @@ abstract class Controller
      *
      * @param string $date User submitted date, NOT parsed to DateTimeInterface
      *
-     * @return string|null If $date is valid, return $date, otherwise null
+     * @return string|null If $date is valid, return $date, if $time is empty, return '', otherwise null
      */
     public function filterDate(string $date): ?string
     {
+        if ($date === '') {
+            return '';
+        }
         // 1: check via regex
         if (preg_match('/^\d{4}-\d{2}-\d{2}$/D', $date) !== 1) {
             // preg_match returns int(1) if pattern matches; if something else is returned, return null
@@ -106,10 +109,14 @@ abstract class Controller
      *
      * @param string $time User submitted time
      *
-     * @return string|null If $time is valid, return $time in format HH:MM:SS, otherwise null
+     * @return string|null If $time is valid, return $time in format HH:MM:SS, if $time is empty, return '', otherwise
+     *                     null
      */
     public function filterTime(string $time): ?string
     {
+        if ($time === '') {
+            return '';
+        }
         // 1: check via regex
         if (preg_match('/^(?|[01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/D', $time) !== 1) {
             return null;
@@ -122,15 +129,18 @@ abstract class Controller
     }
 
     /**
-     * @param string $date
-     * @param string $time
+     * @param string|null $date
+     * @param string|null $time
      *
      * @return DateTime|null
      *
      * @todo Write Tests
      */
-    public function createDateTimeFromDateAndTime(string $date, string $time): ?DateTime
+    public function createDateTimeFromDateAndTime(?string $date, ?string $time): ?DateTime
     {
+        if ($date === null OR $time === null) {
+            return null;
+        }
         $datetime_string = $date . 'T' . $time;
         $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s', $datetime_string);
         if ($datetime === false) {

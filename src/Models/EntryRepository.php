@@ -52,7 +52,9 @@ class EntryRepository extends Model
     }
 
     /**
-     * @return array<Entry|array<int|string|DateTime>>
+     * @param bool $returnAsArray
+     *
+     * @return array<Entry|array<int|string|DateTime|null>>
      * @throws Exception
      */
     public function findLatestEntries(bool $returnAsArray = false): array
@@ -98,7 +100,11 @@ class EntryRepository extends Model
         $stmt->bindParam(':newslug', $entry->slug, PDO::PARAM_STR);
         $stmt->bindParam(':url', $entry->url, PDO::PARAM_STR);
         $stmt->bindParam(':text', $entry->text, PDO::PARAM_STR);
-        $date_atom = $entry->date->format(DateTimeInterface::ATOM);
+        if($entry->date instanceof DateTimeInterface) {
+            $date_atom = $entry->date->format(DateTimeInterface::ATOM);
+        } else {
+            $date_atom = (new DateTime('now'))->format(DateTimeInterface::ATOM);
+        }
         $stmt->bindParam(':date', $date_atom, PDO::PARAM_STR);
         $stmt->execute();
 

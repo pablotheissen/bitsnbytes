@@ -5,18 +5,17 @@ namespace Bitsbytes\Models;
 
 
 use DateTime;
-use phpDocumentor\Reflection\Types\Array_;
 
 class Entry
 {
-    public int $eid;
-    public string $title;
-    public string $slug;
-    public string $url;
-    public string $text;
-    public DateTime $date;
+    public ?int $eid;
+    public ?string $title;
+    public ?string $slug;
+    public ?string $url;
+    public ?string $text;
+    public ?DateTime $date;
 
-    public function __construct(int $eid, string $title, string $slug, string $url, string $text, DateTime $date)
+    public function __construct(?int $eid, ?string $title, ?string $slug, ?string $url, ?string $text, ?DateTime $date)
     {
         $this->eid = $eid;
         $this->title = $title;
@@ -27,9 +26,9 @@ class Entry
     }
 
     /**
-     * @return array<int|string|DateTime>
+     * @return array<int|string|DateTime|null>
      */
-    public function toArray():array
+    public function toArray(): array
     {
         return [
             'eid' => $this->eid,

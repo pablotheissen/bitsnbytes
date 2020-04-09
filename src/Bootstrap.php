@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace Bitsbytes;
 
+use _HumbugBox09702017065e\Nette\DI\Extensions\InjectExtension;
 use AltoRouter;
+use Auryn\Injector;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
@@ -32,13 +34,13 @@ if ($environment !== 'production') {
 $whoops->register();
 
 $config = include __DIR__ . '/../config/config.php';
-date_default_timezone_set($config['timezone']);
 $injector = include 'Dependencies.php';
+date_default_timezone_set($config['timezone']);
 
 $request = $injector->make('Http\HttpRequest');
 $response = $injector->make('Http\HttpResponse');
 
-$router = new AltoRouter();
+$router = $injector->make('AltoRouter');
 $router->setBasePath(''); // TODO: add basePath to config
 
 $routes = include('Routes.php');

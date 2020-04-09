@@ -93,10 +93,14 @@ input[type=text], input[type=search], input[type=date], input[type=time], textar
     color: #4a5568;
     width: 100%;
 }
+.error input[type=text], .error input[type=search], .error input[type=date], .error input[type=time], .error textarea,
+.error input[type=text]:focus, .error input[type=search]:focus, .error input[type=date]:focus, .error input[type=time]:focus, .error textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 1px var(--accent);
+}
 input[type=text]:focus, input[type=search]:focus, input[type=date]:focus, input[type=time]:focus, textarea:focus {
     outline: 0 !important;
-    border-color: #a0aec0;
-    border-color: var(--main);
+    border-color: var(--main-500);
     background-color: #fff;
 }
 textarea {
@@ -114,7 +118,7 @@ input[type=submit]:hover, button:hover {
     background-color: var(--main-500);
 }
 input[type=submit]:focus, button:focus {
-    box-shadow: 0 0 0 3px rgba(66, 153, 225, .5) !important;
+    box-shadow: 0 0 0 3px rgba(66, 153, 225, .5);
 }
 label {
     color: #6d7585;
@@ -122,6 +126,9 @@ label {
     font-size: 95%;
     font-weight: bold;
     display: block;
+}
+.error label {
+    color: var(--accent);
 }
 .wrapper-input {
     margin-bottom: 1.5rem;
