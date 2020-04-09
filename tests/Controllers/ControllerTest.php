@@ -172,7 +172,7 @@ class ControllerTest extends TestCase
         return [
             [
                 '10:10',
-                '10:10'
+                '10:10:00'
             ],
             [
                 '10:10:10',

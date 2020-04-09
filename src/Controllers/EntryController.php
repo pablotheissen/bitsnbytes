@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bitsbytes\Controllers;
 
+use Bitsbytes\Models\Entry;
 use Bitsbytes\Models\EntryRepository;
 use Bitsbytes\Template\Renderer;
 use DateTimeInterface;
@@ -68,6 +69,8 @@ class EntryController extends Controller
      */
     public function saveEntry(array $params): void
     {
+        // TODO differentiate between updated and new entry
+
         $error_fields = [];
         $user_slug = $this->request->getBodyParameter('slug');
         $new_slug = $this->filterSlug($user_slug);
@@ -88,12 +91,15 @@ class EntryController extends Controller
         if ($new_time === null OR empty($new_time)) {
             $error_fields[] = 'time';
         }
-        // TODO
-        $new_datetime = new \DateTime("now");
+        $new_datetime = $this->createDateTimeFromDateAndTime($new_date, $new_time);
+        if ($new_datetime === null) {
+            $error_fields[] = 'date';
+            $error_fields[] = 'time';
+        }
 
         if (!empty($error_fields)) {
             $this->editformErrorsFound(
-                $error_fields,
+                array_unique($error_fields),
                 $user_slug,
                 $new_title,
                 $new_url,
@@ -102,8 +108,14 @@ class EntryController extends Controller
             );
             return;
         }
-//        var_dump($this->request->getBodyParameter('slug'));
-//        var_dump($params);
+
+        $entry = new Entry(-1, $new_title, $new_slug, $new_url, $new_text, $new_datetime);
+
+        // TODO catch exception when error during update occures
+        $update_success = $this->entryRepository->updateBySlug($params['slug'], $entry);
+        if ($update_success === true) {
+            $this->response->redirect('/entry/' . $new_slug . '/edit');
+        }
     }
 
     /**

@@ -34,7 +34,10 @@ if ($environment !== 'production') {
 }
 $whoops->register();
 
+$config = include_once(__DIR__ . '/../config/config.php');
+date_default_timezone_set($config['timezone']);
 $injector = include('Dependencies.php');
+
 
 $request = $injector->make('Http\HttpRequest');
 $response = $injector->make('Http\HttpResponse');

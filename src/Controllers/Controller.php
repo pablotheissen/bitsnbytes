@@ -70,7 +70,7 @@ abstract class Controller
         }
 
         $slug_filtered = $transliterator->transliterate($slug);
-        if($slug_filtered === false) {
+        if ($slug_filtered === false) {
             return null;
         }
         return mb_substr($slug_filtered, 0, 30);
@@ -106,14 +106,36 @@ abstract class Controller
      *
      * @param string $time User submitted time
      *
-     * @return string|null If $time is valid, return $time, otherwise null
+     * @return string|null If $time is valid, return $time in format HH:MM:SS, otherwise null
      */
     public function filterTime(string $time): ?string
     {
         // 1: check via regex
-        if (preg_match('/^([01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/D', $time) !== 1) {
+        if (preg_match('/^(?|[01][0-9]|2[0-3]):[0-5][0-9](:[0-5][0-9])?$/D', $time) !== 1) {
             return null;
         }
+        // 2: add seconds
+        if (preg_match('/^(?|[01][0-9]|2[0-3]):[0-5][0-9]$/D', $time) === 1) {
+            $time = $time . ':00';
+        }
         return $time;
+    }
+
+    /**
+     * @param string $date
+     * @param string $time
+     *
+     * @return DateTime|null
+     *
+     * @todo Write Tests
+     */
+    public function createDateTimeFromDateAndTime(string $date, string $time): ?DateTime
+    {
+        $datetime_string = $date . 'T' . $time;
+        $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s', $datetime_string);
+        if ($datetime === false) {
+            return null;
+        }
+        return $datetime;
     }
 }

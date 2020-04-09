@@ -9,7 +9,6 @@ $injector = new Injector();
 //$injector->share('CONFIG');
 //$injector->define('CONFIG',
 //    include(__DIR__ . '/../config/config.php'));
-$config = include_once(__DIR__ . '/../config/config.php');
 
 $injector->defineParam('config', $config);
 

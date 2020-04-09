@@ -7,7 +7,7 @@ namespace Bitsbytes\Models;
 use DateTime;
 use Exception;
 use PDO;
-use phpDocumentor\Reflection\Types\Array_;
+use DateTimeInterface;
 
 class EntryRepository extends Model
 {
@@ -58,12 +58,11 @@ class EntryRepository extends Model
     public function findLatestEntries(bool $returnAsArray = false): array
     {
         $stmt = $this->pdo->prepare('SELECT eid, title, slug, url, text, date FROM entries ORDER BY date DESC');
-        // TODO: Data filtering? https://phptherightway.com/#data_filtering
 //        $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
         $stmt->execute();
 
         $entries = [];
-        if($returnAsArray === true) {
+        if ($returnAsArray === true) {
             while ($rslt = $stmt->fetch(PDO::FETCH_ASSOC)) {
                 $entries[] = $this->createEntryFromAssoc($rslt)->toArray();
             }
@@ -74,5 +73,38 @@ class EntryRepository extends Model
         }
 
         return $entries;
+    }
+
+    /**
+     * @param string $slug
+     * @param Entry  $entry
+     *
+     * @return bool
+     * @throws Exception
+     */
+    public function updateBySlug(string $slug, Entry $entry): bool
+    {
+        $stmt = $this->pdo->prepare('UPDATE entries
+            SET
+                title = :title,
+                slug = :newslug,
+                url = :url,
+                text = :text,
+                date = :date
+            WHERE slug = :oldslug'
+        );
+        $stmt->bindParam(':oldslug', $slug, PDO::PARAM_STR);
+        $stmt->bindParam(':title', $entry->title, PDO::PARAM_STR);
+        $stmt->bindParam(':newslug', $entry->slug, PDO::PARAM_STR);
+        $stmt->bindParam(':url', $entry->url, PDO::PARAM_STR);
+        $stmt->bindParam(':text', $entry->text, PDO::PARAM_STR);
+        $date_atom = $entry->date->format(DateTimeInterface::ATOM);
+        $stmt->bindParam(':date', $date_atom, PDO::PARAM_STR);
+        $stmt->execute();
+
+        if($stmt->errorInfo()[0] = '00000') {
+            return true;
+        }
+        throw new Exception($stmt->errorInfo()[2]);
     }
 }
