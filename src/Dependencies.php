@@ -6,7 +6,7 @@ use Auryn\Injector;
 
 
 $injector = new Injector();
-$injector->share('Auryn\Injector');
+//$injector->share('Auryn\Injector');
 
 //$injector->share('CONFIG');
 //$injector->define('CONFIG',
@@ -29,6 +29,9 @@ $injector->define(
 
 $injector->alias('Http\Response', 'Http\HttpResponse');
 $injector->share('Http\HttpResponse');
+
+$injector->share('Erusev\Parsedown');
+// TODO: add parsedown settings
 
 $injector->alias('Bitsbytes\Template\Renderer', 'Bitsbytes\Template\MustacheRenderer');
 $injector->define(
@@ -66,14 +69,9 @@ $injector->define(
                         return null;
                     },
                 ],
-                'case' => [
-                    'lower' => function ($value) {
-                        return strtolower((string)$value);
-                    },
-                    'upper' => function ($value) {
-                        return strtoupper((string)$value);
-                    },
-                ],
+//                'markdown' => function($value) {
+//
+//                },
             ],
         ]
     ]

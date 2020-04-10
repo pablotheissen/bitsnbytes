@@ -2,7 +2,7 @@
 <article id="entry-{{ eid }}" class="entry entry-{{ eid }} entry-{{ slug }}">
     <a href="{{ url }}"><h3>{{ title }}</h3>
         <span class="url">{{url}}</span></a>
-    <p>{{ text }}</p>
+    {{{ text }}}
     <p>{{ date | format_date.short }}</p>
     <ul><a href="{{ url-edit }}">edit</a></ul>
 </article>

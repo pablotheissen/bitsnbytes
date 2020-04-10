@@ -9,6 +9,7 @@ use Bitsbytes\Models\Entry;
 use Bitsbytes\Models\EntryRepository;
 use Bitsbytes\Template\Renderer;
 use DateTimeInterface;
+use Erusev\Parsedown\Parsedown;
 use Exception;
 use Http\Request;
 use Http\Response;
@@ -17,10 +18,12 @@ class EntryController extends Controller
 {
     private EntryRepository $entryRepository;
     private AltoRouter $router;
+    private Parsedown $parsedown;
 
     public function __construct(
         EntryRepository $entryRepository,
         AltoRouter $router,
+        Parsedown $parsedown,
         Request $request,
         Response $response,
         Renderer $renderer
@@ -28,6 +31,7 @@ class EntryController extends Controller
         parent::__construct($request, $response, $renderer);
         $this->entryRepository = $entryRepository;
         $this->router = $router;
+        $this->parsedown = $parsedown;
     }
 
     /**
@@ -44,7 +48,9 @@ class EntryController extends Controller
             return;
         }
 
-        $html = $this->renderer->render('Entry', $entry->toArray());
+        $data = $entry->toArray();
+
+        $html = $this->renderer->render('Entry', $data);
         $this->response->setContent($html);
     }
 
@@ -60,6 +66,7 @@ class EntryController extends Controller
             $entries,
             function (&$entry) {
                 $entry['url-edit'] = $this->router->generate('edit-entry', ['slug' => $entry['slug']]);
+                $entry['text'] = $this->parsedown->toHtml($entry['text']);
             }
         );
         $html = $this->renderer->render('entrylist', ['entries' => $entries]);
@@ -100,8 +107,6 @@ class EntryController extends Controller
      */
     public function saveEntry(array $params): void
     {
-        // TODO differentiate between updated and new entry
-
         $error_fields = [];
 
         $new_title = $this->request->getBodyParameter('title');
@@ -149,10 +154,10 @@ class EntryController extends Controller
 
         $entry = new Entry(-1, $new_title, $new_slug, $new_url, $new_text, $new_datetime);
 
-        if (isset($params['slug'])) {
+        if (isset($params['slug'])) { // UPDATE existing entry
             // TODO catch exception when error during update occurs
             $success = $this->entryRepository->updateBySlug($params['slug'], $entry);
-        } else {
+        } else { // NEW entry
             $success = $this->entryRepository->createNewEntry($entry);
         }
         if ($success === true) {
