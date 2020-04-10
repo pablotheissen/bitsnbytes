@@ -8,6 +8,8 @@ use AltoRouter;
 use Bitsbytes\Controllers\EntryController;
 use Bitsbytes\Models\EntryRepository;
 use Bitsbytes\Template\Renderer;
+use Erusev\Parsedown\Parsedown;
+use Exception;
 use Http\Request;
 use Http\Response;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -24,12 +26,14 @@ class EntryControllerTest extends TestCase
 
         $this->entry_repository = $this->createMock(EntryRepository::class);
         $router = $this->createMock(AltoRouter::class);
+        $parsedown = new Parsedown(); // can't be mocked
         $request = $this->createMock(Request::class);
         $response = $this->createMock(Response::class);
         $renderer = $this->createMock(Renderer::class);
         $this->entry_controller = new EntryController(
             $this->entry_repository,
             $router,
+            $parsedown,
             $request,
             $response,
             $renderer
@@ -39,6 +43,10 @@ class EntryControllerTest extends TestCase
     /**
      * @dataProvider titleSlugProvider
      *
+     * @param $inputTitle
+     * @param $expectedSlug
+     *
+     * @throws Exception
      */
     public function testCreateSlugFromTitle($inputTitle, $expectedSlug)
     {
@@ -78,5 +86,47 @@ class EntryControllerTest extends TestCase
             ->method('checkIfSlugExists');
         $createdSlug = $this->entry_controller->createSlugFromTitle('');
         $this->assertEquals('', $createdSlug);
+    }
+
+    public function testCreateSlugFromTitleWhenSlugExists()
+    {
+        $inputTitle = 'Test';
+        $proposedSlug = 'test';
+        $expectedSlug = 'test-2';
+
+        $this->entry_repository->expects($this->exactly(2))
+            ->method('checkIfSlugExists')
+            ->will(
+                $this->returnValueMap(
+                    [
+                        [$proposedSlug, true],
+                        [$expectedSlug, false],
+                    ]
+                )
+            );
+        $createdSlug = $this->entry_controller->createSlugFromTitle($inputTitle);
+        $this->assertEquals($expectedSlug, $createdSlug);
+    }
+
+    public function testCreateSlugFromTitleWhenSlugExistsTwice()
+    {
+        $inputTitle = 'Test';
+        $proposedSlug1 = 'test';
+        $proposedSlug2 = 'test-2';
+        $expectedSlug = 'test-3';
+
+        $this->entry_repository->expects($this->exactly(3))
+            ->method('checkIfSlugExists')
+            ->will(
+                $this->returnValueMap(
+                    [
+                        [$proposedSlug1, true],
+                        [$proposedSlug2, true],
+                        [$expectedSlug, false],
+                    ]
+                )
+            );
+        $createdSlug = $this->entry_controller->createSlugFromTitle($inputTitle);
+        $this->assertEquals($expectedSlug, $createdSlug);
     }
 }
