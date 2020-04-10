@@ -41,7 +41,7 @@ $request = $injector->make('Http\HttpRequest');
 $response = $injector->make('Http\HttpResponse');
 
 $router = $injector->make('AltoRouter');
-$router->setBasePath(''); // TODO: add basePath to config
+$router->setBasePath($config['basepath']);
 
 $routes = include('Routes.php');
 foreach ($routes as $route) {

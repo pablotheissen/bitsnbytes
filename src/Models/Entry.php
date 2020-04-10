@@ -42,11 +42,17 @@ class Entry
 
     public function __toString()
     {
+        if ($this->date === null) {
+            $date_formatted = '';
+        } else {
+            $date_formatted = $this->date->format(\DateTimeInterface::ATOM);
+        }
+
         return "Entry " . $this->eid . ":" .
             "\nTitle: " . $this->title .
             "\nSlug: " . $this->slug .
             "\nURL: " . $this->url .
-            "\nText: " . $this->text;
-        // TODO: add date
+            "\nText: " . $this->text .
+            "\nDate: " . $date_formatted;
     }
 }

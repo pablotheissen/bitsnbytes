@@ -6,6 +6,8 @@ namespace Tests\Controllers;
 
 use Bitsbytes\Controllers\Controller;
 use Bitsbytes\Template\Renderer;
+use DateTime;
+use Exception;
 use Http\Request;
 use Http\Response;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -23,6 +25,18 @@ class ControllerTest extends TestCase
         $response = $this->createMock(Response::class);
         $renderer = $this->createMock(Renderer::class);
         $this->controller = $this->getMockForAbstractClass(Controller::class, array($request, $response, $renderer));
+    }
+
+    /**
+     * @dataProvider urlProvider
+     *
+     * @param $inputUrl
+     * @param $expectedSanitizedUrl
+     */
+    public function testFilterUrl($inputUrl, $expectedSanitizedUrl)
+    {
+        $sanitizedUrl = $this->controller->filterUrl($inputUrl);
+        $this->assertSame($expectedSanitizedUrl, $sanitizedUrl);
     }
 
     public function urlProvider(): array
@@ -49,18 +63,6 @@ class ControllerTest extends TestCase
                 'http://example.com/"><script>alert("xss")</script>'
             ],
         ];
-    }
-
-    /**
-     * @dataProvider urlProvider
-     *
-     * @param $inputUrl
-     * @param $expectedSanitizedUrl
-     */
-    public function testFilterUrl($inputUrl, $expectedSanitizedUrl)
-    {
-        $sanitizedUrl = $this->controller->filterUrl($inputUrl);
-        $this->assertEquals($expectedSanitizedUrl, $sanitizedUrl);
     }
 
     public function slugProvider(): array
@@ -110,11 +112,25 @@ class ControllerTest extends TestCase
      *
      * @param $inputSlug
      * @param $expectedSanitizedSlug
+     *
+     * @throws Exception
      */
     public function testFilterSlug($inputSlug, $expectedSanitizedSlug)
     {
         $sanitizedSlug = $this->controller->filterSlug($inputSlug);
-        $this->assertEquals($expectedSanitizedSlug, $sanitizedSlug);
+        $this->assertSame($expectedSanitizedSlug, $sanitizedSlug);
+    }
+
+    /**
+     * @dataProvider dateProvider
+     *
+     * @param $inputDate
+     * @param $expectedSanitizedDate
+     */
+    public function testFilterDate($inputDate, $expectedSanitizedDate)
+    {
+        $sanitizedDate = $this->controller->filterDate($inputDate);
+        $this->assertSame($expectedSanitizedDate, $sanitizedDate);
     }
 
     public function dateProvider(): array
@@ -160,15 +176,15 @@ class ControllerTest extends TestCase
     }
 
     /**
-     * @dataProvider dateProvider
+     * @dataProvider timeProvider
      *
-     * @param $inputDate
-     * @param $expectedSanitizedDate
+     * @param $inputTime
+     * @param $expectedSanitizedTime
      */
-    public function testFilterDate($inputDate, $expectedSanitizedDate)
+    public function testFilterTime($inputTime, $expectedSanitizedTime)
     {
-        $sanitizedDate = $this->controller->filterDate($inputDate);
-        $this->assertEquals($expectedSanitizedDate, $sanitizedDate);
+        $sanitizedTime = $this->controller->filterTime($inputTime);
+        $this->assertSame($expectedSanitizedTime, $sanitizedTime);
     }
 
     public function timeProvider(): array
@@ -209,16 +225,54 @@ class ControllerTest extends TestCase
         ];
     }
 
+
     /**
-     * @dataProvider timeProvider
+     * @dataProvider dateAndTimeProvider
      *
-     * @param $inputTime
-     * @param $expectedSanitizedTime
+     * @param               $inputDate
+     * @param               $inputTime
+     * @param DateTime|null $expectedDateTime
      */
-    public function testFilterTime($inputTime, $expectedSanitizedTime)
+    public function testCreateDateTimeFromDateAndTime($inputDate, $inputTime, ?DateTime $expectedDateTime)
     {
-        $sanitizedTime = $this->controller->filterTime($inputTime);
-        $this->assertEquals($expectedSanitizedTime, $sanitizedTime);
+        $createdDateTime = $this->controller->createDateTimeFromDateAndTime($inputDate, $inputTime);
+        $this->assertEquals($expectedDateTime, $createdDateTime); // assertEquals as we are comparing objects
+    }
+
+    public function dateAndTimeProvider()
+    {
+        return [
+            [
+                '2020-01-01',
+                '10:10:00',
+                DateTime::createFromFormat('Y-m-d\TH:i:s', '2020-01-01T10:10:00'),
+            ],
+            [ // leap year
+                '2020-02-29',
+                '10:10:10',
+                DateTime::createFromFormat('Y-m-d\TH:i:s', '2020-02-29T10:10:10'),
+            ],
+            [ // date does not exist
+                '2020-02-30',
+                '10:10:10',
+                null,
+            ],
+            [ // seconds missing
+                '2020-01-01',
+                '10:10',
+                null,
+            ],
+            [
+                null,
+                '10:10:00',
+                null,
+            ],
+            [
+                '2020-01-01',
+                null,
+                null,
+            ],
+        ];
     }
 
 }

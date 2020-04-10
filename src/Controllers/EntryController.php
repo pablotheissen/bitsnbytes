@@ -140,6 +140,28 @@ class EntryController extends Controller
     }
 
     /**
+     * @param string $new_title
+     *
+     * @return string
+     * @throws Exception
+     */
+    public function createSlugFromTitle(string $new_title): ?string
+    {
+        $max_slug_length = 30;
+        $i = 2;
+        $proposed_slug = $this->filterSlug($new_title);
+        if ($proposed_slug === '') {
+            return '';
+        }
+        $slug = $proposed_slug;
+        while ($slug_not_available = $this->entryRepository->checkIfSlugExists($slug)) {
+            $slug = substr($proposed_slug, 0, $max_slug_length - 1 - strlen((string)$i)) . '-' . $i;
+            $i++;
+        }
+        return $slug;
+    }
+
+    /**
      * @param array<string>     $error_fields
      * @param string|null       $slug
      * @param string|null       $title
@@ -167,16 +189,5 @@ class EntryController extends Controller
 
         $html = $this->renderer->render('editentry', $data);
         $this->response->setContent($html);
-    }
-
-    /**
-     * @param string $new_title
-     *
-     * @return string
-     * @throws Exception
-     */
-    public function createSlugFromTitle(string $new_title): ?string
-    {
-        return $this->filterSlug($new_title);
     }
 }

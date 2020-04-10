@@ -20,7 +20,6 @@ class EntryRepository extends Model
     public function findEntryBySlug(string $slug)
     {
         $stmt = $this->pdo->prepare('SELECT eid, title, slug, url, text, date FROM entries WHERE slug = :slug');
-        // TODO: Data filtering? https://phptherightway.com/#data_filtering
         $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
         $stmt->execute();
         $rslt = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -112,5 +111,13 @@ class EntryRepository extends Model
             return true;
         }
         throw new Exception($stmt->errorInfo()[2]);
+    }
+
+    public function checkIfSlugExists(string $slug)
+    {
+        $stmt = $this->pdo->prepare('SELECT slug FROM entries WHERE slug = :slug');
+        $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
+        $stmt->execute();
+        return $stmt->fetch() !== false;
     }
 }

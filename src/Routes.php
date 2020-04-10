@@ -23,18 +23,18 @@ return [
     ],
     [
         'GET',
-        '/entry/[a:slug]',
+        '/entry/[:slug]',
         ['Bitsbytes\Controllers\EntryController', 'showBySlug'],
     ],
     [
         'GET',
-        '/entry/[a:slug]/edit',
+        '/entry/[:slug]/edit',
         ['Bitsbytes\Controllers\EntryController', 'editformBySlug'],
         'edit-entry',
     ],
     [
         'POST',
-        '/entry/[a:slug]/edit',
+        '/entry/[:slug]/edit',
         ['Bitsbytes\Controllers\EntryController', 'saveEntry'],
     ],
 ];

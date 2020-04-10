@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Bitsbytes\Controllers;
 
 
-use Exception;
 use Bitsbytes\Template\Renderer;
 use DateTime;
+use Exception;
 use Http\Request;
 use Http\Response;
 use Transliterator;
@@ -129,12 +129,10 @@ abstract class Controller
     }
 
     /**
-     * @param string|null $date
-     * @param string|null $time
+     * @param string|null $date Date MUST be in format YYYY-MM-DD
+     * @param string|null $time Time MUST be in format HH:MM:SS
      *
      * @return DateTime|null
-     *
-     * @todo Write Tests
      */
     public function createDateTimeFromDateAndTime(?string $date, ?string $time): ?DateTime
     {
@@ -143,7 +141,7 @@ abstract class Controller
         }
         $datetime_string = $date . 'T' . $time;
         $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s', $datetime_string);
-        if ($datetime === false) {
+        if ($datetime === false or $datetime_string !== $datetime->format('Y-m-d\TH:i:s')) {
             return null;
         }
         return $datetime;
