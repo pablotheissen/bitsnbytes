@@ -28,8 +28,7 @@ class EntryRepository extends Model
             return null;
         }
 
-        $entry = $this->createEntryFromAssoc($rslt);
-        return $entry;
+        return $this->createEntryFromAssoc($rslt);
     }
 
     /**

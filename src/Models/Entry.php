@@ -5,6 +5,7 @@ namespace Bitsbytes\Models;
 
 
 use DateTime;
+use DateTimeInterface;
 
 class Entry
 {
@@ -45,7 +46,7 @@ class Entry
         if ($this->date === null) {
             $date_formatted = '';
         } else {
-            $date_formatted = $this->date->format(\DateTimeInterface::ATOM);
+            $date_formatted = $this->date->format(DateTimeInterface::ATOM);
         }
 
         return "Entry " . $this->eid . ":" .

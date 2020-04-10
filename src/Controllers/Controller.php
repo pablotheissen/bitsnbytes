@@ -129,6 +129,9 @@ abstract class Controller
     }
 
     /**
+     * Combine a date- and a time-string to a DateTime. Both input strings have to be formatted as YYYY-MM-DD and
+     * HH:MM:SS
+     *
      * @param string|null $date Date MUST be in format YYYY-MM-DD
      * @param string|null $time Time MUST be in format HH:MM:SS
      *

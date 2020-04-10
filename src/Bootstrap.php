@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Bitsbytes;
 
+use AltoRouter;
+use Http\HttpResponse;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 
@@ -20,10 +22,11 @@ $environment = 'development';
  */
 $whoops = new Run();
 if ($environment !== 'production') {
-    $whoops->pushHandler(new PrettyPageHandler);
+    $whoops->pushHandler(new PrettyPageHandler());
 } else {
     $whoops->pushHandler(
         function ($e) {
+            // TODO: create better error handling for production
             echo 'Todo: Friendly error page and send an email to the developer';
         }
     );
@@ -34,9 +37,12 @@ $config = include __DIR__ . '/../config/config.php';
 $injector = include 'Dependencies.php';
 date_default_timezone_set($config['timezone']);
 
-$request = $injector->make('Http\HttpRequest');
-$response = $injector->make('Http\HttpResponse');
+///** @var HttpRequest $request */
+//$request = $injector->make('Http\Request');
+/** @var HttpResponse $response */
+$response = $injector->make('Http\Response');
 
+/** @var AltoRouter $router */
 $router = $injector->make('AltoRouter');
 $router->setBasePath($config['basepath']);
 

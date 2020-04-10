@@ -48,7 +48,9 @@ $injector->define(
             'helpers' => [
                 'format_date' => [
                     'atom' => function ($value) {
-                        return $value->format(DateTimeInterface::ATOM);
+                        if ($value instanceof DateTimeInterface) {
+                            return $value->format(DateTimeInterface::ATOM);
+                        }
                     },
                     'atom_date' => function ($value): ?string {
                         if ($value instanceof DateTimeInterface) {
