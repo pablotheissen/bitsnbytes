@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Bitsbytes;
 
-use _HumbugBox09702017065e\Nette\DI\Extensions\InjectExtension;
-use AltoRouter;
-use Auryn\Injector;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
 

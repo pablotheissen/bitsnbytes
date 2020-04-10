@@ -38,6 +38,12 @@ class EntryController extends Controller
     public function showBySlug(array $params): void
     {
         $entry = $this->entryRepository->findEntryBySlug($params['slug']);
+        if ($entry === null) {
+            $this->response->setContent('404 - Page not found');
+            $this->response->setStatusCode(404);
+            return;
+        }
+
         $html = $this->renderer->render('Entry', $entry->toArray());
         $this->response->setContent($html);
     }
@@ -50,6 +56,12 @@ class EntryController extends Controller
     public function showLatest(array $params): void
     {
         $entries = $this->entryRepository->findLatestEntries(true);
+        array_walk(
+            $entries,
+            function (&$entry) {
+                $entry['url-edit'] = $this->router->generate('edit-entry', ['slug' => $entry['slug']]);
+            }
+        );
         $html = $this->renderer->render('entrylist', ['entries' => $entries]);
         $this->response->setContent($html);
     }
@@ -62,6 +74,12 @@ class EntryController extends Controller
     public function editformBySlug(array $params): void
     {
         $entry = $this->entryRepository->findEntryBySlug($params['slug']);
+        if ($entry === null) {
+            $this->response->setContent('404 - Page not found');
+            $this->response->setStatusCode(404);
+            return;
+        }
+
         $html = $this->renderer->render('editentry', $entry->toArray());
         $this->response->setContent($html);
     }
@@ -131,10 +149,13 @@ class EntryController extends Controller
 
         $entry = new Entry(-1, $new_title, $new_slug, $new_url, $new_text, $new_datetime);
 
-        // TODO catch exception when error during update occurs
-        $update_success = $this->entryRepository->updateBySlug($params['slug'], $entry);
-
-        if ($update_success === true) {
+        if (isset($params['slug'])) {
+            // TODO catch exception when error during update occurs
+            $success = $this->entryRepository->updateBySlug($params['slug'], $entry);
+        } else {
+            $success = $this->entryRepository->createNewEntry($entry);
+        }
+        if ($success === true) {
             $this->response->redirect($this->router->generate('edit-entry', ['slug' => $new_slug]));
         }
     }
@@ -145,12 +166,12 @@ class EntryController extends Controller
      * @return string
      * @throws Exception
      */
-    public function createSlugFromTitle(string $new_title): ?string
+    public function createSlugFromTitle(string $new_title): string
     {
         $max_slug_length = 30;
         $i = 2;
         $proposed_slug = $this->filterSlug($new_title);
-        if ($proposed_slug === '') {
+        if ($proposed_slug === '' OR $proposed_slug === null) {
             return '';
         }
         $slug = $proposed_slug;

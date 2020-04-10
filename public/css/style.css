@@ -81,10 +81,11 @@ main {
 /**
  * FORMS
  */
-input, button, textarea {
+input, button, textarea, .button {
     border-radius: var(--border-radius-input);
     line-height: 1.25;
     padding: .5rem .75rem;
+    text-decoration: none;
 }
 
 input[type=text], input[type=search], input[type=date], input[type=time], textarea {
@@ -106,7 +107,7 @@ input[type=text]:focus, input[type=search]:focus, input[type=date]:focus, input[
 textarea {
     min-height: 10rem;
 }
-input[type=submit], button {
+input[type=submit], button, .button {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06) !important;
     padding: .5rem 1rem;
     background: var(--main-600);
@@ -114,10 +115,10 @@ input[type=submit], button {
     font-weight: bold;
     border: none;
 }
-input[type=submit]:hover, button:hover {
+input[type=submit]:hover, button:hover, .button:hover {
     background-color: var(--main-500);
 }
-input[type=submit]:focus, button:focus {
+input[type=submit]:focus, button:focus, .button:focus {
     box-shadow: 0 0 0 3px rgba(66, 153, 225, .5);
 }
 label {
@@ -167,4 +168,8 @@ header h1 a, header h1 a:hover, header h1 a:focus {
 main {
     /*background: var(--light-300);*/
     padding: 1rem;
+}
+
+article.entry {
+    margin-bottom: 2rem;
 }

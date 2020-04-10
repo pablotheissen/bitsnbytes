@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6c922bbba1ccbe5fc8d175e19b537c41",
+    "content-hash": "8ee40a5d9769d2cd6cb405ec92116652",
     "packages": [
         {
             "name": "altorouter/altorouter",
@@ -61,6 +61,55 @@
                 "routing"
             ],
             "time": "2019-11-23T11:01:41+00:00"
+        },
+        {
+            "name": "erusev/parsedown",
+            "version": "2.0.x-dev",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/erusev/parsedown.git",
+                "reference": "bded7a6ff34f9f0f31be2c60b98e973508e3bf27"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/erusev/parsedown/zipball/bded7a6ff34f9f0f31be2c60b98e973508e3bf27",
+                "reference": "bded7a6ff34f9f0f31be2c60b98e973508e3bf27",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "php": "^7.1"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2.13",
+                "infection/infection": "^0.12.0",
+                "phpunit/phpunit": "^7.4||^6.5.13||^5.7.27||^4.8.36",
+                "vimeo/psalm": "^3.8.3"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Erusev\\Parsedown\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Emanuil Rusev",
+                    "email": "hello@erusev.com",
+                    "homepage": "http://erusev.com"
+                }
+            ],
+            "description": "Parser for Markdown.",
+            "homepage": "http://parsedown.org",
+            "keywords": [
+                "markdown",
+                "parser"
+            ],
+            "time": "2020-01-19T18:14:37+00:00"
         },
         {
             "name": "filp/whoops",
@@ -2044,7 +2093,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": [],
+    "stability-flags": {
+        "erusev/parsedown": 20
+    },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
