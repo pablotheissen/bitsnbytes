@@ -54,8 +54,8 @@ class EntryControllerTest extends TestCase
             ->method('checkIfSlugExists')
             ->with($this->equalTo($expectedSlug))
             ->will($this->returnValue(false));
-        $createdSlug = $this->entry_controller->createSlugFromTitle($inputTitle);
-        $this->assertEquals($expectedSlug, $createdSlug);
+        $actual_slug = $this->entry_controller->createSlugFromTitle($inputTitle);
+        $this->assertSame($expectedSlug, $actual_slug);
     }
 
     public function titleSlugProvider(): array
@@ -84,8 +84,8 @@ class EntryControllerTest extends TestCase
     {
         $this->entry_repository->expects($this->never())
             ->method('checkIfSlugExists');
-        $createdSlug = $this->entry_controller->createSlugFromTitle('');
-        $this->assertEquals('', $createdSlug);
+        $actual_slug = $this->entry_controller->createSlugFromTitle('');
+        $this->assertSame('', $actual_slug);
     }
 
     public function testCreateSlugFromTitleWhenSlugExists()
@@ -104,8 +104,8 @@ class EntryControllerTest extends TestCase
                     ]
                 )
             );
-        $createdSlug = $this->entry_controller->createSlugFromTitle($inputTitle);
-        $this->assertEquals($expectedSlug, $createdSlug);
+        $actual_slug = $this->entry_controller->createSlugFromTitle($inputTitle);
+        $this->assertSame($expectedSlug, $actual_slug);
     }
 
     public function testCreateSlugFromTitleWhenSlugExistsTwice()
@@ -126,7 +126,7 @@ class EntryControllerTest extends TestCase
                     ]
                 )
             );
-        $createdSlug = $this->entry_controller->createSlugFromTitle($inputTitle);
-        $this->assertEquals($expectedSlug, $createdSlug);
+        $actual_slug = $this->entry_controller->createSlugFromTitle($inputTitle);
+        $this->assertSame($expectedSlug, $actual_slug);
     }
 }

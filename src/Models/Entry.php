@@ -4,6 +4,7 @@
 namespace Bitsbytes\Models;
 
 
+use Bitsbytes\Models\Tag\Tag;
 use DateTime;
 use DateTimeInterface;
 
@@ -15,22 +16,51 @@ class Entry
     public ?string $url;
     public ?string $text;
     public ?DateTime $date;
+    /** @var array<Tag> */
+    public array $tags;
 
-    public function __construct(?int $eid, ?string $title, ?string $slug, ?string $url, ?string $text, ?DateTime $date)
-    {
+    /**
+     * Entry constructor.
+     *
+     * @param int|null      $eid
+     * @param string|null   $title
+     * @param string|null   $slug
+     * @param string|null   $url
+     * @param string|null   $text
+     * @param DateTime|null $date
+     * @param array<Tag>    $tags
+     */
+    public function __construct(
+        ?int $eid,
+        ?string $title,
+        ?string $slug,
+        ?string $url,
+        ?string $text,
+        ?DateTime $date,
+        array $tags = []
+    ) {
         $this->eid = $eid;
         $this->title = $title;
         $this->slug = $slug;
         $this->url = $url;
         $this->text = $text;
         $this->date = $date;
+        $this->tags = $tags;
     }
 
     /**
-     * @return array<int|string|DateTime|null>
+     * @return array<int|string|DateTime|array<array<int|string|null>>|null>
      */
     public function toArray(): array
     {
+        $tags_array = [];
+        array_walk(
+            $this->tags,
+            function (Tag $tag) use (&$tags_array) {
+                $tags_array[] = $tag->toArray();
+            }
+        );
+
         return [
             'eid' => $this->eid,
             'title' => $this->title,
@@ -38,6 +68,7 @@ class Entry
             'url' => $this->url,
             'text' => $this->text,
             'date' => $this->date,
+            'tags' => $tags_array,
         ];
     }
 
@@ -49,7 +80,7 @@ class Entry
             $date_formatted = $this->date->format(DateTimeInterface::ATOM);
         }
 
-        return "Entry " . $this->eid . ":" .
+        return "Entry #" . $this->eid . ":" .
             "\nTitle: " . $this->title .
             "\nSlug: " . $this->slug .
             "\nURL: " . $this->url .

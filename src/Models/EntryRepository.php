@@ -56,13 +56,12 @@ class EntryRepository extends Model
     /**
      * @param bool $returnAsArray
      *
-     * @return array<Entry|array<int|string|DateTime|null>>
+     * @return array<int,array<array<array<int|string|null>>|DateTime|int|string|null>|Entry>
      * @throws Exception
      */
     public function findLatestEntries(bool $returnAsArray = false): array
     {
         $stmt = $this->pdo->prepare('SELECT eid, title, slug, url, text, date FROM entries ORDER BY date DESC');
-//        $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
         $stmt->execute();
 
         $entries = [];
