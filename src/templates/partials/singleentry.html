@@ -4,6 +4,11 @@
         <span class="url">{{url}}</span></a>
     {{{ text }}}
     <p>{{ date | format_date.short }}</p>
+    <ul>
+        {{# tags }}
+        <li>{{ title }}</li>
+        {{/ tags }}
+    </ul>
     <ul><a href="{{ url-edit }}">edit</a></ul>
 </article>
 

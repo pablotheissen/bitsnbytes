@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Bitsbytes\Models;
 
+use Bitsbytes\Models\Tag\Tag;
+use Bitsbytes\Models\Tag\TagRepository;
 use DateTime;
 use DateTimeInterface;
 use Exception;
@@ -11,6 +13,14 @@ use PDO;
 
 class EntryRepository extends Model
 {
+    private TagRepository $tag_repository;
+
+    public function __construct(TagRepository $tag_repository, PDO $pdo)
+    {
+        parent::__construct($pdo);
+        $this->tag_repository = $tag_repository;
+    }
+
     /**
      * @param string $slug
      *
@@ -28,7 +38,10 @@ class EntryRepository extends Model
             return null;
         }
 
-        return $this->createEntryFromAssoc($rslt);
+        $entry = $this->createEntryFromAssoc($rslt);
+        $entry->tags = $this->tag_repository->findTagsByEntries($entry);
+
+        return $entry;
     }
 
     /**
@@ -66,12 +79,16 @@ class EntryRepository extends Model
 
         $entries = [];
         if ($returnAsArray === true) {
-            while ($rslt = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entries[] = $this->createEntryFromAssoc($rslt)->toArray();
+            while ($rslt = $stmt->fetch()) {
+                $entry = $this->createEntryFromAssoc($rslt);
+                $entry->tags = $this->tag_repository->findTagsByEntries($entry);
+                $entries[] = $entry->toArray();
             }
         } else {
-            while ($rslt = $stmt->fetch(PDO::FETCH_ASSOC)) {
-                $entries[] = $this->createEntryFromAssoc($rslt);
+            while ($rslt = $stmt->fetch()) {
+                $entry = $this->createEntryFromAssoc($rslt);
+                $entry->tags = $this->tag_repository->findTagsByEntries($entry);
+                $entries[] = $entry;
             }
         }
 
@@ -149,4 +166,16 @@ class EntryRepository extends Model
         $stmt->execute();
         return $stmt->fetch() !== false;
     }
+
+    /**
+     * @param array<Tag>|Tag $tags
+     *
+     * @return array<Entry>
+     *
+     * @todo Implement Method
+     */
+//    public function findEntriesByTags($tags): array
+//    {
+//        return [];
+//    }
 }

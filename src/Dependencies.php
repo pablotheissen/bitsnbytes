@@ -80,6 +80,7 @@ $injector->define(
 );
 
 $injector->share('Bitsbytes\Models\EntryRepository');
+$injector->share('Bitsbytes\Models\TagRepository');
 
 $injector->share('PDO');
 $injector->define(
@@ -88,6 +89,8 @@ $injector->define(
         ':dsn' => $config['database_dsn'],
     ]
 );
+$pdo = $injector->make('PDO');
+$pdo->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
 
 $injector->share('AltoRouter');
 
