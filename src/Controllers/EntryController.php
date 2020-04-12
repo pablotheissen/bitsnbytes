@@ -41,7 +41,7 @@ class EntryController extends Controller
      */
     public function showBySlug(array $params): void
     {
-        $entry = $this->entryRepository->findEntryBySlug($params['slug']);
+        $entry = $this->entryRepository->fetchEntryBySlug($params['slug']);
         if ($entry === null) {
             $this->response->setContent('404 - Page not found');
             $this->response->setStatusCode(404);
@@ -61,7 +61,7 @@ class EntryController extends Controller
      */
     public function showLatest(array $params): void
     {
-        $entries = $this->entryRepository->findLatestEntries(true);
+        $entries = $this->entryRepository->fetchLatestEntries(true);
         array_walk(
             $entries,
             function (&$entry) {
@@ -80,7 +80,7 @@ class EntryController extends Controller
      */
     public function editformBySlug(array $params): void
     {
-        $entry = $this->entryRepository->findEntryBySlug($params['slug']);
+        $entry = $this->entryRepository->fetchEntryBySlug($params['slug']);
         if ($entry === null) {
             $this->response->setContent('404 - Page not found');
             $this->response->setStatusCode(404);

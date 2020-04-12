@@ -17,7 +17,7 @@ class EntryRepository extends Model
      * @return Entry
      * @throws Exception
      */
-    public function findEntryBySlug(string $slug): ?Entry
+    public function fetchEntryBySlug(string $slug): ?Entry
     {
         $stmt = $this->pdo->prepare('SELECT eid, title, slug, url, text, date FROM entries WHERE slug = :slug');
         $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
@@ -59,7 +59,7 @@ class EntryRepository extends Model
      * @return array<int,array<array<array<int|string|null>>|DateTime|int|string|null>|Entry>
      * @throws Exception
      */
-    public function findLatestEntries(bool $returnAsArray = false): array
+    public function fetchLatestEntries(bool $returnAsArray = false): array
     {
         $stmt = $this->pdo->prepare('SELECT eid, title, slug, url, text, date FROM entries ORDER BY date DESC');
         $stmt->execute();
