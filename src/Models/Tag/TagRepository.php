@@ -16,9 +16,9 @@ class TagRepository extends Model
 {
     /**
      * Fetch a single tag from the database based on the slug parameter. Throws an exception if slug doesn't exist in
-     * database.
+     * table.
      *
-     * @param string $slug Slug to search for in database.
+     * @param string $slug Slug to search for in <tt>tags</tt> table.
      *
      * @return Tag Valid tag with tid, slug and title
      * @throws TagNotFoundException If query doesn't return any rows, TagNotFoundException is thrown.
@@ -38,7 +38,7 @@ class TagRepository extends Model
     }
 
     /**
-     * Convert the associative array returned from PDOStatement::fetch into an instance of Tag.
+     * Convert the associative array returned from PDOStatement::fetch into an instance of <tt>Tag</tt>.
      *
      * @param array<string> $query_result <p>Result from PDOStatement::fetch which <i>must</i> contain the keys
      *                                    <p><b>tid</b> ID of tag
@@ -61,11 +61,10 @@ class TagRepository extends Model
      *
      * @param string $title User-readable title to look for in the database
      *
-     * @return Tag|null <b>Tag</b> with id und slug if title was found in database
-     *                  <b>null</b> if title was not found in database
+     * @return Tag <b>Tag</b> with id und slug if title was found in database
      * @throws TagNotFoundException If query doesn't return any rows, TagNotFoundException is thrown.
      */
-    public function fetchTagByTitle(string $title): ?Tag
+    public function fetchTagByTitle(string $title): Tag
     {
         $stmt = $this->pdo->prepare('SELECT tid, slug, title FROM tags WHERE title = :title');
         $stmt->bindParam(':title', $title, PDO::PARAM_STR);
@@ -85,7 +84,7 @@ class TagRepository extends Model
      *
      * @param string $title
      *
-     * @return Tag Instance of Tag with unchanged title but new id and slug for this tag.
+     * @return Tag Instance of <tt>Tag</tt> with unchanged title but new id and slug for this tag.
      * @throws Exception If any error occurs during inserting new data into database.
      */
     public function createNewTagFromTitle(string $title): Tag

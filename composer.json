@@ -9,22 +9,22 @@
     }
   ],
   "require": {
-    "php": ">=7.4",
     "altorouter/altorouter": "^2.0.1",
     "erusev/parsedown": "2.0.x-dev",
+    "ext-intl": "*",
+    "ext-mbstring": "*",
+    "ext-pdo": "*",
     "filp/whoops": "^2.7.1",
     "mustache/mustache": "^v2.13.0",
     "patricklouys/http": "^v1.4.0",
-    "rdlowrey/auryn": "^v1.4.2",
-    "ext-pdo": "*",
-    "ext-intl": "*",
-    "ext-mbstring": "*"
+    "php": ">=7.4",
+    "rdlowrey/auryn": "^v1.4.2"
   },
   "require-dev": {
-    "phpunit/phpunit": "^9.1",
+    "phpstan/extension-installer": "^1.0.4",
     "phpstan/phpstan": "^0.12.18",
-    "phpstan/phpstan-strict-rules": "0.12.2",
-    "phpstan/extension-installer": "1.0.4"
+    "phpstan/phpstan-strict-rules": "^0.12.2",
+    "phpunit/phpunit": "^9.1"
   },
   "autoload": {
     "psr-4": {
