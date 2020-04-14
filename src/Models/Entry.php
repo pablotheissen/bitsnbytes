@@ -56,7 +56,7 @@ class Entry
         $tags_array = [];
         array_walk(
             $this->tags,
-            function (Tag $tag) use (&$tags_array) {
+            function (Tag $tag) use (&$tags_array): void {
                 $tags_array[] = $tag->toArray();
             }
         );

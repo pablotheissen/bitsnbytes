@@ -6,6 +6,7 @@ namespace Bitsbytes\Controllers;
 
 use AltoRouter;
 use Bitsbytes\Models\Entry;
+use Bitsbytes\Models\EntryNotFoundException;
 use Bitsbytes\Models\EntryRepository;
 use Bitsbytes\Template\Renderer;
 use DateTimeInterface;
@@ -41,8 +42,9 @@ class EntryController extends Controller
      */
     public function showBySlug(array $params): void
     {
-        $entry = $this->entryRepository->fetchEntryBySlug($params['slug']);
-        if ($entry === null) {
+        try {
+            $entry = $this->entryRepository->fetchEntryBySlug($params['slug']);
+        } catch (EntryNotFoundException $e) {
             $this->response->setContent('404 - Page not found');
             $this->response->setStatusCode(404);
             return;
@@ -64,7 +66,7 @@ class EntryController extends Controller
         $entries = $this->entryRepository->fetchLatestEntries(true);
         array_walk(
             $entries,
-            function (&$entry) {
+            function (&$entry): void {
                 $entry['url-edit'] = $this->router->generate('edit-entry', ['slug' => $entry['slug']]);
                 $entry['text'] = $this->parsedown->toHtml($entry['text']);
             }
@@ -80,8 +82,9 @@ class EntryController extends Controller
      */
     public function editformBySlug(array $params): void
     {
-        $entry = $this->entryRepository->fetchEntryBySlug($params['slug']);
-        if ($entry === null) {
+        try {
+            $entry = $this->entryRepository->fetchEntryBySlug($params['slug']);
+        } catch (EntryNotFoundException $e) {
             $this->response->setContent('404 - Page not found');
             $this->response->setStatusCode(404);
             return;
@@ -110,12 +113,12 @@ class EntryController extends Controller
         $error_fields = [];
 
         $new_title = $this->request->getBodyParameter('title');
-        if (empty($new_title)) {
+        if ($new_title === '' || $new_title === null) {
             $error_fields[] = 'title';
         }
         $user_slug = $this->request->getBodyParameter('slug');
         $new_slug = $this->filterSlug($user_slug);
-        if (empty($user_slug)) {
+        if ($user_slug === '' || $user_slug === null || $new_slug === '' || $new_slug === null) {
             $new_slug = $this->createSlugFromTitle($new_title);
         } elseif ($user_slug != $new_slug) {
             $error_fields[] = 'slug';
@@ -125,13 +128,13 @@ class EntryController extends Controller
         $new_date = $this->filterDate($this->request->getBodyParameter('date'));
         if ($new_date === null) {
             $error_fields[] = 'date';
-        } elseif (empty($new_date)) {
+        } elseif ($new_date === '') {
             $new_date = date('Y-m-d');
         }
         $new_time = $this->filterTime($this->request->getBodyParameter('time'));
         if ($new_time === null) {
             $error_fields[] = 'time';
-        } elseif (empty($new_time)) {
+        } elseif ($new_time === '') {
             $new_time = date('H:i:s');
         }
         $new_datetime = $this->createDateTimeFromDateAndTime($new_date, $new_time);
@@ -142,7 +145,7 @@ class EntryController extends Controller
         // TODO: parse/filter tags
         $new_tags = array_filter($this->request->getBodyParameter('tags'));
 
-        if (!empty($error_fields)) {
+        if (count($error_fields) > 0) {
             $this->editformErrorsFound(
                 array_unique($error_fields),
                 $user_slug,
@@ -210,6 +213,7 @@ class EntryController extends Controller
         ?string $text,
         ?DateTimeInterface $datetime
     ): void {
+        $data = [];
         $data['slug'] = $slug;
         $data['title'] = $title;
         $data['url'] = $url;
