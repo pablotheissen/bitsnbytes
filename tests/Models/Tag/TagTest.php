@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Models\Tag;
 
-use Bitsbytes\Models\Tag\Tag;
+use Bitsnbytes\Models\Tag\Tag;
 use PHPUnit\Framework\TestCase;
 
 class TagTest extends TestCase

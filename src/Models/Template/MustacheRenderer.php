@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bitsbytes\Template;
+namespace Bitsnbytes\Models\Template;
 
 use AltoRouter;
 use Exception;

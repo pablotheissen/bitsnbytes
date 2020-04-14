@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bitsbytes;
+namespace Bitsnbytes;
 
 use AltoRouter;
 use Auryn\Injector;

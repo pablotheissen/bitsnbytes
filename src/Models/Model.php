@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bitsbytes\Models;
+namespace Bitsnbytes\Models;
 
 use PDO;
 

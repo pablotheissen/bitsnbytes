@@ -28,7 +28,7 @@
   },
   "autoload": {
     "psr-4": {
-      "Bitsbytes\\": "src/"
+      "Bitsnbytes\\": "src/"
     }
   },
   "autoload-dev": {

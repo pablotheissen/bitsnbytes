@@ -7,34 +7,34 @@ return [
     [
         'GET',
         '/',
-        ['Bitsbytes\Controllers\EntryController', 'showLatest'],
+        ['Bitsnbytes\Controllers\EntryController', 'showLatest'],
         'home',
     ],
     [
         'GET',
         '/entry/new',
-        ['Bitsbytes\Controllers\EntryController', 'newform'],
+        ['Bitsnbytes\Controllers\EntryController', 'newform'],
         'new-entry',
     ],
     [
         'POST',
         '/entry/new',
-        ['Bitsbytes\Controllers\EntryController', 'saveEntry'],
+        ['Bitsnbytes\Controllers\EntryController', 'saveEntry'],
     ],
     [
         'GET',
         '/entry/[:slug]',
-        ['Bitsbytes\Controllers\EntryController', 'showBySlug'],
+        ['Bitsnbytes\Controllers\EntryController', 'showBySlug'],
     ],
     [
         'GET',
         '/entry/[:slug]/edit',
-        ['Bitsbytes\Controllers\EntryController', 'editformBySlug'],
+        ['Bitsnbytes\Controllers\EntryController', 'editformBySlug'],
         'edit-entry',
     ],
     [
         'POST',
         '/entry/[:slug]/edit',
-        ['Bitsbytes\Controllers\EntryController', 'saveEntry'],
+        ['Bitsnbytes\Controllers\EntryController', 'saveEntry'],
     ],
 ];

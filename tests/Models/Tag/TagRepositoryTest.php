@@ -5,7 +5,7 @@ declare(strict_types=1);
 
 namespace Tests\Models\Tag;
 
-use Bitsbytes\Models\Tag\TagRepository;
+use Bitsnbytes\Models\Tag\TagRepository;
 use PDO;
 use PHPUnit\Framework\TestCase;
 

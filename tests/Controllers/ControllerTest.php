@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Tests\Controllers;
 
-use Bitsbytes\Controllers\Controller;
-use Bitsbytes\Template\Renderer;
+use Bitsnbytes\Controllers\Controller;
+use Bitsnbytes\Models\Template\Renderer;
 use DateTime;
 use Exception;
 use Http\Request;

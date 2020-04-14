@@ -5,9 +5,9 @@ namespace Tests\Controllers;
 
 
 use AltoRouter;
-use Bitsbytes\Controllers\EntryController;
-use Bitsbytes\Models\EntryRepository;
-use Bitsbytes\Template\Renderer;
+use Bitsnbytes\Controllers\EntryController;
+use Bitsnbytes\Models\Entry\EntryRepository;
+use Bitsnbytes\Models\Template\Renderer;
 use Erusev\Parsedown\Parsedown;
 use Exception;
 use Http\Request;

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Bitsbytes\Models\Tag;
+namespace Bitsnbytes\Models\Tag;
 
 
 class Tag

@@ -4,10 +4,6 @@ declare(strict_types=1);
 
 namespace Tests\Models;
 
-use Bitsbytes\Models\Entry;
-use Bitsbytes\Models\EntryRepository;
-use Tests\TestCase;
-use PDO;
 //
 //class EntryRepositoryTest extends TestCase
 //{

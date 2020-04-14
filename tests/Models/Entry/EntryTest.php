@@ -5,8 +5,8 @@ declare(strict_types=1);
 
 namespace Tests\Models\Entry;
 
-use Bitsbytes\Models\Entry;
-use Bitsbytes\Models\Tag\Tag;
+use Bitsnbytes\Models\Entry\Entry;
+use Bitsnbytes\Models\Tag\Tag;
 use DateTime;
 use PHPUnit\Framework\TestCase;
 

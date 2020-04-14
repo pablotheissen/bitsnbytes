@@ -3,12 +3,12 @@
 declare(strict_types=1);
 
 
-namespace Bitsbytes\Models\Tag;
+namespace Bitsnbytes\Models\Tag;
 
 
-use Bitsbytes\Models\DuplicateKeyException;
-use Bitsbytes\Models\Entry;
-use Bitsbytes\Models\Model;
+use Bitsnbytes\Models\DuplicateKeyException;
+use Bitsnbytes\Models\Entry\Entry;
+use Bitsnbytes\Models\Model;
 use Exception;
 use PDO;
 

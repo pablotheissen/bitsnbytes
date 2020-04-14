@@ -2,9 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bitsbytes\Models;
+namespace Bitsnbytes\Models\Entry;
 
-use Bitsbytes\Models\Tag\TagRepository;
+use Bitsnbytes\Models\Model;
+use Bitsnbytes\Models\Tag\TagRepository;
 use DateTime;
 use DateTimeInterface;
 use Exception;

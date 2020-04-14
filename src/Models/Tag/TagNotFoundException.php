@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 
-namespace Bitsbytes\Models\Tag;
+namespace Bitsnbytes\Models\Tag;
 
 
-use Bitsbytes\Models\RecordNotFoundException;
+use Bitsnbytes\Models\RecordNotFoundException;
 
 class TagNotFoundException extends RecordNotFoundException
 {

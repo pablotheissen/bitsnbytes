@@ -3,8 +3,10 @@
 declare(strict_types=1);
 
 
-namespace Bitsbytes\Models;
+namespace Bitsnbytes\Models\Entry;
 
+
+use Bitsnbytes\Models\RecordNotFoundException;
 
 class EntryNotFoundException extends RecordNotFoundException
 {

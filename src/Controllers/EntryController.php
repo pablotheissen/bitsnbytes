@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Bitsbytes\Controllers;
+namespace Bitsnbytes\Controllers;
 
 use AltoRouter;
-use Bitsbytes\Models\Entry;
-use Bitsbytes\Models\EntryNotFoundException;
-use Bitsbytes\Models\EntryRepository;
-use Bitsbytes\Template\Renderer;
+use Bitsnbytes\Models\Entry\Entry;
+use Bitsnbytes\Models\Entry\EntryNotFoundException;
+use Bitsnbytes\Models\Entry\EntryRepository;
+use Bitsnbytes\Models\Template\Renderer;
 use DateTimeInterface;
 use Erusev\Parsedown\Parsedown;
 use Exception;

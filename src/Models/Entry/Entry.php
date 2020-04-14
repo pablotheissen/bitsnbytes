@@ -1,10 +1,10 @@
 <?php
 
 
-namespace Bitsbytes\Models;
+namespace Bitsnbytes\Models\Entry;
 
 
-use Bitsbytes\Models\Tag\Tag;
+use Bitsnbytes\Models\Tag\Tag;
 use DateTime;
 use DateTimeInterface;
 

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Bitsbytes\Controllers;
+namespace Bitsnbytes\Controllers;
 
 
-use Bitsbytes\Template\Renderer;
+use Bitsnbytes\Models\Template\Renderer;
 use DateTime;
 use Exception;
 use Http\Request;

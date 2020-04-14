@@ -33,7 +33,7 @@ $injector->share('Http\HttpResponse');
 $injector->share('Erusev\Parsedown');
 // TODO: add parsedown settings
 
-$injector->alias('Bitsbytes\Template\Renderer', 'Bitsbytes\Template\MustacheRenderer');
+$injector->alias('Bitsnbytes\Models\Template\Renderer', 'Bitsnbytes\Models\Template\MustacheRenderer');
 $injector->define(
     'Mustache_Engine',
     [
@@ -80,8 +80,8 @@ $injector->define(
     ]
 );
 
-$injector->share('Bitsbytes\Models\EntryRepository');
-$injector->share('Bitsbytes\Models\TagRepository');
+$injector->share('Bitsnbytes\Models\Entry\EntryRepository');
+$injector->share('Bitsnbytes\Models\TagRepository');
 
 $injector->share('PDO');
 $injector->define(
