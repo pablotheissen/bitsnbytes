@@ -4,9 +4,9 @@
         <span class="url">{{url}}</span></a>
     {{{ text }}}
     <p>{{ date | format_date.short }}</p>
-    <ul>
+    <ul class="tags">
         {{# tags }}
-        <li>{{ title }}</li>
+        <li class="tag tag-{{ tid }} tag-{{ slug }}"><a href="/tag/{{ slug }}">{{ title }}</a></li>
         {{/ tags }}
     </ul>
     <ul><a href="{{ url-edit }}">edit</a></ul>

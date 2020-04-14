@@ -132,6 +132,7 @@ class TagRepository extends Model
         }
 
         if ($this->checkIfSlugExists($tag->slug)) {
+            // TODO: when changing tag "test" to "Test" this exception is called
             throw new DuplicateKeyException();
         }
         throw new Exception($stmt->errorInfo()[2]);
