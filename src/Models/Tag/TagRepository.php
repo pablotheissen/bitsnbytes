@@ -15,11 +15,15 @@ use PDO;
 class TagRepository extends Model
 {
     /**
-     * @param string $slug
+     * Fetch a single tag from the database based on the slug parameter. Throws an exception if slug doesn't exist in
+     * database.
      *
-     * @return Tag|null
+     * @param string $slug Slug to search for in database.
+     *
+     * @return Tag Valid tag with tid, slug and title
+     * @throws TagNotFoundException If query doesn't return any rows, TagNotFoundException is thrown.
      */
-    public function fetchTagBySlug(string $slug): ?Tag
+    public function fetchTagBySlug(string $slug): Tag
     {
         $stmt = $this->pdo->prepare('SELECT tid, slug, title FROM tags WHERE slug = :slug');
         $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
@@ -27,16 +31,21 @@ class TagRepository extends Model
         $rslt = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($rslt === false) {
-            return null;
+            throw new TagNotFoundException();
         }
 
         return $this->convertAssocToTag($rslt);
     }
 
     /**
-     * @param array<string> $query_result
+     * Convert the associative array returned from PDOStatement::fetch into an instance of Tag.
      *
-     * @return Tag
+     * @param array<string> $query_result <p>Result from PDOStatement::fetch which <i>must</i> contain the keys
+     *                                    <p><b>tid</b> ID of tag
+     *                                    <p><b>slug</b> Slug of tag
+     *                                    <p><b>title</b> User-readable title
+     *
+     * @return Tag Valid tag with tid, slug and title unchanged from <tt>$query_result</tt> data
      */
     private function convertAssocToTag(array $query_result): Tag
     {
@@ -54,6 +63,7 @@ class TagRepository extends Model
      *
      * @return Tag|null <b>Tag</b> with id und slug if title was found in database
      *                  <b>null</b> if title was not found in database
+     * @throws TagNotFoundException If query doesn't return any rows, TagNotFoundException is thrown.
      */
     public function fetchTagByTitle(string $title): ?Tag
     {
@@ -63,7 +73,7 @@ class TagRepository extends Model
         $rslt = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($rslt === false) {
-            return null;
+            throw new TagNotFoundException();
         }
 
         return $this->convertAssocToTag($rslt);
@@ -146,9 +156,13 @@ class TagRepository extends Model
     }
 
     /**
-     * @param array<Entry>|Entry $entries
+     * <p>Get all tags in alphabetical order (by <tt>Tag::title</tt>) for a set of entries or for a single entry.
+     * <p>Only returns a set of tags, duplicate tags (e.g. with to entries pointing to the same tag) are removed.
      *
-     * @return array<Tag>
+     * @param array<Entry>|Entry $entries Array of entries or single entry for which tags are searched and returned.
+     *                                    <p>All entries without a valid id (<tt>Entry::eid</tt>) are ignored.
+     *
+     * @return array<Tag> Array of all tags found for the list of entries
      */
     public function findTagsByEntries($entries): array
     {
