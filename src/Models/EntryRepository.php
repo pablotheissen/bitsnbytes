@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Bitsbytes\Models;
 
-use Bitsbytes\Models\Tag\Tag;
 use Bitsbytes\Models\Tag\TagRepository;
 use DateTime;
 use DateTimeInterface;
@@ -25,9 +24,10 @@ class EntryRepository extends Model
      * @param string $slug
      *
      * @return Entry
+     * @throws EntryNotFoundException
      * @throws Exception
      */
-    public function fetchEntryBySlug(string $slug): ?Entry
+    public function fetchEntryBySlug(string $slug): Entry
     {
         $stmt = $this->pdo->prepare('SELECT eid, title, slug, url, text, date FROM entries WHERE slug = :slug');
         $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
@@ -35,10 +35,10 @@ class EntryRepository extends Model
         $rslt = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if ($rslt === false) {
-            return null;
+            throw new EntryNotFoundException();
         }
 
-        $entry = $this->createEntryFromAssoc($rslt);
+        $entry = $this->convertAssocToEntry($rslt);
         $entry->tags = $this->tag_repository->findTagsByEntries($entry);
 
         return $entry;
@@ -50,7 +50,7 @@ class EntryRepository extends Model
      * @return Entry
      * @throws Exception
      */
-    private function createEntryFromAssoc(array $query_result): Entry
+    private function convertAssocToEntry(array $query_result): Entry
     {
         $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+e', $query_result['date']);
         if ($datetime === false) {
@@ -80,13 +80,13 @@ class EntryRepository extends Model
         $entries = [];
         if ($returnAsArray === true) {
             while ($rslt = $stmt->fetch()) {
-                $entry = $this->createEntryFromAssoc($rslt);
+                $entry = $this->convertAssocToEntry($rslt);
                 $entry->tags = $this->tag_repository->findTagsByEntries($entry);
                 $entries[] = $entry->toArray();
             }
         } else {
             while ($rslt = $stmt->fetch()) {
-                $entry = $this->createEntryFromAssoc($rslt);
+                $entry = $this->convertAssocToEntry($rslt);
                 $entry->tags = $this->tag_repository->findTagsByEntries($entry);
                 $entries[] = $entry;
             }
@@ -133,6 +133,12 @@ class EntryRepository extends Model
         throw new Exception($stmt->errorInfo()[2]);
     }
 
+    /**
+     * @param Entry $entry
+     *
+     * @return bool
+     * @throws Exception
+     */
     public function createNewEntry(Entry $entry): bool
     {
         $stmt = $this->pdo->prepare(
@@ -168,14 +174,64 @@ class EntryRepository extends Model
     }
 
     /**
-     * @param array<Tag>|Tag $tags
+     * @param Entry         $entry
+     * @param array<string> $tags
      *
-     * @return array<Entry>
-     *
-     * @todo Implement Method
+     * @return Entry
+     * @throws Exception
      */
-//    public function findEntriesByTags($tags): array
-//    {
-//        return [];
-//    }
+    public function updateTagsByEntry(Entry $entry, array $tags): ?Entry
+    {
+        $this->pdo->beginTransaction();
+        $entry = $this->removeTagRelationshipsByEntry($entry);
+
+        if ($entry === null) {
+            $this->pdo->rollBack();
+            return null; // TODO: throw exception instead of return null?
+        }
+
+        foreach ($tags as $tag_title) {
+            $tag = $this->tag_repository->fetchTagByTitle($tag_title);
+            if ($tag === null) {
+                $tag = $this->tag_repository->createNewTagFromTitle($tag_title);
+            }
+            $entry->tags[] = $tag;
+            var_dump($tag);
+            $stmt = $this->pdo->prepare(
+                'INSERT INTO entry_tag
+                    (eid, tid)
+                VALUES
+                    (:eid, :tid)'
+            );
+            $stmt->bindParam(':eid', $entry->eid, PDO::PARAM_INT);
+            $stmt->bindParam(':tid', $tag->tid, PDO::PARAM_INT);
+            $stmt->execute();
+        }
+        $this->pdo->commit();
+        return $entry;
+    }
+
+    /**
+     * Remove all <b>relationships</b> between entries and tags for a specific entry. This will just update the table
+     * entry_tag, not actually delete any tags from the according table.
+     *
+     * @param Entry $entry The entry of which all tag relationships should be removed.
+     *
+     * @return Entry|null <p><b>Entry</b> on success, same entry as submitted via @param <tt>$entry</tt> but without any
+     *                    tags.
+     *                    <p>If this entry doesn't have any associated tags in the database, nothing will be deleted
+     *                    and the entry will be returned without a error.
+     *                    <p><b>NULL</b> on error in case of any SQL/database error.
+     */
+    private function removeTagRelationshipsByEntry(Entry $entry): ?Entry
+    {
+        $stmt = $this->pdo->prepare('DELETE FROM entry_tag WHERE eid = :eid');
+        $stmt->bindParam(':eid', $entry->eid, PDO::PARAM_INT);
+        $success = $stmt->execute();
+        if ($success === false) {
+            return null;
+        }
+        $entry->tags = [];
+        return $entry;
+    }
 }

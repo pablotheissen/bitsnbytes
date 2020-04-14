@@ -11,7 +11,7 @@ class Tag
     public ?string $slug;
     public ?string $title;
 
-    public function __construct(int $tid, string $slug, string $title)
+    public function __construct(?int $tid, string $slug, string $title)
     {
         $this->tid = $tid;
         $this->slug = $slug;

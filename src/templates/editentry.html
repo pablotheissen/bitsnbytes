@@ -27,6 +27,14 @@
             <input id="inpt-time" type="time" name="time" value="{{ date | format_date.atom_time }}">
         </div>
     </div>
+    <div>
+        <ul>
+            {{# tags }}
+            <li><input name="tags[]" type="text" value="{{ title }}"></li>
+            {{/ tags }}
+            <li><input name="tags[]" type="text" value=""></li>
+        </ul>
+    </div>
     <button type="submit">Save</button>
 </form>
 

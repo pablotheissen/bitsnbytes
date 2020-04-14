@@ -139,6 +139,8 @@ class EntryController extends Controller
             $error_fields[] = 'date';
             $error_fields[] = 'time';
         }
+        // TODO: parse/filter tags
+        $new_tags = array_filter($this->request->getBodyParameter('tags'));
 
         if (!empty($error_fields)) {
             $this->editformErrorsFound(
@@ -152,7 +154,7 @@ class EntryController extends Controller
             return;
         }
 
-        $entry = new Entry(-1, $new_title, $new_slug, $new_url, $new_text, $new_datetime);
+        $entry = new Entry(null, $new_title, $new_slug, $new_url, $new_text, $new_datetime);
 
         if (isset($params['slug'])) { // UPDATE existing entry
             // TODO catch exception when error during update occurs
@@ -160,6 +162,11 @@ class EntryController extends Controller
         } else { // NEW entry
             $success = $this->entryRepository->createNewEntry($entry);
         }
+
+        // Fetch entry id from database by simply fetching the entire entry again
+        $entry = $this->entryRepository->fetchEntryBySlug($new_slug);
+
+        $this->entryRepository->updateTagsByEntry($entry, $new_tags);
         if ($success === true) {
             $this->response->redirect($this->router->generate('edit-entry', ['slug' => $new_slug]));
         }
