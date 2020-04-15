@@ -50,12 +50,12 @@ html {
  */
 body {
     display: flex;
-    height: 100%;
+    min-height: 100%;
 }
-header {
+body > header {
     flex: 0 1 33%;
     max-width: 300px;
-    height: 100%;
+    min-height: 100%;
     /*position: fixed;*/
 }
 main {
@@ -66,8 +66,9 @@ main {
     body {
         flex-direction: column;
     }
-    header {
+    body > header {
         height: auto;
+        min-height: 0;
         width: 100%;
         max-width: 100%;
         flex: 0;
@@ -144,17 +145,50 @@ label {
 .wrapper-datetime .wrapper-input-inner:last-child {
     margin-right: 0;
 }
+/* Tags */
+.wrapper-input ul {
+    list-style: none;
+}
+.wrapper-input ul input {
+    border-radius: 0;
+    border-bottom-color: white;
+    border-top-color: white;
+}
+.wrapper-input ul li:first-child input {
+    border-radius: var(--border-radius-input) var(--border-radius-input) 0 0;
+}
+.wrapper-input ul li:last-child input {
+    border-radius: 0 0 var(--border-radius-input) var(--border-radius-input);
+    border-bottom-color: #edf2f7;
+}
+.wrapper-input ul li input:focus {
+    border-color: var(--main-500);
+}
 
 /**
  * COLORS & SPACING
  */
+
+::selection {
+    background: var(--main-600);
+    color: white;
+}
+::-moz-selection {
+    background: var(--main-600);
+    color: white;
+}
 body {
     color: #1a202c;
 }
 
-header {
+body > header {
     background: var(--main-600);
     padding: 1rem;
+}
+@media (max-width: 600px) {
+    body {
+        border-bottom: 5px solid var(--main-600);
+    }
 }
 
 header h1 {
@@ -173,9 +207,36 @@ main {
 article.entry {
     margin-bottom: 2rem;
 }
+article.entry header {
+    margin-bottom: .25rem;
+}
+article.entry header h3 {
+    margin-bottom: 0;
+    padding: .25rem 0 0;
+}
+article.entry header a.heading {
+    display: block;
+    width: 100%;
+}
+article.entry a {
+    color: var(--main-500);
+    text-decoration: none;
+}
+article.entry a:hover {
+    color: var(--main-400);
+}
+article.entry header span.meta {
+    color: #888;
+    font-size: .875rem;
+}
+article.entry > p {
+    line-height: 1.25;
+    padding-bottom: .25rem;
+}
 article.entry ul.tags {
     list-style: none;
     display: flex;
+    margin-top: .5rem;
 }
 article.entry ul.tags li {
     margin: 0 .25rem;
@@ -190,4 +251,8 @@ article.entry ul.tags li a, article.entry ul.tags li span {
     padding: .25rem .5rem;
     border-radius: .25rem;
     font-size: .875rem;
+}
+article.entry ul.tags li a:hover, article.entry ul.tags li span:hover {
+    color: #5f6d82;
+    background-color: #eaeef8;
 }

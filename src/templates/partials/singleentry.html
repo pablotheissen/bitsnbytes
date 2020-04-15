@@ -1,14 +1,23 @@
 {{%FILTERS}}
 <article id="entry-{{ eid }}" class="entry entry-{{ eid }} entry-{{ slug }}">
-    <a href="{{ url }}"><h3>{{ title }}</h3>
-        <span class="url">{{url}}</span></a>
-    {{{ text }}}
-    <p>{{ date | format_date.short }}</p>
+    <header>
+        {{# url }}
+        <a class="heading" href="{{ url }}">
+            <h3>{{ title }}</h3>
+        </a>
+        <span class="meta url">{{url}}</span> &middot;
+        {{/ url }}
+        {{^ url }}
+        <h3>{{ title }}</h3>
+        {{/ url }}
+        <span class="meta date">{{ date | format_date.short }}</span> &middot;
+        <span class="meta edit"><a href="{{ url-edit }}">edit</a></span>
+    </header>
+{{{ text }}}
     <ul class="tags">
         {{# tags }}
         <li class="tag tag-{{ tid }} tag-{{ slug }}"><a href="/tag/{{ slug }}">{{ title }}</a></li>
         {{/ tags }}
     </ul>
-    <ul><a href="{{ url-edit }}">edit</a></ul>
 </article>
 

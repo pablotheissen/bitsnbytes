@@ -27,12 +27,13 @@
             <input id="inpt-time" type="time" name="time" value="{{ date | format_date.atom_time }}">
         </div>
     </div>
-    <div>
+    <div class="wrapper-input wrapper-tags">
+        <label>Tags</label>
         <ul>
             {{# tags }}
-            <li><input name="tags[]" type="text" value="{{ title }}"></li>
+            <li><input name="tags[]" type="text" class="inpt-tag" value="{{ title }}"></li>
             {{/ tags }}
-            <li><input name="tags[]" type="text" value=""></li>
+            <li><input name="tags[]" type="text" class="inpt-tag" value=""></li>
         </ul>
     </div>
     <button type="submit">Save</button>
