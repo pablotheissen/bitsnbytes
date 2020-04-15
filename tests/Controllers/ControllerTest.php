@@ -65,6 +65,20 @@ class ControllerTest extends TestCase
         ];
     }
 
+    /**
+     * @dataProvider slugProvider
+     *
+     * @param $inputSlug
+     * @param $expectedSanitizedSlug
+     *
+     * @throws Exception
+     */
+    public function testFilterSlug($inputSlug, $expectedSanitizedSlug)
+    {
+        $sanitizedSlug = $this->controller->filterSlug($inputSlug);
+        $this->assertSame($expectedSanitizedSlug, $sanitizedSlug);
+    }
+
     public function slugProvider(): array
     {
         return [
@@ -96,29 +110,27 @@ class ControllerTest extends TestCase
                 'ab&cd',
                 'ab-cd'
             ],
-            [ // remove special chars
+            [ // remove special chars and remove leading dashes
                 '\'abcd',
-                '-abcd'
+                'abcd'
             ],
             [ // truncate to 30 chars
                 'abcdefghijklmnopqrstuvwxyz0123456789',
                 'abcdefghijklmnopqrstuvwxyz0123'
             ],
+            [ // avoid double dashes when converting special chars
+                'PHP: The Right Way',
+                'php-the-right-way'
+            ],
+            [ // avoid double and leading/trailing dashes when converting special chars
+                '?»PHP: »"The Right Way"«',
+                'php-the-right-way'
+            ],
+            [ // avoid double dashes when converting special chars and still truncate to 30 chars
+                'a: bcdefghijklmnopqrstuvwxyz0123456789',
+                'a-bcdefghijklmnopqrstuvwxyz012'
+            ],
         ];
-    }
-
-    /**
-     * @dataProvider slugProvider
-     *
-     * @param $inputSlug
-     * @param $expectedSanitizedSlug
-     *
-     * @throws Exception
-     */
-    public function testFilterSlug($inputSlug, $expectedSanitizedSlug)
-    {
-        $sanitizedSlug = $this->controller->filterSlug($inputSlug);
-        $this->assertSame($expectedSanitizedSlug, $sanitizedSlug);
     }
 
     /**

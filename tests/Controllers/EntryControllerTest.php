@@ -67,15 +67,15 @@ class EntryControllerTest extends TestCase
             ],
             [
                 'äöüÄÖÜßẞæœ€',
-                'aeoeueaeoeuessssaeoe-'
+                'aeoeueaeoeuessssaeoe'
             ],
             [
                 'This is a test?',
-                'this-is-a-test-'
+                'this-is-a-test'
             ],
             [
                 'This is a test with more than thirty characters',
-                'this-is-a-test-with-more-than-'
+                'this-is-a-test-with-more-than'
             ],
         ];
     }

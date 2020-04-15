@@ -43,7 +43,7 @@ abstract class Controller
     {
         // filter_var(..., FILTER_VALIDATE_URL) also removes als international domain names (like öko.de) so it
         // currently is not used here
-        if (!mb_startswith($url, 'https://') AND !mb_startswith($url, 'http://')) {
+        if (!mb_startswith($url, 'https://') and !mb_startswith($url, 'http://')) {
             return null;
         }
         return $url;
@@ -73,7 +73,17 @@ abstract class Controller
         if ($slug_filtered === false) {
             return null;
         }
-        return mb_substr($slug_filtered, 0, 30);
+
+        // remove double dashes
+        $slug_filtered = mb_ereg_replace('-+', '-', $slug_filtered);
+        // remove leading dashes
+        $slug_filtered = mb_ereg_replace('^-+', '', $slug_filtered);
+        // truncate to 30 charachters
+        $slug_filtered = mb_substr($slug_filtered, 0, 30);
+        // remove trailing dashes
+        $slug_filtered = mb_ereg_replace('-+$', '', $slug_filtered);
+
+        return $slug_filtered;
     }
 
     /**
@@ -97,7 +107,7 @@ abstract class Controller
         }
         // 2: check via php internal function if date actually exists (eg. check against Feb 30)
         $parsed_date = DateTime::createFromFormat('Y-m-d', $date);
-        if ($parsed_date === false OR $date !== $parsed_date->format('Y-m-d')) {
+        if ($parsed_date === false or $date !== $parsed_date->format('Y-m-d')) {
             return null;
         }
         // 3: return unmodified date string if everything looks ok
@@ -139,7 +149,7 @@ abstract class Controller
      */
     public function createDateTimeFromDateAndTime(?string $date, ?string $time): ?DateTime
     {
-        if ($date === null OR $time === null) {
+        if ($date === null or $time === null) {
             return null;
         }
         $datetime_string = $date . 'T' . $time;
