@@ -2,12 +2,13 @@
     padding: 0;
     margin: 0;
     box-sizing: border-box;
-    font-family: sans-serif;
+    font-family: "Myriad Pro", "Arial Nova", sans-serif;
 }
 
 html {
     line-height: 1.15;
     height: 100%;
+    overflow-y: scroll;
 }
 
 html {
@@ -16,28 +17,47 @@ html {
 
 @media (min-width: 420px) {
     html {
-        font-size: 16px
+        font-size: 18px
     }
 }
 
 
+
+/**
+ * COLORS
+ */
 :root {
-    /* https://coolors.co/e63946-f1faee-a8dadc-457b9d-1d3557 */
-    --main-100: #E7F9FE;
-    --main-200: #C6EAF7;
-    --main-300: #99CDE4;
-    --main-400: #68A6C6;
-    --main-500: #457b9d;
-    --main-600: #365B77;
-    --main-700: #273E52;
-    --main-800: #1A2633;
-    --main-900: #121921;
-    --accent: #e63946;
-    --light-100: #FCFFFA;
-    --light-300: #F8FDF6;
-    --light-500: #F1FAEE;
-    --medium-500: #a8dadc;
-    --dark-500: #1d3557;
+    --main-100: #B2D9FF;
+    --main-200: #85A8CC;
+    --main-300: #5C7A99;
+    --main-400: #2c3e50;
+    --main-500: #192D40;
+    --main-600: #0D2033;
+    --main-700: #041526;
+
+    --neutral-100: #F8FAFA;
+    --neutral-200: #EBEFF0;
+    --neutral-300: #E0E4E5;
+    --neutral-400: #D7DADB;
+    --neutral-500: #9DA7AB;
+    --neutral-600: #6C787D;
+    --neutral-700: #3D484C;
+
+    --accentblue-100: #CFEEFA;
+    --accentblue-200: #ADDDF0;
+    --accentblue-300: #8CCCE5;
+    --accentblue-400: #6DBCDB;
+    --accentblue-500: #4C94B0;
+    --accentblue-600: #306D85;
+    --accentblue-700: #1A4759;
+
+    --accentred-100: #FCDCDD;
+    --accentred-200: #FCA9AC;
+    --accentred-300: #FC767B;
+    --accentred-400: #FC4349;
+    --accentred-500: #C2272C;
+    --accentred-600: #871215;
+    --accentred-700: #4C0507;
 }
 
 :root {
@@ -53,10 +73,18 @@ body {
     min-height: 100%;
 }
 body > header {
-    flex: 0 1 33%;
-    max-width: 300px;
+    flex: 0 1 38.2%;
+    /*max-width: 350px;*/
     min-height: 100%;
     /*position: fixed;*/
+}
+body > header > * {
+    width: 61.8%;
+    min-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    position: relative;
 }
 main {
     flex: 1;
@@ -73,9 +101,17 @@ main {
         max-width: 100%;
         flex: 0;
     }
+    body > header > * {
+        width: 100%;
+    }
     main {
         height: auto;
         width: 100%;
+    }
+}
+@media (max-width: 1000px) {
+    body > header > * {
+        width: 90%;
     }
 }
 
@@ -87,22 +123,22 @@ input, button, textarea, .button {
     line-height: 1.25;
     padding: .5rem .75rem;
     text-decoration: none;
+    transition: background-color 50ms, border-color 50ms, box-shadow 50ms;
 }
 
 input[type=text], input[type=search], input[type=date], input[type=time], textarea {
-    border: 1px solid #edf2f7;
-    background: #edf2f7;
-    color: #4a5568;
+    border: 1px solid var(--neutral-200);
+    background: var(--neutral-200);
     width: 100%;
 }
 .error input[type=text], .error input[type=search], .error input[type=date], .error input[type=time], .error textarea,
 .error input[type=text]:focus, .error input[type=search]:focus, .error input[type=date]:focus, .error input[type=time]:focus, .error textarea:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 1px var(--accent);
+    border-color: var(--accentred-500);
+    box-shadow: 0 0 0 1px var(--accentred-500);
 }
 input[type=text]:focus, input[type=search]:focus, input[type=date]:focus, input[type=time]:focus, textarea:focus {
     outline: 0 !important;
-    border-color: var(--main-500);
+    border-color: var(--neutral-500);
     background-color: #fff;
 }
 textarea {
@@ -111,29 +147,40 @@ textarea {
 input[type=submit], button, .button {
     box-shadow: 0 1px 3px 0 rgba(0, 0, 0, .1), 0 1px 2px 0 rgba(0, 0, 0, .06) !important;
     padding: .5rem 1rem;
-    background: var(--main-600);
+    background: var(--accentblue-600);
     color: white;
     font-weight: bold;
     border: none;
+    cursor: pointer;
+    text-align: center;
+}
+input[type=submit], button[type=submit] {
+    padding: .5rem 1.5rem;
+    float:right;
 }
 input[type=submit]:hover, button:hover, .button:hover {
-    background-color: var(--main-500);
+    background-color: var(--accentblue-500);
 }
 input[type=submit]:focus, button:focus, .button:focus {
     box-shadow: 0 0 0 3px rgba(66, 153, 225, .5);
 }
 label {
     color: #6d7585;
-    margin-bottom: .3rem;
+    padding-bottom: .3rem;
     font-size: 95%;
     font-weight: bold;
     display: block;
 }
 .error label {
-    color: var(--accent);
+    color: var(--accentred-500);
 }
 .wrapper-input {
     margin-bottom: 1.5rem;
+}
+@media (max-width: 600px) {
+    .wrapper-input {
+        margin-bottom: .5rem;
+    }
 }
 .wrapper-datetime {
     display: flex;
@@ -159,10 +206,10 @@ label {
 }
 .wrapper-input ul li:last-child input {
     border-radius: 0 0 var(--border-radius-input) var(--border-radius-input);
-    border-bottom-color: #edf2f7;
+    border-bottom-color: var(--neutral-200);
 }
 .wrapper-input ul li input:focus {
-    border-color: var(--main-500);
+    border-color: var(--neutral-500);
 }
 
 /**
@@ -170,11 +217,11 @@ label {
  */
 
 ::selection {
-    background: var(--main-600);
+    background: var(--main-400);
     color: white;
 }
 ::-moz-selection {
-    background: var(--main-600);
+    background: var(--main-400);
     color: white;
 }
 body {
@@ -182,17 +229,48 @@ body {
 }
 
 body > header {
-    background: var(--main-600);
+    /*background: var(--main-400);*/
     padding: 1rem;
+    position: relative;
+}
+body > header::before {
+    background: var(--main-400);
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    content: "";
+    transform: skewX(-3deg);
+    transform-origin: 0 0;
+    right: 0;
+    bottom: 0;
+    outline: 1px solid transparent;
+    backface-visibility: hidden;
 }
 @media (max-width: 600px) {
     body {
-        border-bottom: 5px solid var(--main-600);
+        border-bottom: 5px solid var(--main-400);
     }
+    body > header {
+        /*background: var(--main-400);*/
+        margin-bottom: 25px;
+    }
+    body > header::before {
+        /*content: none;*/
+        /*display: none;*/
+        transform: skewY(-3deg) translateY(25px);
+        margin-top: -25px;
+    }
+}
+body > header .button {
+    background-color: var(--main-300);
+}
+body > header .button:hover {
+    background-color: var(--main-200);
 }
 
 header h1 {
-    color: var(--light-500);
+    color: var(--neutral-100);
 }
 header h1 a, header h1 a:hover, header h1 a:focus {
     text-decoration: none;
@@ -200,12 +278,25 @@ header h1 a, header h1 a:hover, header h1 a:focus {
 }
 
 main {
-    /*background: var(--light-300);*/
     padding: 1rem;
 }
-
+main > * {
+    margin-left: auto;
+    margin-right: auto;
+    max-width: 50rem;
+}
 article.entry {
     margin-bottom: 2rem;
+}
+@media (min-width: 800px) {
+    article.entry {
+        margin-bottom: 3rem;
+    }
+}
+@media (min-width: 1200px) {
+    article.entry {
+        margin-bottom: 4rem;
+    }
 }
 article.entry header {
     margin-bottom: .25rem;
@@ -219,15 +310,19 @@ article.entry header a.heading {
     width: 100%;
 }
 article.entry a {
-    color: var(--main-500);
+    color: var(--accentblue-700);
     text-decoration: none;
+    transition: color 80ms;
 }
 article.entry a:hover {
-    color: var(--main-400);
+    color: var(--accentblue-500);
 }
 article.entry header span.meta {
     color: #888;
     font-size: .875rem;
+}
+article.entry header span.meta.url {
+    word-break: break-all;
 }
 article.entry > p {
     line-height: 1.25;
@@ -247,12 +342,13 @@ article.entry ul.tags li:first-child {
 article.entry ul.tags li a, article.entry ul.tags li span {
     text-decoration: none;
     color: #4a5568;
-    background-color: #e2e8f0;
+    background-color: var(--neutral-300);
     padding: .25rem .5rem;
     border-radius: .25rem;
     font-size: .875rem;
+    transition: background-color 50ms;
 }
 article.entry ul.tags li a:hover, article.entry ul.tags li span:hover {
     color: #5f6d82;
-    background-color: #eaeef8;
+    background-color: var(--neutral-200);
 }

@@ -3,15 +3,15 @@
     <header>
         {{# url }}
         <a class="heading" href="{{ url }}">
+            <span class="meta url">{{url}}</span>
             <h3>{{ title }}</h3>
         </a>
-        <span class="meta url">{{url}}</span> &middot;
         {{/ url }}
         {{^ url }}
         <h3>{{ title }}</h3>
         {{/ url }}
-        <span class="meta date">{{ date | format_date.short }}</span> &middot;
-        <span class="meta edit"><a href="{{ url-edit }}">edit</a></span>
+        <span class="meta date">{{ date | format_date.short }}</span>
+        {{# url-edit }}&middot; <span class="meta edit"><a href="{{ url-edit }}">edit</a></span>{{/ url-edit }}
     </header>
 {{{ text }}}
     <ul class="tags">

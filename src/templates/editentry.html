@@ -3,19 +3,19 @@
 <form action="" method="POST">
     <div class="wrapper-input wrapper-title{{#error-title}} error{{/error-title}}">
         <label for="inpt-title">Title</label>
-        <input id="inpt-title" type="text" name="title" value="{{ title }}">
+        <input id="inpt-title" type="text" name="title" value="{{ title }}" placeholder="Title">
     </div>
     <div class="wrapper-input wrapper-slug{{#error-slug}} error{{/error-slug}}">
         <label for="inpt-slug">Slug</label>
-        <input id="inpt-slug" type="text" name="slug" value="{{ slug }}">
+        <input id="inpt-slug" type="text" name="slug" value="{{ slug }}" placeholder="Slug">
     </div>
     <div class="wrapper-input wrapper-url{{#error-url}} error{{/error-url}}">
         <label for="inpt-url">URL</label>
-        <input id="inpt-url" type="text" name="url" value="{{ url }}">
+        <input id="inpt-url" type="text" name="url" value="{{ url }}" placeholder="URL">
     </div>
     <div class="wrapper-input wrapper-text{{#error-text}} error{{/error-text}}">
         <label for="inpt-text">Content</label>
-        <textarea id="inpt-text" name="text" rows="5">{{ text }}</textarea>
+        <textarea id="inpt-text" name="text" rows="5" placeholder="Content">{{ text }}</textarea>
     </div>
     <div class="wrapper-input wrapper-datetime{{#error-datetime}} error{{/error-datetime}}">
         <div class="wrapper-input-inner wrapper-date{{#error-date}} error{{/error-date}}">
@@ -34,6 +34,9 @@
             <li><input name="tags[]" type="text" class="inpt-tag" value="{{ title }}"></li>
             {{/ tags }}
             <li><input name="tags[]" type="text" class="inpt-tag" value=""></li>
+            {{^ tags }}
+            <li><input name="tags[]" type="text" class="inpt-tag" value=""></li>
+            {{/ tags }}
         </ul>
     </div>
     <button type="submit">Save</button>
