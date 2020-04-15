@@ -123,8 +123,8 @@ class EntryRepository extends Model
 
     /**
      * Update data of entry.
-     * <p><i>Notice:</i> Tags withing <tt>$entry</tt> are not stored to the database. Call EntryRepository::updateTagsByEntry
-     * separately.
+     * <p><i>Notice:</i> Tags withing <tt>$entry</tt> are not stored to the database. Call
+     * EntryRepository::updateTagsByEntry separately.
      *
      * @param string $slug  Slug of entry as currently used in database.
      * @param Entry  $entry New data to be stored in database.
@@ -162,7 +162,9 @@ class EntryRepository extends Model
     private function writeEntryDataToDatabase(string $sql, Entry $entry, string $old_slug = null)
     {
         $stmt = $this->pdo->prepare($sql);
-        $stmt->bindParam(':oldslug', $old_slug, PDO::PARAM_STR);
+        if ($old_slug !== null) {
+            $stmt->bindParam(':oldslug', $old_slug, PDO::PARAM_STR);
+        }
         $stmt->bindParam(':title', $entry->title, PDO::PARAM_STR);
         $stmt->bindParam(':slug', $entry->slug, PDO::PARAM_STR);
         $stmt->bindParam(':url', $entry->url, PDO::PARAM_STR);
