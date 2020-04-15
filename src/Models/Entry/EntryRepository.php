@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Bitsnbytes\Models\Entry;
 
 use Bitsnbytes\Models\Model;
+use Bitsnbytes\Models\Tag\Tag;
 use Bitsnbytes\Models\Tag\TagNotFoundException;
 use Bitsnbytes\Models\Tag\TagRepository;
 use DateTime;
@@ -101,6 +102,45 @@ class EntryRepository extends Model
     public function fetchLatestEntries(bool $returnAsArray = false): array
     {
         $stmt = $this->pdo->prepare('SELECT eid, title, slug, url, text, date FROM entries ORDER BY date DESC');
+        $stmt->execute();
+
+        $entries = [];
+        if ($returnAsArray === true) {
+            while ($rslt = $stmt->fetch()) {
+                $entry = $this->convertAssocToEntry($rslt);
+                $entry->tags = $this->tag_repository->findTagsByEntries($entry);
+                $entries[] = $entry->toArray();
+            }
+        } else {
+            while ($rslt = $stmt->fetch()) {
+                $entry = $this->convertAssocToEntry($rslt);
+                $entry->tags = $this->tag_repository->findTagsByEntries($entry);
+                $entries[] = $entry;
+            }
+        }
+
+        return $entries;
+    }
+
+    /**
+     * Fetch the latest entries that are tagged with <tt>$tag</tt> from the database.
+     *
+     * @param Tag  $tag
+     * @param bool $returnAsArray
+     *
+     * @return array<int,array<array<array<int|string|null>>|DateTime|int|string|null>|Entry>
+     * @throws Exception
+     */
+    public function fetchEntriesByTag(Tag $tag, bool $returnAsArray = false): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT entries.eid, title, slug, url, text, date
+            FROM entries
+            LEFT JOIN entry_tag et on entries.eid = et.eid
+            WHERE et.tid = :tid
+            ORDER BY date DESC'
+        );
+        $stmt->bindParam(':tid', $tag->tid, PDO::PARAM_INT);
         $stmt->execute();
 
         $entries = [];

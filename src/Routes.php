@@ -37,4 +37,9 @@ return [
         '/entry/[:slug]/edit',
         ['Bitsnbytes\Controllers\EntryController', 'saveEntry'],
     ],
+    [
+        'GET',
+        '/tag/[:tag]',
+        ['Bitsnbytes\Controllers\EntryController', 'showByTag'],
+    ],
 ];

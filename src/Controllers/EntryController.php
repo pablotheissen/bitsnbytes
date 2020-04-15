@@ -8,6 +8,8 @@ use AltoRouter;
 use Bitsnbytes\Models\Entry\Entry;
 use Bitsnbytes\Models\Entry\EntryNotFoundException;
 use Bitsnbytes\Models\Entry\EntryRepository;
+use Bitsnbytes\Models\Tag\TagNotFoundException;
+use Bitsnbytes\Models\Tag\TagRepository;
 use Bitsnbytes\Models\Template\Renderer;
 use DateTimeInterface;
 use Erusev\Parsedown\Parsedown;
@@ -17,12 +19,14 @@ use Http\Response;
 
 class EntryController extends Controller
 {
-    private EntryRepository $entryRepository;
+    private EntryRepository $entry_repository;
     private AltoRouter $router;
     private Parsedown $parsedown;
+    private TagRepository $tag_repository;
 
     public function __construct(
-        EntryRepository $entryRepository,
+        EntryRepository $entry_repository,
+        TagRepository $tag_repository,
         AltoRouter $router,
         Parsedown $parsedown,
         Request $request,
@@ -30,7 +34,8 @@ class EntryController extends Controller
         Renderer $renderer
     ) {
         parent::__construct($request, $response, $renderer);
-        $this->entryRepository = $entryRepository;
+        $this->entry_repository = $entry_repository;
+        $this->tag_repository = $tag_repository;
         $this->router = $router;
         $this->parsedown = $parsedown;
     }
@@ -43,7 +48,7 @@ class EntryController extends Controller
     public function showBySlug(array $params): void
     {
         try {
-            $entry = $this->entryRepository->fetchEntryBySlug($params['slug']);
+            $entry = $this->entry_repository->fetchEntryBySlug($params['slug']);
         } catch (EntryNotFoundException $e) {
             $this->response->setContent('404 - Page not found');
             $this->response->setStatusCode(404);
@@ -61,9 +66,39 @@ class EntryController extends Controller
      *
      * @throws Exception
      */
+    public function showByTag(array $params): void
+    {
+        try {
+            $tag = $this->tag_repository->fetchTagBySlug($params['tag']);
+        } catch (TagNotFoundException $e) {
+            $this->response->setContent('404 - Page not found');
+            $this->response->setStatusCode(404);
+            return;
+        }
+
+        $entries = $this->entry_repository->fetchEntriesByTag($tag, true);
+        array_walk(
+            $entries,
+            function (&$entry): void {
+                $entry['url-edit'] = $this->router->generate('edit-entry', ['slug' => $entry['slug']]);
+                $entry['text'] = $this->parsedown->toHtml($entry['text']);
+            }
+        );
+
+        $data = ['entries' => $entries, 'heading' => 'Entries for tag »' . $tag->title . '«'];
+
+        $html = $this->renderer->render('entrylist', $data);
+        $this->response->setContent($html);
+    }
+
+    /**
+     * @param array<string> $params
+     *
+     * @throws Exception
+     */
     public function showLatest(array $params): void
     {
-        $entries = $this->entryRepository->fetchLatestEntries(true);
+        $entries = $this->entry_repository->fetchLatestEntries(true);
         array_walk(
             $entries,
             function (&$entry): void {
@@ -83,7 +118,7 @@ class EntryController extends Controller
     public function editformBySlug(array $params): void
     {
         try {
-            $entry = $this->entryRepository->fetchEntryBySlug($params['slug']);
+            $entry = $this->entry_repository->fetchEntryBySlug($params['slug']);
         } catch (EntryNotFoundException $e) {
             $this->response->setContent('404 - Page not found');
             $this->response->setStatusCode(404);
@@ -161,15 +196,15 @@ class EntryController extends Controller
 
         if (isset($params['slug'])) { // UPDATE existing entry
             // TODO catch exception when error during update occurs
-            $success = $this->entryRepository->updateBySlug($params['slug'], $entry);
+            $success = $this->entry_repository->updateBySlug($params['slug'], $entry);
         } else { // NEW entry
-            $success = $this->entryRepository->createNewEntry($entry);
+            $success = $this->entry_repository->createNewEntry($entry);
         }
 
         // Fetch entry id from database by simply fetching the entire entry again
-        $entry = $this->entryRepository->fetchEntryBySlug($new_slug);
+        $entry = $this->entry_repository->fetchEntryBySlug($new_slug);
 
-        $this->entryRepository->updateTagsByEntry($entry, $new_tags);
+        $this->entry_repository->updateTagsByEntry($entry, $new_tags);
         if ($success === true) {
             $this->response->redirect($this->router->generate('edit-entry', ['slug' => $new_slug]));
         }
@@ -186,11 +221,11 @@ class EntryController extends Controller
         $max_slug_length = 30;
         $i = 2;
         $proposed_slug = $this->filterSlug($new_title);
-        if ($proposed_slug === '' OR $proposed_slug === null) {
+        if ($proposed_slug === '' or $proposed_slug === null) {
             return '';
         }
         $slug = $proposed_slug;
-        while ($slug_not_available = $this->entryRepository->checkIfSlugExists($slug)) {
+        while ($slug_not_available = $this->entry_repository->checkIfSlugExists($slug)) {
             $slug = substr($proposed_slug, 0, $max_slug_length - 1 - strlen((string)$i)) . '-' . $i;
             $i++;
         }

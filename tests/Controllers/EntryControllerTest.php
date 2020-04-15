@@ -7,6 +7,7 @@ namespace Tests\Controllers;
 use AltoRouter;
 use Bitsnbytes\Controllers\EntryController;
 use Bitsnbytes\Models\Entry\EntryRepository;
+use Bitsnbytes\Models\Tag\TagRepository;
 use Bitsnbytes\Models\Template\Renderer;
 use Erusev\Parsedown\Parsedown;
 use Exception;
@@ -25,6 +26,7 @@ class EntryControllerTest extends TestCase
         parent::__construct($name, $data, $dataName);
 
         $this->entry_repository = $this->createMock(EntryRepository::class);
+        $this->tag_repository = $this->createMock(TagRepository::class);
         $router = $this->createMock(AltoRouter::class);
         $parsedown = new Parsedown(); // can't be mocked
         $request = $this->createMock(Request::class);
@@ -32,6 +34,7 @@ class EntryControllerTest extends TestCase
         $renderer = $this->createMock(Renderer::class);
         $this->entry_controller = new EntryController(
             $this->entry_repository,
+            $this->tag_repository,
             $router,
             $parsedown,
             $request,
