@@ -2,11 +2,13 @@
 {{%FILTERS}}
 <form action="" method="POST">
     <div class="wrapper-input wrapper-title{{#error-title}} error{{/error-title}}">
-        <label for="inpt-title">Title</label>
+        <label for="inpt-title">Title</label>{{# error-message-title }}
+        <span class="error-message error-message-title">{{{ error-message-title }}}</span>{{/ error-message-title }}
         <input id="inpt-title" type="text" name="title" value="{{ title }}" placeholder="Title">
     </div>
-    <div class="wrapper-input wrapper-slug{{#error-slug}} error{{/error-slug}}">
-        <label for="inpt-slug">Slug</label>
+    <div class="wrapper-input wrapper-slug{{# error-slug }} error{{/ error-slug }}">
+        <label for="inpt-slug">Slug</label>{{# error-message-slug }}
+        <span class="error-message error-message-slug">{{{ error-message-slug }}}</span>{{/ error-message-slug }}
         <input id="inpt-slug" type="text" name="slug" value="{{ slug }}" placeholder="Slug">
     </div>
     <div class="wrapper-input wrapper-url{{#error-url}} error{{/error-url}}">

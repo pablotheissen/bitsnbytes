@@ -85,7 +85,7 @@ class EntryController extends Controller
             }
         );
 
-        $data = ['entries' => $entries, 'heading' => 'Entries for tag »' . $tag->title . '«'];
+        $data = ['entries' => $entries, 'heading' => 'Entries tagged as ›' . $tag->title . '‹'];
 
         $html = $this->renderer->render('entrylist', $data);
         $this->response->setContent($html);
@@ -146,10 +146,12 @@ class EntryController extends Controller
     public function saveEntry(array $params): void
     {
         $error_fields = [];
+        $error_messages = [];
 
         $new_title = $this->request->getBodyParameter('title');
         if ($new_title === '' || $new_title === null) {
             $error_fields[] = 'title';
+            $error_messages['title'] = 'Entry must have a title.';
         }
         $user_slug = $this->request->getBodyParameter('slug');
         $new_slug = $this->filterSlug($user_slug);
@@ -157,6 +159,11 @@ class EntryController extends Controller
             $new_slug = $this->createSlugFromTitle($new_title);
         } elseif ($user_slug != $new_slug) {
             $error_fields[] = 'slug';
+            if (mb_strlen($user_slug) > 30) {
+                $error_messages['slug'] = 'Slug too long. Maximum of 30 characters.';
+            } else {
+                $error_messages['slug'] = 'Only use characters <em>a-z</em>, <em>0-9</em>, <em>_</em> and <em>-</em>.';
+            }
         }
         $new_url = $this->filterUrl($this->request->getBodyParameter('url'));
         $new_text = $this->request->getBodyParameter('text');
@@ -183,6 +190,7 @@ class EntryController extends Controller
         if (count($error_fields) > 0) {
             $this->editformErrorsFound(
                 array_unique($error_fields),
+                $error_messages,
                 $user_slug,
                 $new_title,
                 $new_url,
@@ -259,6 +267,7 @@ class EntryController extends Controller
 
     /**
      * @param array<string>     $error_fields
+     * @param array<string>     $error_messages
      * @param string|null       $slug
      * @param string|null       $title
      * @param string|null       $url
@@ -267,6 +276,7 @@ class EntryController extends Controller
      */
     public function editformErrorsFound(
         array $error_fields,
+        array $error_messages,
         ?string $slug,
         ?string $title,
         ?string $url,
@@ -282,6 +292,7 @@ class EntryController extends Controller
 
         foreach ($error_fields as $field) {
             $data['error-' . $field] = true;
+            $data['error-message-' . $field] = $error_messages[$field] ?? '';
         }
 
         $html = $this->renderer->render('editentry', $data);
