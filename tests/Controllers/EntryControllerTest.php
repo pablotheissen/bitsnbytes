@@ -80,6 +80,18 @@ class EntryControllerTest extends TestCase
                 'This is a test with more than thirty characters',
                 'this-is-a-test-with-more-than'
             ],
+            [ // avoid double dashes when converting special chars
+                'PHP: The Right Way',
+                'php-the-right-way'
+            ],
+            [ // avoid double and leading/trailing dashes when converting special chars
+                '?»PHP: »"The Right Way"«',
+                'php-the-right-way'
+            ],
+            [ // avoid double dashes when converting special chars and still truncate to 30 chars
+                'a: bcdefghijklmnopqrstuvwxyz0123456789',
+                'a-bcdefghijklmnopqrstuvwxyz012'
+            ],
         ];
     }
 

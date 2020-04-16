@@ -220,13 +220,38 @@ class EntryController extends Controller
     {
         $max_slug_length = 30;
         $i = 2;
-        $proposed_slug = $this->filterSlug($new_title);
-        if ($proposed_slug === '' or $proposed_slug === null) {
+        $slug_filtered = $this->filterSlug($new_title, null);
+        if ($slug_filtered === null) {
             return '';
         }
-        $slug = $proposed_slug;
+
+        // remove double dashes
+        $slug_proposed = mb_ereg_replace('-+', '-', $slug_filtered);
+        if ($slug_proposed === false) {
+            return '';
+        }
+
+        // remove leading dashes
+        $slug_proposed = mb_ereg_replace('^-+', '', $slug_proposed);
+        if ($slug_proposed === false) {
+            return '';
+        }
+
+        // truncate to X characters
+        $slug_proposed = mb_substr($slug_proposed, 0, $max_slug_length);
+
+        // remove trailing dashes
+        $slug_proposed = mb_ereg_replace('-+$', '', $slug_proposed);
+        if ($slug_proposed === false) {
+            return '';
+        }
+
+        if ($slug_proposed === '') {
+            return '';
+        }
+        $slug = $slug_proposed;
         while ($slug_not_available = $this->entry_repository->checkIfSlugExists($slug)) {
-            $slug = substr($proposed_slug, 0, $max_slug_length - 1 - strlen((string)$i)) . '-' . $i;
+            $slug = substr($slug_proposed, 0, $max_slug_length - 1 - strlen((string)$i)) . '-' . $i;
             $i++;
         }
         return $slug;

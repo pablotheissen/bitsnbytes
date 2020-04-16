@@ -6,6 +6,7 @@ namespace Bitsnbytes;
 
 use AltoRouter;
 use Auryn\Injector;
+use Http\HttpRequest;
 use Http\HttpResponse;
 use Whoops\Handler\PrettyPageHandler;
 use Whoops\Run;
@@ -34,13 +35,16 @@ if ($environment !== 'production') {
 }
 $whoops->register();
 
+/** @var array<mixed> $config */
 $config = include __DIR__ . '/../config/config.php';
-/** @var Injector $injector */
-$injector = include 'Dependencies.php';
 date_default_timezone_set($config['timezone']);
 
-///** @var HttpRequest $request */
-//$request = $injector->make('Http\Request');
+/** @var Injector $injector */
+$injector = include 'Dependencies.php';
+
+/** @var HttpRequest $request */
+$request = $injector->make('Http\Request');
+
 /** @var HttpResponse $response */
 $response = $injector->make('Http\Response');
 

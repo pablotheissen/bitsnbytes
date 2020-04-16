@@ -75,7 +75,7 @@ class ControllerTest extends TestCase
      */
     public function testFilterSlug($inputSlug, $expectedSanitizedSlug)
     {
-        $sanitizedSlug = $this->controller->filterSlug($inputSlug);
+        $sanitizedSlug = $this->controller->filterSlug($inputSlug, 30);
         $this->assertSame($expectedSanitizedSlug, $sanitizedSlug);
     }
 
@@ -112,23 +112,11 @@ class ControllerTest extends TestCase
             ],
             [ // remove special chars and remove leading dashes
                 '\'abcd',
-                'abcd'
+                '-abcd'
             ],
             [ // truncate to 30 chars
                 'abcdefghijklmnopqrstuvwxyz0123456789',
                 'abcdefghijklmnopqrstuvwxyz0123'
-            ],
-            [ // avoid double dashes when converting special chars
-                'PHP: The Right Way',
-                'php-the-right-way'
-            ],
-            [ // avoid double and leading/trailing dashes when converting special chars
-                '?»PHP: »"The Right Way"«',
-                'php-the-right-way'
-            ],
-            [ // avoid double dashes when converting special chars and still truncate to 30 chars
-                'a: bcdefghijklmnopqrstuvwxyz0123456789',
-                'a-bcdefghijklmnopqrstuvwxyz012'
             ],
         ];
     }

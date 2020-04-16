@@ -7,7 +7,6 @@ namespace Bitsnbytes\Controllers;
 
 use Bitsnbytes\Models\Template\Renderer;
 use DateTime;
-use Exception;
 use Http\Request;
 use Http\Response;
 use Transliterator;
@@ -50,15 +49,30 @@ abstract class Controller
     }
 
     /**
-     * Transform all characters to ASCII codes while trying to correctly replace umlauts, etc. Remove all chars that are
+     * Transform all characters to ASCII codes while trying to correctly replace umlauts, etc. Remove all chars that
+     * are
      * not [a-z0-9_-]. Slug is truncated to 30 chars.
      *
-     * @param string $slug User-input slug
+     * @param string   $slug     User-input slug
+     * @param int|null $truncate Truncate filtered slug to X characters. If omitted or <b>NULL</b> is passed, slug is
+     *                           not truncated.
      *
      * @return string|null Sanitized slug
-     * @throws Exception
      */
-    public function filterSlug(string $slug): ?string
+    public function filterSlug(string $slug, int $truncate = null): ?string
+    {
+        $slug_filtered = $this->removeSpecialCharsAndConvertToLower($slug);
+        if ($slug_filtered === null) {
+            return null;
+        }
+
+        // truncate to X characters. mb_substr() does not truncate when start=0 and length=null
+        $slug_filtered = mb_substr($slug_filtered, 0, $truncate);
+
+        return $slug_filtered;
+    }
+
+    private function removeSpecialCharsAndConvertToLower(string $str): ?string
     {
         // http://userguide.icu-project.org/transforms/general for info on rules
         $transliterator = Transliterator::createFromRules(
@@ -66,24 +80,15 @@ abstract class Controller
             Transliterator::FORWARD
         );
         if ($transliterator === null) {
-            throw new Exception("Error while loading Transliterator");
-        }
-
-        $slug_filtered = $transliterator->transliterate($slug);
-        if ($slug_filtered === false) {
             return null;
         }
 
-        // remove double dashes
-        $slug_filtered = mb_ereg_replace('-+', '-', $slug_filtered);
-        // remove leading dashes
-        $slug_filtered = mb_ereg_replace('^-+', '', $slug_filtered);
-        // truncate to 30 charachters
-        $slug_filtered = mb_substr($slug_filtered, 0, 30);
-        // remove trailing dashes
-        $slug_filtered = mb_ereg_replace('-+$', '', $slug_filtered);
+        $str_filtered = $transliterator->transliterate($str);
+        if ($str_filtered === false) {
+            return null;
+        }
 
-        return $slug_filtered;
+        return $str_filtered;
     }
 
     /**

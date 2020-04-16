@@ -171,7 +171,7 @@ class EntryRepository extends Model
      *                      <p><i>Notice:</i> Entry must at least contain a <b>title</b> and a <b>slug</b>,
      *                      otherwise an exception will be called.
      *
-     * @return bool <b>TRUE</b> if successfull, <b>FALSE</b> on failure
+     * @return bool <b>TRUE</b> if successful, <b>FALSE</b> on failure
      * @throws Exception
      */
     public function updateBySlug(string $slug, Entry $entry): bool
