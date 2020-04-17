@@ -39,10 +39,10 @@ $injector->define(
     [
         ':options' => [
             'loader' => new Mustache_Loader_FilesystemLoader(
-                __DIR__ . '/templates', ['extension' => '.html']
+                __DIR__ . '/../templates', ['extension' => '.html']
             ),
             'partials_loader' => new Mustache_Loader_FilesystemLoader(
-                __DIR__ . '/templates/partials',
+                __DIR__ . '/../templates/partials',
                 ['extension' => '.html']
             ),
             'helpers' => [

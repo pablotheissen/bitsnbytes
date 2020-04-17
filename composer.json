@@ -24,7 +24,7 @@
     "phpstan/extension-installer": "^1.0.4",
     "phpstan/phpstan": "^0.12.18",
     "phpstan/phpstan-strict-rules": "^0.12.2",
-    "phpunit/phpunit": "^9.1"
+    "phpunit/phpunit": "^9"
   },
   "autoload": {
     "psr-4": {
@@ -35,5 +35,17 @@
     "psr-4": {
       "Tests\\": "tests/"
     }
+  },
+  "scripts": {
+    "test-unit": "phpunit --colors=always tests",
+    "test-static": "phpstan analyse src --level max",
+    "test": [
+      "@test-unit",
+      "@test-static"
+    ],
+    "run-dev": [
+      "Composer\\Config::disableProcessTimeout",
+      "php -S localhost:8080 -t public"
+    ]
   }
 }

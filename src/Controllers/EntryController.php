@@ -56,6 +56,8 @@ class EntryController extends Controller
         }
 
         $data = $entry->toArray();
+        $data['text'] = $this->parsedown->toHtml($entry->text);
+        $data['url-edit'] = $this->router->generate('edit-entry', ['slug' => $entry->slug]);
 
         $html = $this->renderer->render('Entry', $data);
         $this->response->setContent($html);

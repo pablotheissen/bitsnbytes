@@ -13,7 +13,7 @@ use Whoops\Run;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-require_once 'Helper.php';
+require_once 'Application/Helper.php';
 
 error_reporting(E_ALL);
 
@@ -40,7 +40,7 @@ $config = include __DIR__ . '/../config/config.php';
 date_default_timezone_set($config['timezone']);
 
 /** @var Injector $injector */
-$injector = include 'Dependencies.php';
+$injector = include('Application/Dependencies.php');
 
 /** @var HttpRequest $request */
 $request = $injector->make('Http\Request');
@@ -53,7 +53,7 @@ $router = $injector->make('AltoRouter');
 $router->setBasePath($config['basepath']);
 
 /** @var array<array<mixed>> $routes */
-$routes = include('Routes.php');
+$routes = include('Application/Routes.php');
 foreach ($routes as $route) {
     if (!isset($route[3])) {
         $route[3] = null;
