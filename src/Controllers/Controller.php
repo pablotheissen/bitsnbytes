@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Bitsnbytes\Controllers;
 
 
-use Bitsnbytes\Models\Template\Renderer;
+use Bitsnbytes\Helpers\Template\RendererInterface;
 use DateTime;
 use Http\Request;
 use Http\Response;
@@ -15,14 +15,14 @@ abstract class Controller
 {
     protected Response $response;
     protected Request $request;
-    protected Renderer $renderer;
+    protected RendererInterface $renderer;
 
     /**
      * @var array<int>
      */
     private array $filter_options;
 
-    public function __construct(Request $request, Response $response, Renderer $renderer)
+    public function __construct(Request $request, Response $response, RendererInterface $renderer)
     {
         $this->request = $request;
         $this->response = $response;

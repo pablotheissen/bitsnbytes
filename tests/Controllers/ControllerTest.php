@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Tests\Controllers;
 
 use Bitsnbytes\Controllers\Controller;
-use Bitsnbytes\Models\Template\Renderer;
+use Bitsnbytes\Helpers\Template\RendererInterface;
 use DateTime;
 use Exception;
 use Http\Request;
@@ -23,7 +23,7 @@ class ControllerTest extends TestCase
 
         $request = $this->createMock(Request::class);
         $response = $this->createMock(Response::class);
-        $renderer = $this->createMock(Renderer::class);
+        $renderer = $this->createMock(RendererInterface::class);
         $this->controller = $this->getMockForAbstractClass(Controller::class, array($request, $response, $renderer));
     }
 

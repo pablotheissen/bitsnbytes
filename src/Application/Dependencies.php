@@ -33,7 +33,7 @@ $injector->share('Http\HttpResponse');
 $injector->share('Erusev\Parsedown');
 // TODO: add parsedown settings
 
-$injector->alias('Bitsnbytes\Models\Template\Renderer', 'Bitsnbytes\Models\Template\MustacheRenderer');
+$injector->alias('Bitsnbytes\Helpers\Template\RendererInterface', 'Bitsnbytes\Helpers\Template\MustacheRenderer');
 $injector->define(
     'Mustache_Engine',
     [
@@ -72,9 +72,6 @@ $injector->define(
                         return null;
                     },
                 ],
-//                'markdown' => function($value) {
-//
-//                },
             ],
         ]
     ]

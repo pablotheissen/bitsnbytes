@@ -9,6 +9,9 @@
     }
   ],
   "require": {
+    "slim/slim": "^4.5",
+    "nyholm/psr7": "^1.2.1",
+    "nyholm/psr7-server": "^0.4.1",
     "altorouter/altorouter": "^2.0.1",
     "erusev/parsedown": "2.0.x-dev",
     "ext-intl": "*",

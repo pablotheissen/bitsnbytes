@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Bitsnbytes\Models\Template;
+namespace Bitsnbytes\Helpers\Template;
 
 use AltoRouter;
 use Exception;
 use Mustache_Engine;
 
-class MustacheRenderer implements Renderer
+class MustacheRenderer implements RendererInterface
 {
 
     private Mustache_Engine $engine;

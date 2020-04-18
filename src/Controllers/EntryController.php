@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Bitsnbytes\Controllers;
 
 use AltoRouter;
+use Bitsnbytes\Helpers\Template\RendererInterface;
 use Bitsnbytes\Models\Entry\Entry;
 use Bitsnbytes\Models\Entry\EntryNotFoundException;
 use Bitsnbytes\Models\Entry\EntryRepository;
 use Bitsnbytes\Models\Tag\TagNotFoundException;
 use Bitsnbytes\Models\Tag\TagRepository;
-use Bitsnbytes\Models\Template\Renderer;
 use DateTimeInterface;
 use Erusev\Parsedown\Parsedown;
 use Exception;
@@ -31,7 +31,7 @@ class EntryController extends Controller
         Parsedown $parsedown,
         Request $request,
         Response $response,
-        Renderer $renderer
+        RendererInterface $renderer
     ) {
         parent::__construct($request, $response, $renderer);
         $this->entry_repository = $entry_repository;

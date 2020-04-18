@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Bitsnbytes\Models\Template;
+namespace Bitsnbytes\Helpers\Template;
 
-interface Renderer
+interface RendererInterface
 {
     /**
      * @param string      $template
