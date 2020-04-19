@@ -10,7 +10,7 @@ return function (App $app): void {
     $app->get('/', EntryController::class . ':showLatest');
     $app->group(
         '/entry',
-        function (Group $group) {
+        function (Group $group): void {
             $group->get('/new', EntryController::class . ':newform')
                 ->setName('new-entry');
             $group->post('/new', EntryController::class . ':saveEntry');

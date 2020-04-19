@@ -40,9 +40,9 @@ class EntryController extends Controller
     }
 
     /**
-     * @param Request  $request
-     * @param Response $response
-     * @param array    $args
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
      *
      * @return Response
      * @throws LoaderError
@@ -59,7 +59,7 @@ class EntryController extends Controller
         }
 
         $data = ['entry' => $entry->toArray()];
-        $data['entry']['text'] = $this->parsedown->toHtml($entry->text);
+        $data['entry']['text'] = $this->parsedown->toHtml($entry->text ?? '');
         $data['entry']['url_edit'] = $this->route_parser->urlFor('edit-entry', ['slug' => $entry->slug]);
         $data['entry']['date_formatted'] = $entry->date->format('d.m.Y'); // TODO: use config date
 
@@ -68,9 +68,9 @@ class EntryController extends Controller
     }
 
     /**
-     * @param Request  $request
-     * @param Response $response
-     * @param array    $args
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
      *
      * @return Response
      * @throws LoaderError
@@ -106,9 +106,9 @@ class EntryController extends Controller
     }
 
     /**
-     * @param Request  $request
-     * @param Response $response
-     * @param array    $args
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
      *
      * @return Response
      */
@@ -131,9 +131,9 @@ class EntryController extends Controller
     }
 
     /**
-     * @param Request  $request
-     * @param Response $response
-     * @param array    $args
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
      *
      * @return Response
      * @throws Exception
@@ -156,7 +156,14 @@ class EntryController extends Controller
     }
 
     /**
-     * @param array<string> $params
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
+     *
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function newform(Request $request, Response $response, array $args = []): Response
     {
@@ -165,9 +172,12 @@ class EntryController extends Controller
     }
 
     /**
-     * @param array<string> $params
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
      *
-     * @throws Exception
+     * @return Response
+     * @throws EntryNotFoundException
      */
     public function saveEntry(Request $request, Response $response, array $args = []): Response
     {
@@ -228,9 +238,9 @@ class EntryController extends Controller
 
         $entry = new Entry(null, $new_title, $new_slug, $new_url, $new_text, $new_datetime);
 
-        if (isset($params['slug'])) { // UPDATE existing entry
+        if (isset($args['slug'])) { // UPDATE existing entry
             // TODO catch exception when error during update occurs
-            $success = $this->entry_repository->updateBySlug($params['slug'], $entry);
+            $success = $this->entry_repository->updateBySlug($args['slug'], $entry);
         } else { // NEW entry
             $success = $this->entry_repository->createNewEntry($entry);
         }
@@ -311,7 +321,7 @@ class EntryController extends Controller
         ?string $url,
         ?string $text,
         ?DateTimeInterface $datetime
-    ): ResponseInterface {
+    ): Response {
         $data = [];
         $data['slug'] = $slug;
         $data['title'] = $title;

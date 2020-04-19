@@ -18,4 +18,4 @@ parameters:
 		    path: src/Dependencies.php
 	autoload_files:
 		- config/config.php
-		- src/Helper.php
+		- src/Application/Helper.php

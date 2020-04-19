@@ -8,6 +8,7 @@ use DI\ContainerBuilder;
 use PDO;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
@@ -40,28 +41,28 @@ $container->set(
 );
 $container->set(
     App::class,
-    function (ContainerInterface $container) {
+    function (ContainerInterface $container): App {
         AppFactory::setContainer($container);
         return AppFactory::create();
     }
 );
 $container->set(
     Twig::class,
-    function () {
+    function (): Twig {
         return Twig::create(__DIR__ . '/templates'/*, ['cache' => 'path/to/cache']*/);
     }
 );
 // For the responder
 $container->set(
     ResponseFactoryInterface::class,
-    function (ContainerInterface $container) {
+    function (ContainerInterface $container): ResponseFactoryInterface {
         return $container->get(App::class)->getResponseFactory();
     }
 );
 // The Slim RouterParser
 $container->set(
     RouteParserInterface::class,
-    function (ContainerInterface $container) {
+    function (ContainerInterface $container): RouteParserInterface {
         return $container->get(App::class)->getRouteCollector()->getRouteParser();
     }
 );
@@ -87,7 +88,7 @@ $customErrorHandler = function (
     bool $logErrors,
     bool $logErrorDetails,
     ?LoggerInterface $logger = null
-) use ($app) {
+) use ($app) : ResponseInterface {
     // Todo: add logging: $logger->error($exception->getMessage());
     // Todo: differentiate between dev/prod instance
     $whoops = new Run();
@@ -103,7 +104,7 @@ $error_middleware = $app->addErrorMiddleware(true, false, false);
 $error_middleware->setDefaultErrorHandler($customErrorHandler);
 
 // Define custom shutdown handler
-$shutdown_handler = function () {
+$shutdown_handler = function (): void {
     $whoops = new Run();
     $whoops->pushHandler(new PrettyPageHandler());
     $whoops->handleShutdown();
