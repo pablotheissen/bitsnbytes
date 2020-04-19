@@ -60,11 +60,8 @@ class EntryController extends Controller
         try {
             $entry = $this->entry_repository->fetchEntryBySlug($args['slug']);
         } catch (EntryNotFoundException $e) {
-            $response->getBody()->write('404');
-            // TODO: set status code
-//            $response->setContent('404 - Page not found');
-//            $response->setStatusCode(404);
-            return $response;
+            $response->getBody()->write('404 - Page not found');
+            return $response->withStatus(404);
         }
 
         $data = ['entry' => $entry->toArray()];
@@ -91,11 +88,8 @@ class EntryController extends Controller
         try {
             $tag = $this->tag_repository->fetchTagBySlug($args['tag']);
         } catch (TagNotFoundException $e) {
-            $response->getBody()->write('404');
-            // TODO: set status code
-//            $response->setContent('404 - Page not found');
-//            $response->setStatusCode(404);
-            return $response;
+            $response->getBody()->write('404 - Page not found');
+            return $response->withStatus(404);
         }
 
         $entries = $this->entry_repository->fetchEntriesByTag($tag, true);
@@ -155,11 +149,8 @@ class EntryController extends Controller
         try {
             $entry = $this->entry_repository->fetchEntryBySlug($args['slug']);
         } catch (EntryNotFoundException $e) {
-            $response->getBody()->write('404');
-            // TODO: set status code
-//            $response->setContent('404 - Page not found');
-//            $response->setStatusCode(404);
-            return $response;
+            $response->getBody()->write('404 - Page not found');
+            return $response->withStatus(404);
         }
 
         $data = $entry->toArray();
