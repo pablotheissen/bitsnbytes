@@ -1,47 +1,46 @@
-{{> head }}
-{{%FILTERS}}
+{% include "partials/head.html" %}
 <form action="" method="POST">
-    <div class="wrapper-input wrapper-title{{#error-title}} error{{/error-title}}">
-        <label for="inpt-title">Title</label>{{# error-message-title }}
-        <span class="error-message error-message-title">{{{ error-message-title }}}</span>{{/ error-message-title }}
+    <div class="wrapper-input wrapper-title{% if error_title is not empty %} error{% endif %}">
+        <label for="inpt-title">Title</label>{% if error_message_title is not empty %}
+        <span class="error-message error-message-title">{{ error_message_title | raw }}</span>{% endif %}
         <input id="inpt-title" type="text" name="title" value="{{ title }}" placeholder="Title" required>
     </div>
-    <div class="wrapper-input wrapper-slug{{# error-slug }} error{{/ error-slug }}">
-        <label for="inpt-slug">Slug</label>{{# error-message-slug }}
-        <span class="error-message error-message-slug">{{{ error-message-slug }}}</span>{{/ error-message-slug }}
+    <div class="wrapper-input wrapper-slug{% if error_slug is not empty %} error{% endif %}">
+        <label for="inpt-slug">Slug</label>{% if  error_message_slug is not empty %}
+        <span class="error-message error-message-slug">{{ error_message_slug | raw }}</span>{% endif %}
         <input id="inpt-slug" type="text" name="slug" value="{{ slug }}" placeholder="slug" pattern="[a-z0-9-_]*">
     </div>
-    <div class="wrapper-input wrapper-url{{#error-url}} error{{/error-url}}">
+    <div class="wrapper-input wrapper-url{% if error_url is not empty %} error{% endif %}">
         <label for="inpt-url">URL</label>
         <input id="inpt-url" type="url" name="url" value="{{ url }}" placeholder="https://example.org">
     </div>
-    <div class="wrapper-input wrapper-text{{#error-text}} error{{/error-text}}">
+    <div class="wrapper-input wrapper-text{% if error_text is not empty %} error{% endif %}">
         <label for="inpt-text">Content</label>
         <textarea id="inpt-text" name="text" rows="5" placeholder="">{{ text }}</textarea>
     </div>
-    <div class="wrapper-input wrapper-datetime{{#error-datetime}} error{{/error-datetime}}">
-        <div class="wrapper-input-inner wrapper-date{{#error-date}} error{{/error-date}}">
+    <div class="wrapper-input wrapper-datetime{% if error_datetime is not empty %} error{% endif %}">
+        <div class="wrapper-input-inner wrapper-date{% if error_date is not empty %} error{% endif %}">
             <label for="inpt-date">Date</label>
-            <input id="inpt-date" type="date" name="date" value="{{ date | format_date.atom_date }}">
+            <input id="inpt-date" type="date" name="date" value="{{ date_atom_date }}">
         </div>
-        <div class="wrapper-input-inner wrapper-time{{#error-time}} error{{/error-time}}">
+        <div class="wrapper-input-inner wrapper-time{% if error_time is not empty %} error{% endif %}">
             <label for="inpt-time">Time</label>
-            <input id="inpt-time" type="time" name="time" value="{{ date | format_date.atom_time }}">
+            <input id="inpt-time" type="time" name="time" value="{{ date_atom_time }}">
         </div>
     </div>
     <div class="wrapper-input wrapper-tags">
         <label>Tags</label>
         <ul>
-            {{# tags }}
-            <li><input name="tags[]" type="text" class="inpt-tag" value="{{ title }}"></li>
-            {{/ tags }}
+            {% for tag in tags %}
+            <li><input name="tags[]" type="text" class="inpt-tag" value="{{ tag.title }}"></li>
+            {% endfor %}
             <li><input name="tags[]" type="text" class="inpt-tag" value=""></li>
-            {{^ tags }}
+            {% if tags is empty %}
             <li><input name="tags[]" type="text" class="inpt-tag" value=""></li>
-            {{/ tags }}
+            {% endif %}
         </ul>
     </div>
     <button type="submit">Save</button>
 </form>
 
-{{> foot }}
+{% include "partials/foot.html" %}

@@ -9,6 +9,7 @@ use Bitsnbytes\Helpers\Template\RendererInterface;
 use DateTime;
 use Http\Request;
 use Http\Response;
+use Psr\Container\ContainerInterface;
 use Transliterator;
 
 abstract class Controller
@@ -22,16 +23,28 @@ abstract class Controller
      */
     private array $filter_options;
 
-    public function __construct(Request $request, Response $response, RendererInterface $renderer)
-    {
-        $this->request = $request;
-        $this->response = $response;
-        $this->renderer = $renderer;
+    protected $view;
+    protected $logger;
+    protected $flash;
+    protected $em;  // Entities Manager
 
-        $this->filter_options = [
-            'flags' => FILTER_NULL_ON_FAILURE
-        ];
+    public function __construct(ContainerInterface $container)
+    {
+//        $this->view = $container->get('view');
+//        $this->logger = $container->get('logger');
+//        $this->flash = $container->get('flash');
+//        $this->em = $container->get('em');
     }
+//    public function __construct(Request $request, Response $response, RendererInterface $renderer)
+//    {
+//        $this->request = $request;
+//        $this->response = $response;
+//        $this->renderer = $renderer;
+//
+//        $this->filter_options = [
+//            'flags' => FILTER_NULL_ON_FAILURE
+//        ];
+//    }
 
     /**
      * @param string $url User input URL

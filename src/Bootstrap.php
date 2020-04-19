@@ -20,11 +20,61 @@ use Throwable;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$app = AppFactory::create();
+$environment = 'development';
+
+// Create Container using PHP-DI
+$container_builder = new ContainerBuilder();
+$container_builder->addDefinitions(
+    [
+        'dsn' => 'sqlite:' . __DIR__ . '/../data/bitsnbytes.use.sqlite',
+    ]
+);
+// $containerBuilder->addDefinitions('config.php');
+
+$container = $container_builder->build();
+$container->set(
+    PDO::class,
+    new \PDO($container->get('dsn'))
+);
+$container->set(
+    App::class,
+    function (ContainerInterface $container) {
+        AppFactory::setContainer($container);
+        return AppFactory::create();
+    }
+);
+$container->set(
+    Twig::class,
+    function () {
+        return Twig::create(__DIR__ . '/templates'/*, ['cache' => 'path/to/cache']*/);
+    }
+);
+// For the responder
+$container->set(
+    ResponseFactoryInterface::class,
+    function (ContainerInterface $container) {
+        return $container->get(App::class)->getResponseFactory();
+    }
+);
+// The Slim RouterParser
+$container->set(
+    RouteParserInterface::class,
+    function (ContainerInterface $container) {
+        return $container->get(App::class)->getRouteCollector()->getRouteParser();
+    }
+);
+
+// Set container to create App with on AppFactory
+$app = $container->get(App::class);
 
 // Middleware
 $contentLengthMiddleware = new ContentLengthMiddleware();
 $app->add($contentLengthMiddleware);
+
+// Add Twig-View Middleware
+//https://github.com/odan/slim4-skeleton/blob/7d0ed7c1ad77c54c34eef027e8c62d81380d88a8/config/container.php#L68
+//$app->add(TwigMiddleware::createFromContainer($app));
+$app->add(TwigMiddleware::class);
 
 
 // Define Custom Error Handler
@@ -65,82 +115,11 @@ $routes($app);
 
 $app->run();
 
-
-
-//use AltoRouter;
-//use Auryn\Injector;
-//use Http\HttpRequest;
-//use Http\HttpResponse;
-//use Whoops\Handler\PrettyPageHandler;
-//use Whoops\Run;
-//
-//require __DIR__ . '/../vendor/autoload.php';
-//
 //require_once 'Application/Helper.php';
 //
 //error_reporting(E_ALL);
-//
-//$environment = 'development';
-//
-///**
-// * Register the error handler
-// */
-//$whoops = new Run();
-//if ($environment !== 'production') {
-//    $whoops->pushHandler(new PrettyPageHandler());
-//} else {
-//    $whoops->pushHandler(
-//        function ($e): void {
-//            // TODO: create better error handling for production
-//            echo 'Todo: Friendly error page and send an email to the developer';
-//        }
-//    );
-//}
-//$whoops->register();
 //
 ///** @var array<mixed> $config */
 //$config = include __DIR__ . '/../config/config.php';
 //date_default_timezone_set($config['timezone']);
 //
-///** @var Injector $injector */
-//$injector = include('Application/Dependencies.php');
-//
-///** @var HttpRequest $request */
-//$request = $injector->make('Http\Request');
-//
-///** @var HttpResponse $response */
-//$response = $injector->make('Http\Response');
-//
-///** @var AltoRouter $router */
-//$router = $injector->make('AltoRouter');
-//$router->setBasePath($config['basepath']);
-//
-///** @var array<array<mixed>> $routes */
-//$routes = include('Application/Routes.php');
-//foreach ($routes as $route) {
-//    if (!isset($route[3])) {
-//        $route[3] = null;
-//    }
-//    $router->map($route[0], $route[1], $route[2], $route[3]);
-//}
-//
-//$match = $router->match();
-//
-//// call closure or throw 404 status
-//if (is_array($match)) {
-//    $className = $match['target'][0];
-//    $method = $match['target'][1];
-//
-//    $class = $injector->make($className);
-//    $class->$method($match['params']);
-//} else {
-//    // no route was matched
-//    $response->setContent('404 - Page not found');
-//    $response->setStatusCode(404);
-//}
-//
-//foreach ($response->getHeaders() as $header) {
-//    header($header, false);
-//}
-//
-//echo $response->getContent();

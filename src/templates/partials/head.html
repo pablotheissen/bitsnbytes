@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>{{# title }}{{ title }} &middot; {{/ title }}Bits’n’Bytes</title>
+    <title>{% if title is not empty %}{{ title }} &middot; {% endif %}Bits’n’Bytes</title>
     <link rel="stylesheet" href="/css/normalize.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
@@ -15,7 +15,7 @@
             <input type="search" name="search">
         </div>
     </form>
-    {{# url-newentry }}<a href="{{ url-newentry }}" class="button">New Entry</a>{{/ url-newentry }}
+    {% if url_newentry is not empty %}<a href="{{ url_newentry }}" class="button">New Entry</a>{% endif %}
 </header>
 <main>
-
+<!-- TODO: build template inheritance: https://twig.symfony.com/doc/3.x/templates.html#template-inheritance -->

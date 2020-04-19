@@ -14,6 +14,11 @@ use PDO;
 
 class TagRepository extends Model
 {
+    public function __construct(PDO $pdo)
+    {
+        parent::__construct($pdo);
+    }
+
     /**
      * Fetch a single tag from the database based on the slug parameter. Throws an exception if slug doesn't exist in
      * table.

@@ -1,23 +1,22 @@
-{{%FILTERS}}
-<article id="entry-{{ eid }}" class="entry entry-{{ eid }} entry-{{ slug }}">
+
+<article id="entry-{{ entry.eid }}" class="entry entry-{{ entry.eid }} entry-{{ entry.slug }}">
     <header>
-        {{# url }}
-        <a class="heading" href="{{ url }}">
-            <span class="meta url">{{url}}</span>
-            <h3>{{ title }}</h3>
+        {% if entry.url is not empty %}
+        <a class="heading" href="{{ entry.url }}">
+            <span class="meta url">{{ entry.url }}</span>
+            <h3>{{ entry.title }}</h3>
         </a>
-        {{/ url }}
-        {{^ url }}
-        <h3>{{ title }}</h3>
-        {{/ url }}
-        <span class="meta date">{{ date | format_date.short }}</span>
-        {{# url-edit }}&middot; <span class="meta edit"><a href="{{ url-edit }}">edit</a></span>{{/ url-edit }}
+        {% else %}
+        <h3>{{ entry.title }}</h3>
+        {% endif %}
+        <span class="meta date">{{ entry.date_formatted }}</span>
+        {% if entry.url_edit is not empty %}&middot; <span class="meta edit"><a href="{{ entry.url_edit }}">edit</a></span>{% endif %}
     </header>
-{{{ text }}}
+{{ entry.text | raw }}
     <ul class="tags">
-        {{# tags }}
-        <li class="tag tag-{{ tid }} tag-{{ slug }}"><a href="/tag/{{ slug }}">{{ title }}</a></li>
-        {{/ tags }}
+        {% for tag in entry.tags %}
+        <li class="tag tag-{{ tag.tid }} tag-{{ tag.slug }}"><a href="/tag/{{ tag.slug }}">{{ tag.title }}</a></li>
+        {% endfor %}
     </ul>
 </article>
 
