@@ -12,37 +12,31 @@ use Bitsnbytes\Models\Tag\TagRepository;
 use DateTimeInterface;
 use Erusev\Parsedown\Parsedown;
 use Exception;
-use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Interfaces\RouteParserInterface;
 use Slim\Views\Twig;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
 
 
 class EntryController extends Controller
 {
     private EntryRepository $entry_repository;
-    private Parsedown $parsedown;
     private TagRepository $tag_repository;
-    private RouteParserInterface $route_parser;
-    private Twig $twig;
 
     public function __construct(
         EntryRepository $entry_repository,
-        ContainerInterface $container,
         TagRepository $tag_repository,
         Parsedown $parsedown,
         Twig $twig,
-        RouteParserInterface $route_parser // TODO move to Controller
-    )
-    {
-        parent::__construct($container);
+        RouteParserInterface $route_parser
+    ) {
+        parent::__construct($parsedown, $twig, $route_parser);
         $this->entry_repository = $entry_repository;
         $this->tag_repository = $tag_repository;
-        $this->route_parser = $route_parser;
-        $this->parsedown = $parsedown;
-        $this->twig = $twig;
     }
 
     /**
@@ -51,9 +45,9 @@ class EntryController extends Controller
      * @param array    $args
      *
      * @return Response
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function showBySlug(Request $request, Response $response, array $args = []): Response
     {
@@ -79,9 +73,9 @@ class EntryController extends Controller
      * @param array    $args
      *
      * @return Response
-     * @throws \Twig\Error\LoaderError
-     * @throws \Twig\Error\RuntimeError
-     * @throws \Twig\Error\SyntaxError
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function showByTag(Request $request, Response $response, array $args = []): Response
     {

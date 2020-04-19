@@ -7,33 +7,32 @@ namespace Bitsnbytes\Controllers;
 
 use Bitsnbytes\Helpers\Template\RendererInterface;
 use DateTime;
+use Erusev\Parsedown\Parsedown;
 use Http\Request;
 use Http\Response;
-use Psr\Container\ContainerInterface;
+use Slim\Interfaces\RouteParserInterface;
+use Slim\Views\Twig;
 use Transliterator;
 
 abstract class Controller
 {
-    protected Response $response;
-    protected Request $request;
     protected RendererInterface $renderer;
-
+    protected RouteParserInterface $route_parser;
+    protected Parsedown $parsedown;
+    protected Twig $twig;
     /**
      * @var array<int>
      */
     private array $filter_options;
 
-    protected $view;
-    protected $logger;
-    protected $flash;
-    protected $em;  // Entities Manager
-
-    public function __construct(ContainerInterface $container)
-    {
-//        $this->view = $container->get('view');
-//        $this->logger = $container->get('logger');
-//        $this->flash = $container->get('flash');
-//        $this->em = $container->get('em');
+    public function __construct(
+        Parsedown $parsedown,
+        Twig $twig,
+        RouteParserInterface $route_parser
+    ) {
+        $this->parsedown = $parsedown;
+        $this->twig = $twig;
+        $this->route_parser = $route_parser;
     }
 //    public function __construct(Request $request, Response $response, RendererInterface $renderer)
 //    {
