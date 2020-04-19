@@ -17,6 +17,8 @@ use Slim\Middleware\ContentLengthMiddleware;
 use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Throwable;
+use Whoops\Handler\PrettyPageHandler;
+use Whoops\Run;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -34,7 +36,7 @@ $container_builder->addDefinitions(
 $container = $container_builder->build();
 $container->set(
     PDO::class,
-    new \PDO($container->get('dsn'))
+    new PDO($container->get('dsn'))
 );
 $container->set(
     App::class,
@@ -88,8 +90,8 @@ $customErrorHandler = function (
 ) use ($app) {
     // Todo: add logging: $logger->error($exception->getMessage());
     // Todo: differentiate between dev/prod instance
-    $whoops = new \Whoops\Run;
-    $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+    $whoops = new Run();
+    $whoops->pushHandler(new PrettyPageHandler());
     $html = $whoops->handleException($exception);
     $response = $app->getResponseFactory()->createResponse();
     $response->getBody()->write($html);
@@ -102,8 +104,8 @@ $error_middleware->setDefaultErrorHandler($customErrorHandler);
 
 // Define custom shutdown handler
 $shutdown_handler = function () {
-    $whoops = new \Whoops\Run;
-    $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+    $whoops = new Run();
+    $whoops->pushHandler(new PrettyPageHandler());
     $whoops->handleShutdown();
 };
 register_shutdown_function($shutdown_handler);

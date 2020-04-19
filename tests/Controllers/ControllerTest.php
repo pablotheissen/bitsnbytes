@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Tests\Controllers;
 
 use Bitsnbytes\Controllers\Controller;
-use Bitsnbytes\Helpers\Template\RendererInterface;
 use DateTime;
+use Erusev\Parsedown\Parsedown;
 use Exception;
-use Http\Request;
-use Http\Response;
 use PHPUnit\Framework\MockObject\MockObject;
+use Slim\Interfaces\RouteParserInterface;
 use Tests\TestCase;
 
 class ControllerTest extends TestCase
@@ -20,11 +19,18 @@ class ControllerTest extends TestCase
     public function __construct(?string $name = null, array $data = [], $dataName = '')
     {
         parent::__construct($name, $data, $dataName);
+        $route_parser = $this->createMock(RouteParserInterface::class);
+        $parsedown = new Parsedown(); // can't be mocked
+        $twig = $this->createMock(\Slim\Views\Twig::class);
 
-        $request = $this->createMock(Request::class);
-        $response = $this->createMock(Response::class);
-        $renderer = $this->createMock(RendererInterface::class);
-        $this->controller = $this->getMockForAbstractClass(Controller::class, array($request, $response, $renderer));
+        $this->controller = $this->getMockForAbstractClass(
+            Controller::class,
+            [
+                $parsedown,
+                $twig,
+                $route_parser
+            ]
+        );
     }
 
     /**
