@@ -2,44 +2,22 @@
 
 declare(strict_types=1);
 
+use Slim\App;
+use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
-return [
-    [
-        'GET',
-        '/',
-        ['Bitsnbytes\Controllers\EntryController', 'showLatest'],
-        'home',
-    ],
-    [
-        'GET',
-        '/entry/new',
-        ['Bitsnbytes\Controllers\EntryController', 'newform'],
-        'new-entry',
-    ],
-    [
-        'POST',
-        '/entry/new',
-        ['Bitsnbytes\Controllers\EntryController', 'saveEntry'],
-    ],
-    [
-        'GET',
-        '/entry/[:slug]',
-        ['Bitsnbytes\Controllers\EntryController', 'showBySlug'],
-    ],
-    [
-        'GET',
-        '/entry/[:slug]/edit',
-        ['Bitsnbytes\Controllers\EntryController', 'editformBySlug'],
-        'edit-entry',
-    ],
-    [
-        'POST',
-        '/entry/[:slug]/edit',
-        ['Bitsnbytes\Controllers\EntryController', 'saveEntry'],
-    ],
-    [
-        'GET',
-        '/tag/[:tag]',
-        ['Bitsnbytes\Controllers\EntryController', 'showByTag'],
-    ],
-];
+return function (App $app): void {
+    $app->get('/', \Bitsnbytes\Controllers\EntryController::class . ':showLatest');
+    $app->group(
+        '/entry',
+        function (Group $group) {
+            $group->get('/new', \Bitsnbytes\Controllers\EntryController::class . ':newform')
+                ->setName('new-entry');
+            $group->post('/new', \Bitsnbytes\Controllers\EntryController::class . ':saveEntry');
+            $group->get('/{slug}', \Bitsnbytes\Controllers\EntryController::class . ':showBySlug');
+            $group->get('/{slug}/edit', \Bitsnbytes\Controllers\EntryController::class . ':editformBySlug')
+                ->setName('edit-entry');
+            $group->post('/{slug}/edit', \Bitsnbytes\Controllers\EntryController::class . ':saveEntry');
+        }
+    );
+    $app->get('/tag/{tag}', \Bitsnbytes\Controllers\EntryController::class . ':showByTag');
+};
