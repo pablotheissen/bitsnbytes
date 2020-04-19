@@ -5,18 +5,14 @@ declare(strict_types=1);
 namespace Bitsnbytes\Controllers;
 
 
-use Bitsnbytes\Helpers\Template\RendererInterface;
 use DateTime;
 use Erusev\Parsedown\Parsedown;
-use Http\Request;
-use Http\Response;
 use Slim\Interfaces\RouteParserInterface;
 use Slim\Views\Twig;
 use Transliterator;
 
 abstract class Controller
 {
-    protected RendererInterface $renderer;
     protected RouteParserInterface $route_parser;
     protected Parsedown $parsedown;
     protected Twig $twig;

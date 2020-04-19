@@ -5,17 +5,11 @@ declare(strict_types=1);
 namespace Bitsnbytes;
 
 use DI\ContainerBuilder;
-use PDO;
-use Psr\Container\ContainerInterface;
-use Psr\Http\Message\ResponseFactoryInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
 use Psr\Log\LoggerInterface;
 use Slim\App;
-use Slim\Factory\AppFactory;
-use Slim\Interfaces\RouteParserInterface;
 use Slim\Middleware\ContentLengthMiddleware;
-use Slim\Views\Twig;
 use Slim\Views\TwigMiddleware;
 use Throwable;
 use Whoops\Handler\PrettyPageHandler;
@@ -32,40 +26,9 @@ $container_builder->addDefinitions(
         'dsn' => 'sqlite:' . __DIR__ . '/../data/bitsnbytes.use.sqlite',
     ]
 );
-// $containerBuilder->addDefinitions('config.php');
+$container_builder->addDefinitions(require 'Application/container.php');
 
 $container = $container_builder->build();
-$container->set(
-    PDO::class,
-    new PDO($container->get('dsn'))
-);
-$container->set(
-    App::class,
-    function (ContainerInterface $container): App {
-        AppFactory::setContainer($container);
-        return AppFactory::create();
-    }
-);
-$container->set(
-    Twig::class,
-    function (): Twig {
-        return Twig::create(__DIR__ . '/templates'/*, ['cache' => 'path/to/cache']*/);
-    }
-);
-// For the responder
-$container->set(
-    ResponseFactoryInterface::class,
-    function (ContainerInterface $container): ResponseFactoryInterface {
-        return $container->get(App::class)->getResponseFactory();
-    }
-);
-// The Slim RouterParser
-$container->set(
-    RouteParserInterface::class,
-    function (ContainerInterface $container): RouteParserInterface {
-        return $container->get(App::class)->getRouteCollector()->getRouteParser();
-    }
-);
 
 // Set container to create App with on AppFactory
 $app = $container->get(App::class);
