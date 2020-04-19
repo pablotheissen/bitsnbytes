@@ -4,10 +4,19 @@ declare(strict_types=1);
 
 namespace Bitsnbytes;
 
-use Psr\Http\Message\ResponseInterface as Response;
-use Psr\Http\Message\ServerRequestInterface as Request;
+use DI\ContainerBuilder;
+use PDO;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
+use Psr\Http\Message\ServerRequestInterface;
+use Psr\Log\LoggerInterface;
+use Slim\App;
 use Slim\Factory\AppFactory;
+use Slim\Interfaces\RouteParserInterface;
 use Slim\Middleware\ContentLengthMiddleware;
+use Slim\Views\Twig;
+use Slim\Views\TwigMiddleware;
+use Throwable;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -18,13 +27,41 @@ $contentLengthMiddleware = new ContentLengthMiddleware();
 $app->add($contentLengthMiddleware);
 
 
-$app->get(
-    '/',
-    function (Request $request, Response $response, $args) {
-        $response->getBody()->write("Hello world!");
-        return $response;
-    }
-);
+// Define Custom Error Handler
+$customErrorHandler = function (
+    ServerRequestInterface $request,
+    Throwable $exception,
+    bool $displayErrorDetails,
+    bool $logErrors,
+    bool $logErrorDetails,
+    ?LoggerInterface $logger = null
+) use ($app) {
+    // Todo: add logging: $logger->error($exception->getMessage());
+    // Todo: differentiate between dev/prod instance
+    $whoops = new \Whoops\Run;
+    $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+    $html = $whoops->handleException($exception);
+    $response = $app->getResponseFactory()->createResponse();
+    $response->getBody()->write($html);
+
+    return $response;
+};
+
+$error_middleware = $app->addErrorMiddleware(true, false, false);
+$error_middleware->setDefaultErrorHandler($customErrorHandler);
+
+// Define custom shutdown handler
+$shutdown_handler = function () {
+    $whoops = new \Whoops\Run;
+    $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler());
+    $whoops->handleShutdown();
+};
+register_shutdown_function($shutdown_handler);
+
+
+// Register routes
+$routes = require __DIR__ . '/Application/Routes.php';
+$routes($app);
 
 $app->run();
 
