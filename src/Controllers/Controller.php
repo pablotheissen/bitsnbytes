@@ -16,10 +16,6 @@ abstract class Controller
     protected RouteParserInterface $route_parser;
     protected Parsedown $parsedown;
     protected Twig $twig;
-    /**
-     * @var array<int>
-     */
-    private array $filter_options;
 
     public function __construct(
         Parsedown $parsedown,
@@ -30,16 +26,6 @@ abstract class Controller
         $this->twig = $twig;
         $this->route_parser = $route_parser;
     }
-//    public function __construct(Request $request, Response $response, RendererInterface $renderer)
-//    {
-//        $this->request = $request;
-//        $this->response = $response;
-//        $this->renderer = $renderer;
-//
-//        $this->filter_options = [
-//            'flags' => FILTER_NULL_ON_FAILURE
-//        ];
-//    }
 
     /**
      * @param string $url User input URL
