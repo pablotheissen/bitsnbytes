@@ -184,12 +184,14 @@ class EntryController extends Controller
         $error_fields = [];
         $error_messages = [];
 
-        $new_title = $request->getAttribute('title');
+        $data = (array)$request->getParsedBody();
+
+        $new_title = $data['title'];
         if ($new_title === '' || $new_title === null) {
             $error_fields[] = 'title';
             $error_messages['title'] = 'Entry must have a title.';
         }
-        $user_slug = $request->getAttribute('slug');
+        $user_slug = $data['slug'];
         $new_slug = $this->filterSlug($user_slug);
         if ($user_slug === '' || $user_slug === null || $new_slug === '' || $new_slug === null) {
             $new_slug = $this->createSlugFromTitle($new_title);
@@ -201,15 +203,15 @@ class EntryController extends Controller
                 $error_messages['slug'] = 'Only use characters <em>a-z</em>, <em>0-9</em>, <em>_</em> and <em>-</em>.';
             }
         }
-        $new_url = $this->filterUrl($request->getAttribute('url'));
-        $new_text = $request->getAttribute('text');
-        $new_date = $this->filterDate($request->getAttribute('date'));
+        $new_url = $this->filterUrl($data['url']);
+        $new_text = $data['text'];
+        $new_date = $this->filterDate($data['date']);
         if ($new_date === null) {
             $error_fields[] = 'date';
         } elseif ($new_date === '') {
             $new_date = date('Y-m-d');
         }
-        $new_time = $this->filterTime($request->getAttribute('time'));
+        $new_time = $this->filterTime($data['time']);
         if ($new_time === null) {
             $error_fields[] = 'time';
         } elseif ($new_time === '') {
@@ -221,7 +223,7 @@ class EntryController extends Controller
             $error_fields[] = 'time';
         }
         // TODO: parse/filter tags
-        $new_tags = array_filter($request->getAttribute('tags'));
+        $new_tags = array_filter($data['tags']);
 
         if (count($error_fields) > 0) {
             return $this->editformErrorsFound(
@@ -250,8 +252,8 @@ class EntryController extends Controller
 
         $this->entry_repository->updateTagsByEntry($entry, $new_tags);
         if ($success === true) {
-            // TODO: redirect
-//            $this->response->redirect($this->router->generate('edit-entry', ['slug' => $new_slug]));
+            $redirect_to = $this->route_parser->urlFor('edit-entry', ['slug' => $new_slug]);
+            return $response->withHeader('Location', $redirect_to);
         }
         return $response;
     }
