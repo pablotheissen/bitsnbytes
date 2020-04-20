@@ -5,7 +5,22 @@ declare(strict_types=1);
 
 namespace Bitsnbytes\Helpers;
 
-
+/**
+ * Class Configuration
+ *
+ * Usage:
+ *   $conig = new \Configuration([
+ *      'db' => [
+ *          'host' => 'localhost',
+ *      ],
+ *      'timezone' => 'Europe/Berlin',
+ *   ]);
+ *   $config->get('db.host'); // 'localhost'
+ *   $config->get('timezone'); // 'Europe/Berlin'
+ *   $config->timezone; // 'Europe/Berlin' –– does not work for arrays
+ *
+ * @package Bitsnbytes\Helpers
+ */
 final class Configuration
 {
     /** @var array<mixed> $data */
@@ -16,9 +31,15 @@ final class Configuration
         $this->data = $data;
     }
 
+    public function __get($name)
+    {
+        return $this->get($name);
+    }
+
     /**
-     * @param string $path
-     * @param ?mixed   $default
+     * @param string $path Key of configuration variable. Separate nested arrays with dots, e.g. get('db.host') for
+     *                     retrieving 'db'=>['host'=>'...']
+     * @param mixed $default [optional] Default return value, <b>NULL</b> if empty
      *
      * @return mixed
      *
@@ -46,11 +67,5 @@ final class Configuration
         }
 
         return $arrayCopyOrValue;
-    }
-
-    public function __get($name)
-    {
-        var_dump($name);
-        return $this->get($name);
     }
 }
