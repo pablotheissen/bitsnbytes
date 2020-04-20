@@ -17,7 +17,19 @@ use Whoops\Run;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-$environment = 'development';
+define('ENVIRONMENT', 'development'); // development | production
+
+if(ENVIRONMENT === 'development'){
+    error_reporting(E_ALL);
+
+    // Use whoops for displaying fatal errors
+    $shutdown_handler = function (): void {
+        $whoops = new Run();
+        $whoops->pushHandler(new PrettyPageHandler());
+        $whoops->handleShutdown();
+    };
+    register_shutdown_function($shutdown_handler);
+}
 
 // Create Container using PHP-DI
 $container_builder = new ContainerBuilder();
@@ -53,12 +65,13 @@ $customErrorHandler = function (
     ?LoggerInterface $logger = null
 ) use ($app) : ResponseInterface {
     // Todo: add logging: $logger->error($exception->getMessage());
-    // Todo: differentiate between dev/prod instance
-    $whoops = new Run();
-    $whoops->pushHandler(new PrettyPageHandler());
-    $html = $whoops->handleException($exception);
-    $response = $app->getResponseFactory()->createResponse();
-    $response->getBody()->write($html);
+    if(ENVIRONMENT === 'development'){
+        $whoops = new Run();
+        $whoops->pushHandler(new PrettyPageHandler());
+        $html = $whoops->handleException($exception);
+        $response = $app->getResponseFactory()->createResponse();
+        $response->getBody()->write($html);
+    }
 
     return $response;
 };
