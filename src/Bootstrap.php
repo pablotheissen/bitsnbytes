@@ -32,14 +32,9 @@ if(ENVIRONMENT === 'development'){
 }
 
 // Create Container using PHP-DI
+// TODO: enable compilation: http://php-di.org/doc/performances.html
 $container_builder = new ContainerBuilder();
-$container_builder->addDefinitions(
-    [
-        'dsn' => 'sqlite:' . __DIR__ . '/../data/bitsnbytes.use.sqlite',
-    ]
-);
 $container_builder->addDefinitions(require 'Application/container.php');
-
 $container = $container_builder->build();
 
 // Set container to create App with on AppFactory
@@ -79,24 +74,13 @@ $customErrorHandler = function (
 $error_middleware = $app->addErrorMiddleware(true, false, false);
 $error_middleware->setDefaultErrorHandler($customErrorHandler);
 
-// Define custom shutdown handler
-$shutdown_handler = function (): void {
-    $whoops = new Run();
-    $whoops->pushHandler(new PrettyPageHandler());
-    $whoops->handleShutdown();
-};
-register_shutdown_function($shutdown_handler);
-
-
 // Register routes
-$routes = require __DIR__ . '/Application/Routes.php';
+$routes = require __DIR__ . '/Application/routes.php';
 $routes($app);
 
 $app->run();
 
 //require_once 'Application/Helper.php';
-//
-//error_reporting(E_ALL);
 //
 ///** @var array<mixed> $config */
 //$config = include __DIR__ . '/../config/config.php';

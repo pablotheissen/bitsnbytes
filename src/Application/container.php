@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Bitsnbytes\Helpers\Configuration;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\App;
@@ -11,15 +12,15 @@ use Slim\Views\Twig;
 
 return [
     // Application settings
-//    Configuration::class => function () {
-//        return new Configuration(require __DIR__ . '/settings.php');
-//    },
+    Configuration::class => function () {
+        return new Configuration(require __DIR__ . '/../../config/config.php');
+    },
     App::class => function (ContainerInterface $container): App {
         AppFactory::setContainer($container);
         return AppFactory::create();
     },
-    PDO::class => function (ContainerInterface $container): PDO {
-        return new PDO($container->get('dsn'));
+    PDO::class => function (Configuration $config): PDO {
+        return new PDO($config->get('db.dsn'));
     },
     Twig::class => function (): Twig {
         return Twig::create(__DIR__ . '/../templates'/*, ['cache' => 'path/to/cache']*/);
