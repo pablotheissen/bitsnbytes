@@ -390,7 +390,8 @@ article.entry > p {
 article.entry ul.tags {
   list-style: none;
   display: flex;
-  margin-top: .5rem;
+  flex-flow: row wrap;
+  line-height: 2rem;
 }
 
 article.entry ul.tags li {
