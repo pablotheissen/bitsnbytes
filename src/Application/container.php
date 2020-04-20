@@ -22,8 +22,11 @@ return [
     PDO::class => function (Configuration $config): PDO {
         return new PDO($config->get('db.dsn'));
     },
-    Twig::class => function (): Twig {
-        return Twig::create(__DIR__ . '/../templates'/*, ['cache' => 'path/to/cache']*/);
+    Twig::class => function (Configuration $config): Twig {
+        $options = $config->get('twig.options');
+        $options['cache'] = $options['cache_enabled'] ? $options['cache_path'] : false;
+
+        return Twig::create($config->get('twig.paths'), $options);
     },
     // For the responder
     ResponseFactoryInterface::class => function (ContainerInterface $container): ResponseFactoryInterface {
