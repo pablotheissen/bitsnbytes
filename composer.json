@@ -9,18 +9,18 @@
     }
   ],
   "require": {
-    "altorouter/altorouter": "^2.0.1",
+    "slim/slim": "^4.5",
+    "slim/psr7": "^1.0",
+    "php-di/php-di": "^6.0",
+    "slim/twig-view": "^3.0",
     "erusev/parsedown": "2.0.x-dev",
     "ext-intl": "*",
     "ext-mbstring": "*",
     "ext-pdo": "*",
-    "filp/whoops": "^2.7.1",
-    "mustache/mustache": "^v2.13.0",
-    "patricklouys/http": "^v1.4.0",
-    "php": ">=7.4",
-    "rdlowrey/auryn": "^v1.4.2"
+    "php": ">=7.4"
   },
   "require-dev": {
+    "filp/whoops": "^2.7.1",
     "phpstan/extension-installer": "^1.0.4",
     "phpstan/phpstan": "^0.12.18",
     "phpstan/phpstan-strict-rules": "^0.12.2",

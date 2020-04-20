@@ -15,7 +15,7 @@ parameters:
 		-
 		    message: '#Undefined variable: \$config#'
 		    count: 4
-		    path: src/Dependencies.php
+		    path: src/container.php
 	autoload_files:
 		- config/config.php
-		- src/Helper.php
+		- src/Application/helper.php

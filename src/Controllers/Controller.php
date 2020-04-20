@@ -5,32 +5,26 @@ declare(strict_types=1);
 namespace Bitsnbytes\Controllers;
 
 
-use Bitsnbytes\Models\Template\Renderer;
 use DateTime;
-use Http\Request;
-use Http\Response;
+use Erusev\Parsedown\Parsedown;
+use Slim\Interfaces\RouteParserInterface;
+use Slim\Views\Twig;
 use Transliterator;
 
 abstract class Controller
 {
-    protected Response $response;
-    protected Request $request;
-    protected Renderer $renderer;
+    protected RouteParserInterface $route_parser;
+    protected Parsedown $parsedown;
+    protected Twig $twig;
 
-    /**
-     * @var array<int>
-     */
-    private array $filter_options;
-
-    public function __construct(Request $request, Response $response, Renderer $renderer)
-    {
-        $this->request = $request;
-        $this->response = $response;
-        $this->renderer = $renderer;
-
-        $this->filter_options = [
-            'flags' => FILTER_NULL_ON_FAILURE
-        ];
+    public function __construct(
+        Parsedown $parsedown,
+        Twig $twig,
+        RouteParserInterface $route_parser
+    ) {
+        $this->parsedown = $parsedown;
+        $this->twig = $twig;
+        $this->route_parser = $route_parser;
     }
 
     /**

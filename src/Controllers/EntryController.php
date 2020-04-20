@@ -4,158 +4,194 @@ declare(strict_types=1);
 
 namespace Bitsnbytes\Controllers;
 
-use AltoRouter;
 use Bitsnbytes\Models\Entry\Entry;
 use Bitsnbytes\Models\Entry\EntryNotFoundException;
 use Bitsnbytes\Models\Entry\EntryRepository;
 use Bitsnbytes\Models\Tag\TagNotFoundException;
 use Bitsnbytes\Models\Tag\TagRepository;
-use Bitsnbytes\Models\Template\Renderer;
 use DateTimeInterface;
 use Erusev\Parsedown\Parsedown;
 use Exception;
-use Http\Request;
-use Http\Response;
+use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use Slim\Interfaces\RouteParserInterface;
+use Slim\Views\Twig;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
+
 
 class EntryController extends Controller
 {
     private EntryRepository $entry_repository;
-    private AltoRouter $router;
-    private Parsedown $parsedown;
     private TagRepository $tag_repository;
 
     public function __construct(
         EntryRepository $entry_repository,
         TagRepository $tag_repository,
-        AltoRouter $router,
         Parsedown $parsedown,
-        Request $request,
-        Response $response,
-        Renderer $renderer
+        Twig $twig,
+        RouteParserInterface $route_parser
     ) {
-        parent::__construct($request, $response, $renderer);
+        parent::__construct($parsedown, $twig, $route_parser);
         $this->entry_repository = $entry_repository;
         $this->tag_repository = $tag_repository;
-        $this->router = $router;
-        $this->parsedown = $parsedown;
     }
 
     /**
-     * @param array<string> $params
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
      *
-     * @throws Exception
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    public function showBySlug(array $params): void
+    public function showBySlug(Request $request, Response $response, array $args = []): Response
     {
         try {
-            $entry = $this->entry_repository->fetchEntryBySlug($params['slug']);
+            $entry = $this->entry_repository->fetchEntryBySlug($args['slug']);
         } catch (EntryNotFoundException $e) {
-            $this->response->setContent('404 - Page not found');
-            $this->response->setStatusCode(404);
-            return;
+            $response->getBody()->write('404 - Page not found');
+            return $response->withStatus(404);
         }
 
-        $data = $entry->toArray();
-        $data['text'] = $this->parsedown->toHtml($entry->text);
-        $data['url-edit'] = $this->router->generate('edit-entry', ['slug' => $entry->slug]);
+        $data = ['entry' => $entry->toArray()];
+        $data['entry']['text'] = $this->parsedown->toHtml($entry->text ?? '');
+        $data['entry']['url_edit'] = $this->route_parser->urlFor('edit-entry', ['slug' => $entry->slug]);
+        $data['entry']['date_formatted'] = $entry->date->format('d.m.Y'); // TODO: use config date
 
-        $html = $this->renderer->render('Entry', $data);
-        $this->response->setContent($html);
+        $this->twig->render($response, 'Entry.html', $data);
+        return $response;
     }
 
     /**
-     * @param array<string> $params
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
      *
-     * @throws Exception
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    public function showByTag(array $params): void
+    public function showByTag(Request $request, Response $response, array $args = []): Response
     {
         try {
-            $tag = $this->tag_repository->fetchTagBySlug($params['tag']);
+            $tag = $this->tag_repository->fetchTagBySlug($args['tag']);
         } catch (TagNotFoundException $e) {
-            $this->response->setContent('404 - Page not found');
-            $this->response->setStatusCode(404);
-            return;
+            $response->getBody()->write('404 - Page not found');
+            return $response->withStatus(404);
         }
 
         $entries = $this->entry_repository->fetchEntriesByTag($tag, true);
         array_walk(
             $entries,
             function (&$entry): void {
-                $entry['url-edit'] = $this->router->generate('edit-entry', ['slug' => $entry['slug']]);
+                $entry['url_edit'] = $this->route_parser->urlFor(
+                    'edit-entry',
+                    ['slug' => $entry['slug']]
+                );
                 $entry['text'] = $this->parsedown->toHtml($entry['text']);
+                $entry['date_formatted'] = $entry['date']->format('d.m.Y'); // TODO: use config date
             }
         );
 
         $data = ['entries' => $entries, 'heading' => 'Entries tagged as ›' . $tag->title . '‹'];
 
-        $html = $this->renderer->render('entrylist', $data);
-        $this->response->setContent($html);
+        $this->twig->render($response, 'entrylist.html', $data);
+        return $response;
     }
 
     /**
-     * @param array<string> $params
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
      *
-     * @throws Exception
+     * @return Response
      */
-    public function showLatest(array $params): void
+    public function showLatest(Request $request, Response $response, array $args = []): Response
     {
         $entries = $this->entry_repository->fetchLatestEntries(true);
         array_walk(
             $entries,
             function (&$entry): void {
-                $entry['url-edit'] = $this->router->generate('edit-entry', ['slug' => $entry['slug']]);
+                $entry['url_edit'] = $this->route_parser->urlFor(
+                    'edit-entry',
+                    ['slug' => $entry['slug']]
+                );
                 $entry['text'] = $this->parsedown->toHtml($entry['text']);
+                $entry['date_formatted'] = $entry['date']->format('d.m.Y'); // TODO: use config date
             }
         );
-        $html = $this->renderer->render('entrylist', ['entries' => $entries]);
-        $this->response->setContent($html);
+        $this->twig->render($response, 'entrylist.html', ['entries' => $entries]);
+        return $response;
     }
 
     /**
-     * @param array<string> $params
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
      *
+     * @return Response
      * @throws Exception
      */
-    public function editformBySlug(array $params): void
+    public function editformBySlug(Request $request, Response $response, array $args = []): Response
     {
         try {
-            $entry = $this->entry_repository->fetchEntryBySlug($params['slug']);
+            $entry = $this->entry_repository->fetchEntryBySlug($args['slug']);
         } catch (EntryNotFoundException $e) {
-            $this->response->setContent('404 - Page not found');
-            $this->response->setStatusCode(404);
-            return;
+            $response->getBody()->write('404 - Page not found');
+            return $response->withStatus(404);
         }
 
-        $html = $this->renderer->render('editentry', $entry->toArray());
-        $this->response->setContent($html);
+        $data = $entry->toArray();
+        $data['date_atom_date'] = $entry->date->format('Y-m-d');
+        $data['date_atom_time'] = $entry->date->format('H:i');
+
+        $this->twig->render($response, 'editentry.html', $data);
+        return $response;
     }
 
     /**
-     * @param array<string> $params
-     */
-    public function newform(array $params): void
-    {
-        $html = $this->renderer->render('editentry');
-        $this->response->setContent($html);
-    }
-
-    /**
-     * @param array<string> $params
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
      *
-     * @throws Exception
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
-    public function saveEntry(array $params): void
+    public function newform(Request $request, Response $response, array $args = []): Response
+    {
+        $this->twig->render($response, 'editentry.html');
+        return $response;
+    }
+
+    /**
+     * @param Request       $request
+     * @param Response      $response
+     * @param array<string> $args
+     *
+     * @return Response
+     * @throws EntryNotFoundException
+     */
+    public function saveEntry(Request $request, Response $response, array $args = []): Response
     {
         $error_fields = [];
         $error_messages = [];
 
-        $new_title = $this->request->getBodyParameter('title');
+        $data = (array)$request->getParsedBody();
+
+        $new_title = $data['title'];
         if ($new_title === '' || $new_title === null) {
             $error_fields[] = 'title';
             $error_messages['title'] = 'Entry must have a title.';
         }
-        $user_slug = $this->request->getBodyParameter('slug');
+        $user_slug = $data['slug'];
         $new_slug = $this->filterSlug($user_slug);
         if ($user_slug === '' || $user_slug === null || $new_slug === '' || $new_slug === null) {
             $new_slug = $this->createSlugFromTitle($new_title);
@@ -167,15 +203,15 @@ class EntryController extends Controller
                 $error_messages['slug'] = 'Only use characters <em>a-z</em>, <em>0-9</em>, <em>_</em> and <em>-</em>.';
             }
         }
-        $new_url = $this->filterUrl($this->request->getBodyParameter('url'));
-        $new_text = $this->request->getBodyParameter('text');
-        $new_date = $this->filterDate($this->request->getBodyParameter('date'));
+        $new_url = $this->filterUrl($data['url']);
+        $new_text = $data['text'];
+        $new_date = $this->filterDate($data['date']);
         if ($new_date === null) {
             $error_fields[] = 'date';
         } elseif ($new_date === '') {
             $new_date = date('Y-m-d');
         }
-        $new_time = $this->filterTime($this->request->getBodyParameter('time'));
+        $new_time = $this->filterTime($data['time']);
         if ($new_time === null) {
             $error_fields[] = 'time';
         } elseif ($new_time === '') {
@@ -187,10 +223,11 @@ class EntryController extends Controller
             $error_fields[] = 'time';
         }
         // TODO: parse/filter tags
-        $new_tags = array_filter($this->request->getBodyParameter('tags'));
+        $new_tags = array_filter($data['tags']);
 
         if (count($error_fields) > 0) {
-            $this->editformErrorsFound(
+            return $this->editformErrorsFound(
+                $response,
                 array_unique($error_fields),
                 $error_messages,
                 $user_slug,
@@ -199,14 +236,13 @@ class EntryController extends Controller
                 $new_text,
                 $new_datetime
             );
-            return;
         }
 
         $entry = new Entry(null, $new_title, $new_slug, $new_url, $new_text, $new_datetime);
 
-        if (isset($params['slug'])) { // UPDATE existing entry
+        if (isset($args['slug'])) { // UPDATE existing entry
             // TODO catch exception when error during update occurs
-            $success = $this->entry_repository->updateBySlug($params['slug'], $entry);
+            $success = $this->entry_repository->updateBySlug($args['slug'], $entry);
         } else { // NEW entry
             $success = $this->entry_repository->createNewEntry($entry);
         }
@@ -216,8 +252,10 @@ class EntryController extends Controller
 
         $this->entry_repository->updateTagsByEntry($entry, $new_tags);
         if ($success === true) {
-            $this->response->redirect($this->router->generate('edit-entry', ['slug' => $new_slug]));
+            $redirect_to = $this->route_parser->urlFor('edit-entry', ['slug' => $new_slug]);
+            return $response->withHeader('Location', $redirect_to);
         }
+        return $response;
     }
 
     /**
@@ -277,6 +315,7 @@ class EntryController extends Controller
      * @param DateTimeInterface $datetime
      */
     public function editformErrorsFound(
+        ResponseInterface $response,
         array $error_fields,
         array $error_messages,
         ?string $slug,
@@ -284,20 +323,22 @@ class EntryController extends Controller
         ?string $url,
         ?string $text,
         ?DateTimeInterface $datetime
-    ): void {
+    ): Response {
         $data = [];
         $data['slug'] = $slug;
         $data['title'] = $title;
         $data['url'] = $url;
         $data['text'] = $text;
         $data['date'] = $datetime;
+        $data['date_atom_date'] = $datetime->format('Y-m-d');
+        $data['date_atom_time'] = $datetime->format('H:i');
 
         foreach ($error_fields as $field) {
-            $data['error-' . $field] = true;
-            $data['error-message-' . $field] = $error_messages[$field] ?? '';
+            $data['error_' . $field] = true;
+            $data['error_message_' . $field] = $error_messages[$field] ?? '';
         }
 
-        $html = $this->renderer->render('editentry', $data);
-        $this->response->setContent($html);
+        $this->twig->render($response, 'editentry.html', $data);
+        return $response;
     }
 }
