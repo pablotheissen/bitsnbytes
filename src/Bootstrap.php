@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Bitsnbytes;
 
+use Bitsnbytes\Helpers\Configuration;
 use DI\ContainerBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -31,6 +32,9 @@ if(ENVIRONMENT === 'development'){
     register_shutdown_function($shutdown_handler);
 }
 
+// General helper functions that are completely unrelated to Bitsnbytes
+require_once 'Application/helper.php';
+
 // Create Container using PHP-DI
 // TODO: enable compilation: http://php-di.org/doc/performances.html
 $container_builder = new ContainerBuilder();
@@ -40,15 +44,16 @@ $container = $container_builder->build();
 // Set container to create App with on AppFactory
 $app = $container->get(App::class);
 
+// Basic settings
+$config = $container->get(Configuration::class);
+date_default_timezone_set($config->timezone);
+
 // Middleware
 $contentLengthMiddleware = new ContentLengthMiddleware();
 $app->add($contentLengthMiddleware);
 
 // Add Twig-View Middleware
-//https://github.com/odan/slim4-skeleton/blob/7d0ed7c1ad77c54c34eef027e8c62d81380d88a8/config/container.php#L68
-//$app->add(TwigMiddleware::createFromContainer($app));
 $app->add(TwigMiddleware::class);
-
 
 // Define Custom Error Handler
 $customErrorHandler = function (
@@ -79,10 +84,3 @@ $routes = require __DIR__ . '/Application/routes.php';
 $routes($app);
 
 $app->run();
-
-//require_once 'Application/Helper.php';
-//
-///** @var array<mixed> $config */
-//$config = include __DIR__ . '/../config/config.php';
-//date_default_timezone_set($config['timezone']);
-//

@@ -8,7 +8,7 @@ use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
 
 //use Tests\Application\Middleware\DatabaseMiddlewareTesting;
 
-require_once __DIR__ . '/../src/Application/Helper.php';
+require_once __DIR__ . '/../src/Application/helper.php';
 
 class TestCase extends PHPUnit_TestCase
 {
