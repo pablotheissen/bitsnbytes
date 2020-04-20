@@ -32,5 +32,6 @@ class ConfigurationTest extends TestCase
         $this->assertSame('GHIJKL', $config->get('array.nested.level2'));
         $this->assertNull($config->get('unknown'));
         $this->assertSame('MNOPQR', $config->get('unknown', 'MNOPQR'));
+        $this->assertSame(['level2' => 'GHIJKL'], $config->get('array.nested'));
     }
 }

@@ -18,4 +18,4 @@ parameters:
 		    path: src/container.php
 	autoload_files:
 		- config/config.php
-		- src/Application/Helper.php
+		- src/Application/helper.php
