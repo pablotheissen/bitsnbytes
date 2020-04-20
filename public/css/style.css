@@ -395,11 +395,7 @@ article.entry ul.tags {
 }
 
 article.entry ul.tags li {
-  margin: 0 .25rem;
-}
-
-article.entry ul.tags li:first-child {
-  margin-left: 0;
+  margin: 0 .5rem 0 0;
 }
 
 article.entry ul.tags li a, article.entry ul.tags li span {
