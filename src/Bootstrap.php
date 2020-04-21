@@ -20,7 +20,7 @@ require __DIR__ . '/../vendor/autoload.php';
 
 define('ENVIRONMENT', 'development'); // development | production
 
-if(ENVIRONMENT === 'development'){
+if (ENVIRONMENT === 'development') {
     error_reporting(E_ALL);
 
     // Use whoops for displaying fatal errors
@@ -36,9 +36,13 @@ if(ENVIRONMENT === 'development'){
 require_once 'Application/helper.php';
 
 // Create Container using PHP-DI
-// TODO: enable compilation: http://php-di.org/doc/performances.html
 $container_builder = new ContainerBuilder();
 $container_builder->addDefinitions(require 'Application/container.php');
+// TODO find better option to get config data before building container
+if (ENVIRONMENT !== 'development') {
+    $config = require __DIR__ . '/../config/config.php';
+    $container_builder->enableCompilation($config['container_cache']);
+}
 $container = $container_builder->build();
 
 // Set container to create App with on AppFactory
@@ -65,7 +69,7 @@ $customErrorHandler = function (
     ?LoggerInterface $logger = null
 ) use ($app) : ResponseInterface {
     // Todo: add logging: $logger->error($exception->getMessage());
-    if(ENVIRONMENT === 'development'){
+    if (ENVIRONMENT === 'development') {
         $whoops = new Run();
         $whoops->pushHandler(new PrettyPageHandler());
         $html = $whoops->handleException($exception);
@@ -82,5 +86,10 @@ $error_middleware->setDefaultErrorHandler($customErrorHandler);
 // Register routes
 $routes = require __DIR__ . '/Application/routes.php';
 $routes($app);
+// Activate route caching
+if (ENVIRONMENT !== 'development') {
+    $routeCollector = $app->getRouteCollector();
+    $routeCollector->setCacheFile($config->router_cache);
+}
 
 $app->run();

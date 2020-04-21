@@ -4,3 +4,6 @@ vendor/
 phpstan.bat
 config/config.php
 /data/bitsnbytes.use.sqlite
+/tmp/container/CompiledContainer.php
+/tmp/router/router_cache.php
+/tmp/twig/*/*
