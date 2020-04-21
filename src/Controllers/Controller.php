@@ -7,6 +7,7 @@ namespace Bitsnbytes\Controllers;
 
 use DateTime;
 use Erusev\Parsedown\Parsedown;
+use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Interfaces\RouteParserInterface;
 use Slim\Views\Twig;
 use Transliterator;
@@ -157,5 +158,17 @@ abstract class Controller
             return null;
         }
         return $datetime;
+    }
+
+    /**
+     * @param array<mixed> $data
+     * @param Response     $response
+     *
+     * @return Response
+     */
+    protected function returnJsonResponse(array $data, Response $response): Response
+    {
+        $response->getBody()->write(json_encode($data));
+        return $response->withHeader('Content-Type', 'application/json');
     }
 }

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Bitsnbytes\Controllers\EntryController;
+use Bitsnbytes\Controllers\RemoteController;
 use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
@@ -21,4 +22,5 @@ return function (App $app): void {
         }
     );
     $app->get('/tag/{tag}', EntryController::class . ':showByTag');
+    $app->get('/fetch', RemoteController::class . ':fetchTitleAndDescription');
 };
