@@ -63,6 +63,8 @@ class EntryController extends Controller
         $data['entry']['url_edit'] = $this->route_parser->urlFor('edit-entry', ['slug' => $entry->slug]);
         $data['entry']['date_formatted'] = $entry->date->format('d.m.Y'); // TODO: use config date
 
+        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
+
         $this->twig->render($response, 'Entry.html', $data);
         return $response;
     }
@@ -101,6 +103,8 @@ class EntryController extends Controller
 
         $data = ['entries' => $entries, 'heading' => 'Entries tagged as ›' . $tag->title . '‹'];
 
+        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
+
         $this->twig->render($response, 'entrylist.html', $data);
         return $response;
     }
@@ -126,7 +130,11 @@ class EntryController extends Controller
                 $entry['date_formatted'] = $entry['date']->format('d.m.Y'); // TODO: use config date
             }
         );
-        $this->twig->render($response, 'entrylist.html', ['entries' => $entries]);
+        $data['entries'] = $entries;
+
+        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
+
+        $this->twig->render($response, 'entrylist.html', $data);
         return $response;
     }
 
@@ -151,6 +159,8 @@ class EntryController extends Controller
         $data['date_atom_date'] = $entry->date->format('Y-m-d');
         $data['date_atom_time'] = $entry->date->format('H:i');
 
+        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
+
         $this->twig->render($response, 'editentry.html', $data);
         return $response;
     }
@@ -167,7 +177,9 @@ class EntryController extends Controller
      */
     public function newform(Request $request, Response $response, array $args = []): Response
     {
-        $this->twig->render($response, 'editentry.html');
+        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
+
+        $this->twig->render($response, 'editentry.html', $data);
         return $response;
     }
 
@@ -337,6 +349,7 @@ class EntryController extends Controller
             $data['error_' . $field] = true;
             $data['error_message_' . $field] = $error_messages[$field] ?? '';
         }
+        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
         $this->twig->render($response, 'editentry.html', $data);
         return $response;
