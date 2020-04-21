@@ -43,4 +43,25 @@
     <button type="submit">Save</button>
 </form>
 
+<script>
+    document.querySelector('#inpt-url').addEventListener('blur', function(e) {
+        window.fetch('/fetch?url='+this.value, {method: 'get'/*, signal: signal*/}).then(response => {
+            fetchActive = false;
+            if (response.ok)
+                return response.json();
+            else
+                throw new Error('Could load results.'); // TODO handle errors correctly
+        }).then(function (json) {
+            if(document.querySelector('#inpt-title').value === '') {
+                document.querySelector('#inpt-title').value = json['title'];
+            }
+            if(document.querySelector('#inpt-text').innerText === '') {
+                document.querySelector('#inpt-text').innerText = json['description'];
+            }
+        }).catch(function (err) {
+            // catch errors, e.g. when fetch was aborted
+        });
+    });
+</script>
+
 {% include "partials/foot.html" %}
