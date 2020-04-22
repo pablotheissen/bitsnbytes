@@ -40,6 +40,9 @@ class Remote
         }
 
         $dom = $this->parseHTMLToDOMDocument($remote_html_raw);
+        if ($dom === null) {
+            return [$default_title, $default_description];
+        }
 
         $title = $this->findTitleInDom($dom, $default_title);
         $description = $this->findMetaDescriptionInDom($dom, $default_description);
@@ -57,6 +60,9 @@ class Remote
         curl_setopt($curl_handle, CURLOPT_CONNECTTIMEOUT, 2);
         curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, true);
         curl_setopt($curl_handle, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($curl_handle, CURLOPT_SSL_VERIFYHOST, false);
+        curl_setopt($curl_handle, CURLOPT_CONNECTTIMEOUT, 1);
+        curl_setopt($curl_handle, CURLOPT_TIMEOUT, 2);
         $buffer = curl_exec($curl_handle);
         curl_close($curl_handle);
         if (is_bool($buffer)) {
@@ -65,11 +71,19 @@ class Remote
         return $buffer;
     }
 
-    private function parseHTMLToDOMDocument(string $raw_html): DOMDocument
+    private function parseHTMLToDOMDocument(string $raw_html): ?DOMDocument
     {
         $doc = new DOMDocument();
         libxml_use_internal_errors(true);
-        $doc->loadHTML($raw_html);
+        if($raw_html === '') {
+            // DOMDocument::loadHTML can't handle empty string without issuing a PHP Warning
+            return null;
+        }
+        $ret = $doc->loadHTML($raw_html);
+
+        if ($ret === false) {
+            return null;
+        }
 
         return $doc;
     }

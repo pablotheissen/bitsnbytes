@@ -45,7 +45,7 @@
 
 <script>
     document.querySelector('#inpt-url').addEventListener('blur', function(e) {
-        window.fetch('/fetch?url='+this.value, {method: 'get'/*, signal: signal*/}).then(response => {
+        window.fetch('/fetch?url='+encodeURIComponent(this.value), {method: 'get'/*, signal: signal*/}).then(response => {
             fetchActive = false;
             if (response.ok)
                 return response.json();
