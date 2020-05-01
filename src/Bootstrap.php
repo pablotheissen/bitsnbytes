@@ -20,9 +20,18 @@ use Whoops\Run;
 
 require __DIR__ . '/../vendor/autoload.php';
 
-define('ENVIRONMENT', 'development'); // development | production
+// General helper functions that are completely unrelated to Bitsnbytes
+require_once 'Application/helper.php';
 
-if (ENVIRONMENT === 'development') {
+// Create Container using PHP-DI
+$container_builder = new ContainerBuilder();
+
+// Application settings
+$config = new Configuration(require __DIR__ . '/../config/config.php');
+$container_builder->addDefinitions([Configuration::class => $config]);
+
+$container_builder->addDefinitions($config->get('root') . '/src/Application/container.php');
+if ($config->get('environment') === 'development') {
     error_reporting(E_ALL);
 
     // Use whoops for displaying fatal errors
@@ -32,18 +41,9 @@ if (ENVIRONMENT === 'development') {
         $whoops->handleShutdown();
     };
     register_shutdown_function($shutdown_handler);
-}
-
-// General helper functions that are completely unrelated to Bitsnbytes
-require_once 'Application/helper.php';
-
-// Create Container using PHP-DI
-$container_builder = new ContainerBuilder();
-$container_builder->addDefinitions(require 'Application/container.php');
-// TODO find better option to get config data before building container
-if (ENVIRONMENT !== 'development') {
-    $config = require __DIR__ . '/../config/config.php';
-    $container_builder->enableCompilation($config['container_cache']);
+} else {
+    error_reporting(null);
+    $container_builder->enableCompilation($config->get('container_cache'));
 }
 $container = $container_builder->build();
 
@@ -95,7 +95,7 @@ $app->add(TwigMiddleware::class);
 $routes = require __DIR__ . '/Application/routes.php';
 $routes($app);
 // Activate route caching
-if (ENVIRONMENT !== 'development') {
+if ($config->get('environment') !== 'development') {
     $routeCollector = $app->getRouteCollector();
     $routeCollector->setCacheFile($config->router_cache);
 }
@@ -109,15 +109,16 @@ $customErrorHandler = function (
     bool $logErrors,
     bool $logErrorDetails,
     ?LoggerInterface $logger = null
-) use ($app) : ResponseInterface {
+) use ($app, $config) : ResponseInterface {
     $response = $app->getResponseFactory()->createResponse();
     // Todo: add logging: $logger->error($exception->getMessage());
-    if (ENVIRONMENT === 'development') {
+    if ($config->get('environment') === 'development') {
         $whoops = new Run();
         $whoops->pushHandler(new PrettyPageHandler());
         $html = $whoops->handleException($exception);
-        $response = $app->getResponseFactory()->createResponse();
         $response->getBody()->write($html);
+    } else {
+        $response->getBody()->write('');
     }
     return $response;
 };

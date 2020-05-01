@@ -11,10 +11,6 @@ use Slim\Interfaces\RouteParserInterface;
 use Slim\Views\Twig;
 
 return [
-    // Application settings
-    Configuration::class => function () {
-        return new Configuration(require __DIR__ . '/../../config/config.php');
-    },
     App::class => function (ContainerInterface $container): App {
         AppFactory::setContainer($container);
         return AppFactory::create();

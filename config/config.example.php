@@ -6,6 +6,8 @@ $settings = [];
 $settings['root'] = __DIR__ . '/..';
 $settings['temp'] = $settings['root'] . '/tmp';
 
+$settings['environment'] = 'production'; // development | production
+
 $settings['date_formats'] = [
     'short' => 'd.m.Y',
 ];
