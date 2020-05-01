@@ -12,13 +12,7 @@ html {
 }
 
 html {
-  font-size: 14px
-}
-
-@media (min-width: 420px) {
-  html {
-    font-size: 18px
-  }
+  font-size: 18px
 }
 
 
@@ -202,10 +196,51 @@ label {
   margin-bottom: 1.5rem;
 }
 
+.wrapper-collapsible {
+  background-color: var(--neutral-100);
+  border-bottom: 1px solid var(--neutral-400);
+  border-top: 1px solid var(--neutral-400);
+}
 @media (max-width: 600px) {
   .wrapper-input {
     margin-bottom: .5rem;
   }
+  .wrapper-collapsible {
+    margin-left: calc(var(--padding-main) * -1);
+    margin-right: calc(var(--padding-main) * -1);
+    padding: 0 var(--padding-main);
+  }
+}
+.wrapper-collapsible .collapsible-opener:before {
+  content: '\E970'; /* ChevronRightSmall */
+  display: inline-block;
+  font-family: 'Segoe MDL2 Assets';
+  font-size: 12px;
+  font-weight: bold;
+  height: 20px;
+  line-height: 20px;
+  text-align: center;
+  transform: rotate(0deg) translateY(-2px);
+  transition: transform 150ms;
+  vertical-align: middle;
+  width: 20px;
+}
+.wrapper-collapsible.opened .collapsible-opener:before {
+  transform: rotate(90deg) translateX(-2px);
+}
+.collapsible-opener {
+  display: none;
+  color: var(--main-300);
+  font-weight: bold;
+  cursor: pointer;
+  padding: .3rem 0 .4rem;
+}
+.wrapper-collapsible .collapsible-content {
+  display: none;
+  margin: .3rem .5rem 1rem;
+}
+.wrapper-collapsible.opened .collapsible-content {
+  display: block;
 }
 
 .wrapper-datetime {
@@ -312,14 +347,21 @@ body > header .button:hover {
 header h1 {
   color: var(--neutral-100);
 }
-
+@media (max-width: 600px) {
+  header h1 {
+    font-size: 1.5em;
+    margin-top: 0;
+    margin-bottom: .5rem;
+  }
+}
 header h1 a, header h1 a:hover, header h1 a:focus {
   text-decoration: none;
   color: inherit;
 }
 
 main {
-  padding: 1rem;
+  --padding-main: 1rem;
+  padding: var(--padding-main);
 }
 
 main > * {
