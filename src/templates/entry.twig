@@ -1,6 +1,6 @@
 {% include "partials/head.twig" %}
 {% if heading is not empty %}<h2>{{ heading }}</h2>{% endif %}
 
-{{ message | raw }}
+{% include "partials/singleentry.twig" %}
 
 {% include "partials/foot.twig" %}

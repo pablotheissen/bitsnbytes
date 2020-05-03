@@ -65,7 +65,7 @@ class EntryController extends Controller
 
         $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
-        $this->twig->render($response, 'Entry.html', $data);
+        $this->twig->render($response, 'entry.twig', $data);
         return $response;
     }
 
@@ -105,7 +105,7 @@ class EntryController extends Controller
 
         $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
-        $this->twig->render($response, 'entrylist.html', $data);
+        $this->twig->render($response, 'entrylist.twig', $data);
         return $response;
     }
 
@@ -136,7 +136,7 @@ class EntryController extends Controller
 
         $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
-        $this->twig->render($response, 'entrylist.html', $data);
+        $this->twig->render($response, 'entrylist.twig', $data);
         return $response;
     }
 
@@ -163,7 +163,7 @@ class EntryController extends Controller
 
         $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
-        $this->twig->render($response, 'editentry.html', $data);
+        $this->twig->render($response, 'editentry.twig', $data);
         return $response;
     }
 
@@ -182,7 +182,7 @@ class EntryController extends Controller
         $data = [];
         $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
-        $this->twig->render($response, 'editentry.html', $data);
+        $this->twig->render($response, 'editentry.twig', $data);
         return $response;
     }
 
@@ -354,7 +354,7 @@ class EntryController extends Controller
         }
         $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
-        $this->twig->render($response, 'editentry.html', $data);
+        $this->twig->render($response, 'editentry.twig', $data);
         return $response;
     }
 }

@@ -1,6 +1,8 @@
 {% include "partials/head.twig" %}
 {% if heading is not empty %}<h2>{{ heading }}</h2>{% endif %}
 
-{{ message | raw }}
+{% for entry in entries %}
+{% include "partials/singleentry.twig" %}
+{% endfor %}
 
 {% include "partials/foot.twig" %}
