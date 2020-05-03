@@ -54,8 +54,7 @@ class EntryController extends Controller
         try {
             $entry = $this->entry_repository->fetchEntryBySlug($args['slug']);
         } catch (EntryNotFoundException $e) {
-            $response->getBody()->write('404 - Page not found');
-            return $response->withStatus(404);
+            return $this->error404($response);
         }
 
         $data = ['entry' => $entry->toArray()];
@@ -84,8 +83,7 @@ class EntryController extends Controller
         try {
             $tag = $this->tag_repository->fetchTagBySlug($args['tag']);
         } catch (TagNotFoundException $e) {
-            $response->getBody()->write('404 - Page not found');
-            return $response->withStatus(404);
+            return $this->error404($response);
         }
 
         $entries = $this->entry_repository->fetchEntriesByTag($tag, true);
@@ -153,8 +151,7 @@ class EntryController extends Controller
         try {
             $entry = $this->entry_repository->fetchEntryBySlug($args['slug']);
         } catch (EntryNotFoundException $e) {
-            $response->getBody()->write('404 - Page not found');
-            return $response->withStatus(404);
+            return $this->error404($response);
         }
 
         $data = $entry->toArray();
@@ -277,7 +274,6 @@ class EntryController extends Controller
      * @param string $new_title
      *
      * @return string
-     * @throws Exception
      */
     public function createSlugFromTitle(string $new_title): string
     {
@@ -321,6 +317,7 @@ class EntryController extends Controller
     }
 
     /**
+     * @param Response          $response
      * @param array<string>     $error_fields
      * @param array<string>     $error_messages
      * @param string|null       $slug
@@ -328,6 +325,11 @@ class EntryController extends Controller
      * @param string|null       $url
      * @param string|null       $text
      * @param DateTimeInterface $datetime
+     *
+     * @return Response
+     * @throws LoaderError
+     * @throws RuntimeError
+     * @throws SyntaxError
      */
     public function editformErrorsFound(
         ResponseInterface $response,
