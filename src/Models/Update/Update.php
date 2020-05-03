@@ -22,8 +22,10 @@ class Update extends Model
 
     /**
      * Delete all files and folders in tmp dir except for folders containing a file called <i>empty</i>.
+     *
+     * @return string[] List of deleted files
      */
-    public function cleanupTmpFolder():array
+    public function cleanupTmpFolder(): array
     {
         return $this->deleteFilesInFolder($this->config->get('temp') . '');
     }
@@ -38,7 +40,8 @@ class Update extends Model
     private function deleteFilesInFolder(string $path): array
     {
         $deleted_files = [];
-        if ($handle = opendir($path)) {
+        $handle = opendir($path);
+        if ($handle !== false) {
             while (false !== ($entry = readdir($handle))) {
                 if ($entry != "." && $entry != "..") {
                     $filepath = $path . '/' . $entry;
@@ -48,18 +51,25 @@ class Update extends Model
                         // Only delete folder if it is empty; scandir contains elements '.' and '..' if not empty.
                         // We can't check for the existence of the file empty as the empty-file may be within a
                         // subfolder, not directly und $filepath
-                        if (count(scandir($filepath)) === 2) {
-                            $deleted_files[] = realpath($filepath);
-                            rmdir($filepath);
+                        $file_in_path = scandir($filepath);
+                        if ($file_in_path !== false && count($file_in_path) === 2) {
+                            $canonical_path = realpath($filepath);
+                            if ($canonical_path !== false) {
+                                $deleted_files[] = $canonical_path;
+                                rmdir($canonical_path);
+                            }
                         }
                     } elseif (is_file($filepath) && $entry !== 'empty') {
-                        $deleted_files[] = realpath($filepath);
-                        unlink($filepath);
+                        $canonical_path = realpath($filepath);
+                        if ($canonical_path !== false) {
+                            $deleted_files[] = $canonical_path;
+                            unlink($canonical_path);
+                        }
                     }
                 }
             }
+            closedir($handle);
         }
-        closedir($handle);
 
         return $deleted_files;
     }

@@ -26,12 +26,22 @@ final class Configuration
     /** @var array<mixed> $data */
     private array $data;
 
+    /**
+     * Configuration constructor.
+     *
+     * @param mixed $data
+     */
     public function __construct($data)
     {
         $this->data = $data;
     }
 
-    public function __get($name)
+    /**
+     * @param string $name
+     *
+     * @return array|mixed|null
+     */
+    public function __get(string $name)
     {
         return $this->get($name);
     }

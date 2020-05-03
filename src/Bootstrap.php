@@ -42,7 +42,7 @@ if ($config->get('environment') === 'development') {
     };
     register_shutdown_function($shutdown_handler);
 } else {
-    error_reporting(null);
+    error_reporting(0);
     $container_builder->enableCompilation($config->get('container_cache'));
 }
 $container = $container_builder->build();

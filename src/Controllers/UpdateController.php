@@ -31,8 +31,11 @@ class UpdateController extends Controller
         $content .= "Deleted files:\n";
         $deleted_files = $this->update->cleanupTmpFolder();
         foreach ($deleted_files as $filename) {
-            $a = strpos($filename, 'tmp');
-            $content .= "- " . substr($filename, $a) . "\n";
+            $truncate_path = strpos($filename, 'tmp');
+            if($truncate_path === false) {
+                $truncate_path = 0;
+            }
+            $content .= "- " . substr($filename, $truncate_path) . "\n";
         }
 
         $html = $this->parsedown->toHtml($content);

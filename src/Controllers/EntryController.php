@@ -118,6 +118,8 @@ class EntryController extends Controller
      */
     public function showLatest(Request $request, Response $response, array $args = []): Response
     {
+        $data = [];
+
         $entries = $this->entry_repository->fetchLatestEntries(true);
         array_walk(
             $entries,
@@ -177,6 +179,7 @@ class EntryController extends Controller
      */
     public function newform(Request $request, Response $response, array $args = []): Response
     {
+        $data = [];
         $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
         $this->twig->render($response, 'editentry.html', $data);

@@ -1,21 +1,5 @@
 parameters:
 	ignoreErrors:
-		-
-		    message: '#Else branch is unreachable because previous condition is always true.#'
-		    count: 1
-		    path: src/Bootstrap.php
-		-
-		    message: "#Strict comparison using !== between '[a-z]+' and '[a-z]+' will always evaluate to true.#"
-		    count: 1
-		    path: src/Bootstrap.php
-		-
-		    message: '#Variable method call on mixed.#'
-		    count: 1
-		    path: src/Bootstrap.php
-		-
-		    message: '#Undefined variable: \$config#'
-		    count: 4
-		    path: src/container.php
 	autoload_files:
 		- config/config.php
 		- src/Application/helper.php

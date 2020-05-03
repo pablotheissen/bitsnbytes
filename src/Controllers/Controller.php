@@ -168,7 +168,11 @@ abstract class Controller
      */
     protected function returnJsonResponse(array $data, Response $response): Response
     {
-        $response->getBody()->write(json_encode($data));
+        $json_data = json_encode($data);
+        if ($json_data === false) {
+            return $response;
+        }
+        $response->getBody()->write($json_data);
         return $response->withHeader('Content-Type', 'application/json');
     }
 }
