@@ -18,4 +18,8 @@
     {% if url_newentry is not empty %}<a href="{{ url_newentry }}" class="button">New Entry</a>{% endif %}
 </header>
 <main>
-<!-- TODO: build template inheritance: https://twig.symfony.com/doc/3.x/templates.html#template-inheritance -->
+{% block content %}{% endblock %}
+</main>
+
+</body>
+</html>

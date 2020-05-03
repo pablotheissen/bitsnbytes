@@ -1,6 +1,9 @@
-{% include "partials/head.twig" %}
+{% extends "base.twig" %}
+
+{% block content %}
+
 {% if heading is not empty %}<h2>{{ heading }}</h2>{% endif %}
 
 {{ message | raw }}
 
-{% include "partials/foot.twig" %}
+{% endblock %}

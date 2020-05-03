@@ -1,8 +1,9 @@
-{% include "partials/head.twig" %}
-{% if heading is not empty %}<h2>{{ heading }}</h2>{% endif %}
+{% extends "base.twig" %}
 
-{% for entry in entries %}
-{% include "partials/singleentry.twig" %}
-{% endfor %}
+{% block content %}
+    {% if heading is not empty %}<h2>{{ heading }}</h2>{% endif %}
 
-{% include "partials/foot.twig" %}
+    {% for entry in entries %}
+        {% include "partials/singleentry.twig" %}
+    {% endfor %}
+{% endblock %}

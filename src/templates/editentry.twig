@@ -1,4 +1,6 @@
-{% include "partials/head.twig" %}
+{% extends "base.twig" %}
+
+{% block content %}
 <form action="" method="POST" class="edit-entry">
     <div class="wrapper-input wrapper-url{% if error_url is not empty %} error{% endif %}">
         <label for="inpt-url">URL</label>
@@ -319,4 +321,4 @@
 
 </script>
 
-{% include "partials/foot.twig" %}
+{% endblock %}
