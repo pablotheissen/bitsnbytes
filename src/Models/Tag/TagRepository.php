@@ -213,4 +213,51 @@ class TagRepository extends Model
         }
         return $tags;
     }
+
+    /**
+     * <p>Find all tags that contain the query string in the title. Returns tags starting with the search string first,
+     * sorted alphabetically as the second sort operation.
+     * <p>Limited to 10 results.
+     *
+     * @param string $query
+     *
+     * @return Tag[]
+     */
+    public function findTagsBySearchString(string $query): array
+    {
+        $tags_starting_with = $this->findTagsLike($query . '%');
+        $tags_middle = $this->findTagsLike('%' . $query . '%');
+        $search_results = array_unique(array_merge($tags_starting_with, $tags_middle));
+        return array_slice($search_results, 0, 10); // TODO: don't hardcode limit
+    }
+
+    /**
+     * @param string $query
+     *
+     * @return Tag[]
+     */
+    private function findTagsLike(string $query): array
+    {
+        $this->pdo->exec('PRAGMA case_sensitive_like = false;');
+        // TODO: not working for non-ascii characters. Maybe add column title_lower for case-insens. searches
+        $stmt = $this->pdo->prepare(
+            'SELECT
+                tid, slug, title
+            FROM tags
+            WHERE title
+            LIKE :title
+            ORDER BY title ASC
+            LIMIT 10'
+        ); // TODO: don't hardcode limit
+        $stmt->bindParam(':title', $query, PDO::PARAM_STR);
+        $stmt->execute();
+
+        /** @var Tag[] $search_results */
+        $search_results = [];
+        while ($rslt = $stmt->fetch(PDO::FETCH_ASSOC)) {
+            $search_results[] = $this->convertAssocToTag($rslt);
+        }
+
+        return $search_results;
+    }
 }

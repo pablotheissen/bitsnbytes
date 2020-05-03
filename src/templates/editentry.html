@@ -1,5 +1,5 @@
 {% include "partials/head.html" %}
-<form action="" method="POST">
+<form action="" method="POST" class="edit-entry">
     <div class="wrapper-input wrapper-url{% if error_url is not empty %} error{% endif %}">
         <label for="inpt-url">URL</label>
         <input id="inpt-url" type="url" name="url" value="{{ url }}" placeholder="https://example.org">
@@ -13,15 +13,30 @@
         <label for="inpt-text">Content</label>
         <textarea id="inpt-text" name="text" rows="5" placeholder="">{{ text }}</textarea>
     </div>
-    <div class="wrapper-input wrapper-tags">
+    <div class="wrapper-input wrapper-tags wrapper-autocomplete">
         <label>Tags</label>
         <ul>
             {% for tag in tags %}
-            <li><input name="tags[]" type="text" class="inpt-tag" value="{{ tag.title }}"></li>
+            <li class="li-tag">
+                <input name="tags[]" type="text" class="inpt-tag" autocomplete="off" value="{{ tag.title }}">
+                <ul class="autocomplete">
+                    <li>Loading results...</li>
+                </ul>
+            </li>
             {% endfor %}
-            <li><input name="tags[]" type="text" class="inpt-tag" value=""></li>
+            <li class="li-tag">
+                <input name="tags[]" type="text" class="inpt-tag" autocomplete="off" value="">
+                <ul class="autocomplete">
+                    <li>Loading results...</li>
+                </ul>
+            </li>
             {% if tags is empty %}
-            <li><input name="tags[]" type="text" class="inpt-tag" value=""></li>
+            <li class="li-tag">
+                <input name="tags[]" type="text" class="inpt-tag" autocomplete="off" value="">
+                <ul class="autocomplete">
+                    <li>Loading results...</li>
+                </ul>
+            </li>
             {% endif %}
         </ul>
     </div>
@@ -29,9 +44,10 @@
         <span class="collapsible-opener">Metadata</span>
         <div class="collapsible-content">
             <div class="wrapper-input wrapper-slug{% if error_slug is not empty %} error{% endif %}">
-                <label for="inpt-slug">Slug</label>{% if  error_message_slug is not empty %}
+                <label for="inpt-slug">Slug</label>{% if error_message_slug is not empty %}
                 <span class="error-message error-message-slug">{{ error_message_slug | raw }}</span>{% endif %}
-                <input id="inpt-slug" type="text" name="slug" value="{{ slug }}" placeholder="slug" pattern="[a-z0-9-_]*">
+                <input id="inpt-slug" type="text" name="slug" value="{{ slug }}" placeholder="slug"
+                       pattern="[a-z0-9-_]*">
             </div>
             <div class="wrapper-input wrapper-datetime{% if error_datetime is not empty %} error{% endif %}">
                 <div class="wrapper-input-inner wrapper-date{% if error_date is not empty %} error{% endif %}">
@@ -49,18 +65,18 @@
 </form>
 
 <script>
-    document.querySelector('#inpt-url').addEventListener('blur', function(e) {
-        window.fetch('/fetch?url='+encodeURIComponent(this.value), {method: 'get'/*, signal: signal*/}).then(response => {
+    document.querySelector('#inpt-url').addEventListener('blur', function (e) {
+        window.fetch('/fetch?url=' + encodeURIComponent(this.value), {method: 'get'/*, signal: signal*/}).then(response => {
             fetchActive = false;
             if (response.ok)
                 return response.json();
             else
                 throw new Error('Could load results.'); // TODO handle errors correctly
         }).then(function (json) {
-            if(document.querySelector('#inpt-title').value === '') {
+            if (document.querySelector('#inpt-title').value === '') {
                 document.querySelector('#inpt-title').value = json['title'];
             }
-            if(document.querySelector('#inpt-text').innerText === '') {
+            if (document.querySelector('#inpt-text').innerText === '') {
                 document.querySelector('#inpt-text').innerText = json['description'];
             }
         }).catch(function (err) {
@@ -72,6 +88,235 @@
     document.querySelector('.collapsible-opener').addEventListener('click', function (e) {
         this.parentNode.classList.toggle('opened');
     })
+
+
+    initTagLiveSearch = function () {
+        let inptFields = document.querySelectorAll('.wrapper-tags li.li-tag');
+        inptFields.forEach(function (element) {
+            initAutocomplete(
+                element,
+                '/search/tag?q=%s');
+        });
+    };
+
+    closeAutocompleteList = function (inputElement, autocompleteListElement) {
+        inputElement.classList.remove('autocomplete-open');
+        clearAutocompleteList(autocompleteListElement);
+    };
+    closeAllAutocompleteLists = function (exceptForInputElement = null) {
+        autocompleteWrappers.forEach(function (wrappingElement) {
+            if (exceptForInputElement !== null) {
+                if (wrappingElement.querySelector('input') === exceptForInputElement) {
+                    return;
+                }
+            }
+            closeAutocompleteList(wrappingElement.querySelector('input'), wrappingElement.querySelector('ul.autocomplete'))
+        });
+    };
+    openAutocompleteList = function (inputElement, autocompleteListElement) {
+        inputElement.classList.add('autocomplete-open');
+    };
+    clearAutocompleteList = function (autocompleteListElement) {
+        autocompleteListElement.innerHTML = "";
+    };
+
+    let autocompleteWrappers = [];
+    // TODO: split into multiple functions, generalize for other fields
+    initAutocomplete = function (wrappingElement, searchUrl, searchUrlEmpty) {
+        autocompleteWrappers.push(wrappingElement);
+        let inputElement = wrappingElement.querySelector('input');
+        let autocompleteListElement = wrappingElement.querySelector('ul.autocomplete');
+
+        let selectedChild = -1;
+
+        inputElement.addEventListener('focus', function () {
+            closeAllAutocompleteLists(inputElement);
+            if (!inputElement.classList.contains('autocomplete-open')) {
+                openAutocompleteList(inputElement, autocompleteListElement);
+            }
+        });
+        inputElement.addEventListener('blur', function () {
+            //closeAutocompleteList(inputElement, autocompleteListElement);
+        });
+        inputElement.addEventListener('keydown', function (e) {
+            switch (e.key) {
+                case 'ArrowDown':
+                    if (!inputElement.classList.contains('autocomplete-open')) {
+                        openAutocompleteList(inputElement, autocompleteListElement);
+                        loadResults();
+                    } else {
+                        if (selectedChild >= 0 && selectedChild < (autocompleteListElement.childNodes.length - 1)) {
+                            autocompleteListElement.childNodes[selectedChild].classList.remove('selected');
+                        }
+                        if (selectedChild < autocompleteListElement.childNodes.length - 1) {
+                            selectedChild++;
+                            autocompleteListElement.childNodes[selectedChild].classList.add('selected');
+                        }
+                    }
+                    break;
+                case 'ArrowUp':
+                    if (!inputElement.classList.contains('autocomplete-open')) {
+                        openAutocompleteList(inputElement, autocompleteListElement);
+                        loadResults();
+                    } else {
+                        if (selectedChild > 0 && selectedChild <= autocompleteListElement.childNodes.length - 1) {
+                            autocompleteListElement.childNodes[selectedChild].classList.remove('selected');
+                        }
+                        if (selectedChild > 0) {
+                            selectedChild--;
+                            autocompleteListElement.childNodes[selectedChild].classList.add('selected');
+                        }
+                    }
+                    break;
+                case 'Enter':
+                case 'Tab':
+                    if (selectedChild > -1) {
+                        e.preventDefault();
+                        inputElement.value = autocompleteListElement.childNodes[selectedChild].innerText;
+                        selectedChild = -1;
+                        closeAutocompleteList(inputElement, autocompleteListElement);
+                    } else if (selectedChild === -1 && inputElement.classList.contains('autocomplete-open')) {
+                        e.preventDefault();
+                        closeAutocompleteList(inputElement, autocompleteListElement);
+                    }
+                    break;
+                case 'Escape':
+                    closeAllAutocompleteLists();
+                    break;
+                default:
+                    if (!inputElement.classList.contains('autocomplete-open')) {
+                        openAutocompleteList(inputElement, autocompleteListElement);
+                        loadResults();
+                    }
+                    break;
+            }
+        });
+        inputElement.addEventListener('keyup', function (e) {
+            switch (e.key) {
+                case 'ArrowDown':
+                case 'ArrowUp':
+                    break;
+                case 'Tab':
+                    loadResults();
+                    break;
+                case 'Enter':
+                case 'Escape':
+                    break;
+                default:
+                    loadResults();
+                    break;
+            }
+        });
+        document.addEventListener('click', function (ev) {
+            if (wrappingElement.contains(ev.target) === false) {
+                closeAutocompleteList(inputElement, autocompleteListElement);
+            }
+        });
+
+        let controller = new AbortController();
+        let signal = controller.signal;
+        let fetchActive = false;
+
+        let loadResults = function () {
+            selectedChild = -1;
+            if (fetchActive === true) {
+                // if another request is currently running, cancel it
+                fetchActive = false;
+                controller.abort();
+                controller = new AbortController();
+                signal = controller.signal;
+            }
+
+            // Display "loading..." while autocomplete list is empty and new results are loading
+            if (autocompleteListElement.childNodes.length === 0) {
+                let autocompleteEl = document.createElement('li');
+                let loadingNode = document.createTextNode("loading…");
+                autocompleteEl.appendChild(loadingNode);
+                autocompleteListElement.appendChild(autocompleteEl);
+            }
+
+            let needle = inputElement.value.toLowerCase();
+            fetchActive = true;
+
+            let searchUrlTmp = searchUrl;
+            searchUrlTmp = searchUrlTmp.replace('%s', encodeURI(needle));
+
+            window.fetch(searchUrlTmp, {method: 'get', signal: signal})
+                .then(response => {
+                    fetchActive = false;
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        throw new Error('Could load results.'); // TODO handle errors correctly
+                    }
+                })
+                .then(results => {
+                    autocompleteListElement.innerHTML = results;
+
+                    let counter = 0;
+                    if (results.length === 0) {
+                        closeAllAutocompleteLists();
+                        controller.abort();
+                    }
+
+                    autocompleteListElement.childNodes.forEach(function (element) {
+                        element.addEventListener('click', function () {
+                            inputElement.value = element.innerText;
+                            inputElement.focus();
+                            closeAutocompleteList(inputElement, autocompleteListElement);
+                        });
+                    });
+                })
+                .catch(function (err) {
+                    // catch errors, e.g. when fetch was aborted
+                });
+        };
+
+        inputElement.addEventListener('click', loadResults);
+
+    };
+
+
+    function $(selector) {
+        return document.querySelector(selector);
+    }
+
+    function $$(selector) {
+        return document.querySelectorAll(selector);
+    }
+
+
+    function DOMready(fn) {
+        if (document.readyState != 'loading') {
+            fn();
+        } else {
+            document.addEventListener('DOMContentLoaded', fn);
+        }
+    }
+
+    DOMready(function () {
+        // function to run on form for editing/adding entries
+        if (document.body.contains(document.querySelector('form.edit-entry'))) {
+            // initAddTaskButton();
+            // initCustomerLiveSearch();
+            // initProjectLiveSearch();
+            initTagLiveSearch();
+            // initEqualizeStartAndEndDate();
+            // initTimeParse();
+        }
+        if (document.body.contains(document.querySelector('form.quickentry'))) {
+            // initCustomerLiveSearch();
+            // initAddTaskButton();
+            // initProjectLiveSearch();
+            // initTaskLiveSearch();
+            // initTimeParse();
+        }
+        if (document.body.contains(document.querySelector('nav#secondary'))) {
+            // initCollapseSubMenu();
+        }
+        // initCollapsible();
+    });
+
 </script>
 
 {% include "partials/foot.html" %}

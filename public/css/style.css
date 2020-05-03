@@ -201,16 +201,19 @@ label {
   border-bottom: 1px solid var(--neutral-400);
   border-top: 1px solid var(--neutral-400);
 }
+
 @media (max-width: 600px) {
   .wrapper-input {
     margin-bottom: .5rem;
   }
+
   .wrapper-collapsible {
     margin-left: calc(var(--padding-main) * -1);
     margin-right: calc(var(--padding-main) * -1);
     padding: 0 var(--padding-main);
   }
 }
+
 .wrapper-collapsible .collapsible-opener:before {
   content: '\E970'; /* ChevronRightSmall */
   display: inline-block;
@@ -225,9 +228,11 @@ label {
   vertical-align: middle;
   width: 20px;
 }
+
 .wrapper-collapsible.opened .collapsible-opener:before {
   transform: rotate(90deg) translateX(-2px);
 }
+
 .collapsible-opener {
   display: none;
   color: var(--main-300);
@@ -235,10 +240,12 @@ label {
   cursor: pointer;
   padding: .3rem 0 .4rem;
 }
+
 .wrapper-collapsible .collapsible-content {
   display: none;
   margin: .3rem .5rem 1rem;
 }
+
 .wrapper-collapsible.opened .collapsible-content {
   display: block;
 }
@@ -254,6 +261,58 @@ label {
 
 .wrapper-datetime .wrapper-input-inner:last-child {
   margin-right: 0;
+}
+
+.wrapper-autocomplete {
+  position: relative;
+}
+
+input[type=text].autocomplete-open, input[type=text].autocomplete-open:focus {
+  border-bottom-color: var(--neutral-200);
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  outline: 0 !important;
+  border-color: var(--neutral-500);
+  background-color: #FFFFFF;
+}
+
+ul.autocomplete {
+  position: absolute;
+  z-index: 99;
+  display: none;
+  width: 100%;
+  background-color: white;
+  border-bottom-left-radius: var(--border-radius-input);
+  border-bottom-right-radius: var(--border-radius-input);
+  border-top: 0;
+}
+
+input.autocomplete-open + ul.autocomplete {
+  display: block;
+}
+
+ul.autocomplete li {
+  width: 100%;
+  display: block;
+  padding: .5rem;
+  cursor: pointer;
+  transition: background-color 30ms;
+  border-left: 1px solid var(--neutral-500);
+  border-right: 1px solid var(--neutral-500);
+}
+
+ul.autocomplete li:hover {
+  background-color: var(--neutral-100);
+}
+
+ul.autocomplete li.selected {
+  background-color: var(--neutral-200);
+}
+
+ul.autocomplete li:last-child {
+  border-bottom-left-radius: var(--border-radius-input);
+  border-bottom-right-radius: var(--border-radius-input);
+  border-bottom: 1px solid var(--neutral-500);
 }
 
 /* Tags */
@@ -347,6 +406,7 @@ body > header .button:hover {
 header h1 {
   color: var(--neutral-100);
 }
+
 @media (max-width: 600px) {
   header h1 {
     font-size: 1.5em;
@@ -354,6 +414,7 @@ header h1 {
     margin-bottom: .5rem;
   }
 }
+
 header h1 a, header h1 a:hover, header h1 a:focus {
   text-decoration: none;
   color: inherit;
@@ -494,7 +555,7 @@ p > code {
 
 kbd, pre, samp, code {
   -moz-osx-font-smoothing: auto;
-  -webkit-font-smoothing: auto;
+  -webkit-font-smoothing: subpixel-antialiased;
   font-family: "Fira Code", "Consolas", Liberation Mono, Menlo, Courier, monospace !important;
   line-height: 19px;
 }
