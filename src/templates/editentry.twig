@@ -275,18 +275,18 @@
         };
 
         inputElement.addEventListener('click', loadResults);
-
     };
 
-
-    function $(selector) {
-        return document.querySelector(selector);
+    let initAddTagInputFields = function() {
+        document.querySelector('.wrapper-tags li.li-tag:last-of-type input').addEventListener('keydown', function(event) {
+            if(document.querySelector('.wrapper-tags li.li-tag:last-of-type input').value !== "") {
+                let copy = document.querySelector('.wrapper-tags li.li-tag:first-of-type').cloneNode(true);
+                copy.querySelector('input').value='';
+                document.querySelector('.wrapper-tags > ul').appendChild(copy);
+                initAddTagInputFields();
+            }
+        }, false);
     }
-
-    function $$(selector) {
-        return document.querySelectorAll(selector);
-    }
-
 
     function DOMready(fn) {
         if (document.readyState != 'loading') {
@@ -299,24 +299,9 @@
     DOMready(function () {
         // function to run on form for editing/adding entries
         if (document.body.contains(document.querySelector('form.edit-entry'))) {
-            // initAddTaskButton();
-            // initCustomerLiveSearch();
-            // initProjectLiveSearch();
             initTagLiveSearch();
-            // initEqualizeStartAndEndDate();
-            // initTimeParse();
+            initAddTagInputFields();
         }
-        if (document.body.contains(document.querySelector('form.quickentry'))) {
-            // initCustomerLiveSearch();
-            // initAddTaskButton();
-            // initProjectLiveSearch();
-            // initTaskLiveSearch();
-            // initTimeParse();
-        }
-        if (document.body.contains(document.querySelector('nav#secondary'))) {
-            // initCollapseSubMenu();
-        }
-        // initCollapsible();
     });
 
 </script>
