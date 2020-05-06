@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Bitsnbytes\Controllers\EntryController;
 use Bitsnbytes\Controllers\ErrorController;
 use Bitsnbytes\Controllers\RemoteController;
+use Bitsnbytes\Controllers\SearchController;
 use Bitsnbytes\Controllers\TagController;
 use Bitsnbytes\Controllers\UpdateController;
 use Slim\App;
@@ -25,6 +26,7 @@ return function (App $app): void {
         }
     );
     $app->get('/tag/{tag}', EntryController::class . ':showByTag');
+    $app->get('/search', SearchController::class . ':search')->setName('search');
     $app->get('/search/tag', TagController::class . ':searchTag');
     $app->get('/fetch', RemoteController::class . ':fetchTitleAndDescription');
     $app->get('/update', UpdateController::class . ':update');

@@ -225,31 +225,61 @@ class TagRepository extends Model
      */
     public function findTagsBySearchString(string $query): array
     {
+        $query = trim($query);
+
+        // search for entire query
         $tags_starting_with = $this->findTagsLike($query . '%');
         $tags_middle = $this->findTagsLike('%' . $query . '%');
         $search_results = array_unique(array_merge($tags_starting_with, $tags_middle));
+
+        // if query consists of multiple words, split them and search independently
+        if (strpos($query, ' ') !== false) {
+            $query_strings = explode(' ', trim($query));
+            array_walk(
+                $query_strings,
+                function (&$value) {
+                    $value = '%' . $value . '%';
+                }
+            );
+
+            $tags_fuzzy = $this->findTagsLike($query_strings);
+            $search_results = array_unique(array_merge($search_results, $tags_fuzzy));
+        }
         return array_slice($search_results, 0, 10); // TODO: don't hardcode limit
     }
 
     /**
-     * @param string $query
+     * @param string[]|string $query
      *
      * @return Tag[]
      */
-    private function findTagsLike(string $query): array
+    private function findTagsLike($query): array
     {
+        if (is_string($query)) {
+            $query = [$query];
+        }
+
         $this->pdo->exec('PRAGMA case_sensitive_like = false;');
         // TODO: not working for non-ascii characters. Maybe add column title_lower for case-insens. searches
-        $stmt = $this->pdo->prepare(
-            'SELECT
+        $sql = 'SELECT
                 tid, slug, title
             FROM tags
-            WHERE title
-            LIKE :title
+            WHERE ';
+        $where = [];
+        for ($i = 0; $i < count($query); $i++) {
+            $where[] = 'title LIKE :title' . $i;
+        }
+        $sql .= implode(' OR ', $where);
+        $sql .= '
             ORDER BY title ASC
-            LIMIT 10'
-        ); // TODO: don't hardcode limit
-        $stmt->bindParam(':title', $query, PDO::PARAM_STR);
+            LIMIT 10';
+        // TODO: don't hardcode limit
+
+        $stmt = $this->pdo->prepare($sql);
+        $i = 0;
+        foreach ($query as &$q) {
+            $stmt->bindParam(':title' . $i++, $q, PDO::PARAM_STR);
+        }
         $stmt->execute();
 
         /** @var Tag[] $search_results */

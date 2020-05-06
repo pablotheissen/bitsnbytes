@@ -77,7 +77,7 @@ class EntryController extends Controller
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
-     */
+ */
     public function showByTag(Request $request, Response $response, array $args = []): Response
     {
         try {
