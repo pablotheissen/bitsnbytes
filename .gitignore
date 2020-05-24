@@ -7,3 +7,4 @@ config/config.php
 /tmp/container/CompiledContainer.php
 /tmp/router/router_cache.php
 /tmp/twig/*/*
+/composer.phar
