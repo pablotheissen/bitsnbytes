@@ -490,11 +490,16 @@ article.entry > p {
   padding-bottom: .25rem;
 }
 
+article.entry > ol, article.entry > ul {
+  padding-left: 1.5rem;
+}
+
 article.entry ul.tags {
   list-style: none;
   display: flex;
   flex-flow: row wrap;
   line-height: 2rem;
+  padding-left: 0;
 }
 
 article.entry ul.tags li {
@@ -549,11 +554,13 @@ pre > code {
 
 p > code {
   background-color: var(--neutral-100);
-  padding: .15rem .35rem;
+  border: 1px solid var(--neutral-300);
+  padding: 0 .35rem;
   font-size: .875rem;
+  line-height: 1.7;
 }
 
-kbd, pre, samp, code {
+kbd, pre, samp, code, kbd *, pre *, samp *, code * {
   -moz-osx-font-smoothing: auto;
   -webkit-font-smoothing: subpixel-antialiased;
   font-family: "Fira Code", "Consolas", Liberation Mono, Menlo, Courier, monospace !important;
