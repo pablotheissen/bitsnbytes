@@ -60,7 +60,11 @@ class EntryController extends Controller
         $data = ['entry' => $entry->toArray()];
         $data['entry']['text'] = $this->parsedown->toHtml($entry->text ?? '');
         $data['entry']['url_edit'] = $this->route_parser->urlFor('edit-entry', ['slug' => $entry->slug]);
-        $data['entry']['date_formatted'] = $entry->date->format('d.m.Y'); // TODO: use config date
+        if ($entry->date === null) {
+            $data['entry']['date_formatted'] = 'Date error';
+        } else {
+            $data['entry']['date_formatted'] = $entry->date->format('d.m.Y'); // TODO: use config date
+        }
 
         $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
@@ -155,8 +159,13 @@ class EntryController extends Controller
         }
 
         $data = $entry->toArray();
-        $data['date_atom_date'] = $entry->date->format('Y-m-d');
-        $data['date_atom_time'] = $entry->date->format('H:i');
+        if ($entry->date === null) {
+            $data['date_atom_date'] = null;
+            $data['date_atom_time'] = null;
+        } else {
+            $data['date_atom_date'] = $entry->date->format('Y-m-d');
+            $data['date_atom_time'] = $entry->date->format('H:i');
+        }
 
         $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
@@ -347,8 +356,13 @@ class EntryController extends Controller
         $data['url'] = $url;
         $data['text'] = $text;
         $data['date'] = $datetime;
-        $data['date_atom_date'] = $datetime->format('Y-m-d');
-        $data['date_atom_time'] = $datetime->format('H:i');
+        if ($datetime === null) {
+            $data['date_atom_date'] = null;
+            $data['date_atom_time'] = null;
+        } else {
+            $data['date_atom_date'] = $datetime->format('Y-m-d');
+            $data['date_atom_time'] = $datetime->format('H:i');
+        }
 
         foreach ($error_fields as $field) {
             $data['error_' . $field] = true;

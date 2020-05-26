@@ -9,7 +9,6 @@ use DateTime;
 use Erusev\Parsedown\Parsedown;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouteParserInterface;
 use Slim\Views\Twig;
@@ -164,12 +163,12 @@ abstract class Controller
     }
 
     /**
-     * @param array<mixed> $data
-     * @param Response     $response
+     * @param array<mixed>      $data
+     * @param ResponseInterface $response
      *
-     * @return Response
+     * @return ResponseInterface
      */
-    protected function returnJsonResponse(array $data, Response $response): Response
+    protected function returnJsonResponse(array $data, ResponseInterface $response): ResponseInterface
     {
         $json_data = json_encode($data);
         if ($json_data === false) {
@@ -180,8 +179,7 @@ abstract class Controller
     }
 
     /**
-     * @param ServerRequestInterface $request
-     * @param ResponseInterface      $response
+     * @param ResponseInterface $response
      *
      * @return ResponseInterface
      */
@@ -209,7 +207,9 @@ abstract class Controller
             $this->twig->render($response, 'error.twig', $data);
         } catch (Exception $exception) {
             $response = new \Slim\Psr7\Response();
-            $response->getBody()->write("There was an internal error while building this page. Please inform the site admin.");
+            $response->getBody()->write(
+                "There was an internal error while building this page. Please inform the site admin."
+            );
             $code = 500; // Internal Server Error
             // TODO Log error
         }
