@@ -24,9 +24,10 @@
 <body>
 <header>
     <h1><a href="/">Bits’n’Bytes</a></h1>
-    <form action="{{ url_for('search') }}">
+    <form action="{{ url_for('search') }}" role="search" class="search">
         <div class="wrapper-input">
             <input type="search" name="q" value="{{ search_query }}">
+            <button type="submit">&#xE721;</button>
         </div>
     </form>
     {% if url_newentry is not empty %}<a href="{{ url_newentry }}" class="button">New Entry</a>{% endif %}
