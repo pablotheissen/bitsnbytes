@@ -325,4 +325,131 @@ class EntryRepository extends Model
         $entry->tags = [];
         return $entry;
     }
+
+    /**
+     * @param Tag[] $tags
+     * @param bool  $or_disjunction
+     * @param bool  $return_as_array
+     *
+     * @return array<Entry|mixed>
+     * @throws Exception
+     */
+    public function fetchEntriesByTags(array $tags, bool $or_disjunction = false, bool $return_as_array = false): array
+    {
+        if (count($tags) === 0) {
+            // return empty array if there aren't any tags to look for
+            return [];
+        }
+        $sql = 'SELECT entries.eid, title, slug, url, text, date
+            FROM entries
+            LEFT JOIN entry_tag et on entries.eid = et.eid
+            WHERE ';
+        $where = [];
+        $tag_ids = [];
+        $i = 0;
+        foreach ($tags as $tag) {
+            $where[] = 'et.tid = :tid' . strval($i);
+            $tag_ids[':tid' . strval($i)] = $tag->tid;
+            $i++;
+        }
+        if ($or_disjunction === true) {
+            $sql .= implode(' OR ', $where);
+        } else {
+            $sql .= implode(' AND ', $where);
+        }
+        $sql .= "
+            GROUP BY entries.eid
+            ORDER BY date DESC";
+        // TODO: Order by number of matching entries with OR
+
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($tag_ids as $key => &$value) {
+            // $value has to be passed by reference, otherwise bindParam doesnt work
+            // https://www.php.net/manual/fr/pdostatement.bindparam.php#98145
+            $stmt->bindParam($key, $value, PDO::PARAM_INT);
+        }
+        $stmt->execute();
+
+
+        $entries = [];
+        if ($return_as_array === true) {
+            while ($rslt = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $entry = $this->convertAssocToEntry($rslt);
+                $entry->tags = $this->tag_repository->findTagsByEntries($entry);
+                $entries[] = $entry->toArray();
+            }
+        } else {
+            while ($rslt = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $entry = $this->convertAssocToEntry($rslt);
+                $entry->tags = $this->tag_repository->findTagsByEntries($entry);
+                $entries[] = $entry;
+            }
+        }
+
+        return $entries;
+    }
+
+    /**
+     * @param string $query
+     * @param bool   $or_disjunction
+     * @param bool   $return_as_array
+     *
+     * @return array<Entry|mixed>
+     * @throws Exception
+     */
+    public function findEntriesMatchingTags(
+        string $query,
+        bool $or_disjunction = false,
+        bool $return_as_array = false
+    ): array {
+        if (strlen($query) === 0) {
+            // return empty array if search query is empty
+            return [];
+        }
+        $query_segments = explode(' ', trim($query));
+        $sql = 'SELECT eid, title, slug, url, text, date
+            FROM entries
+            WHERE ';
+        $where = [];
+        $segment_ids = [];
+        $i = 0;
+        foreach ($query_segments as $query_segment) {
+            $where[] = 'title LIKE :segment' . strval($i);
+            $segment_ids[':segment' . strval($i)] = '%' . $query_segment . '%';
+            $i++;
+        }
+        if ($or_disjunction === true) {
+            $sql .= implode(' OR ', $where);
+        } else {
+            $sql .= implode(' AND ', $where);
+        }
+        $sql .= "
+            GROUP BY eid
+            ORDER BY date DESC";
+
+        $stmt = $this->pdo->prepare($sql);
+        foreach ($segment_ids as $key => &$value) {
+            // $value has to be passed by reference, otherwise bindParam doesnt work
+            // https://www.php.net/manual/fr/pdostatement.bindparam.php#98145
+            $stmt->bindParam($key, $value, PDO::PARAM_STR);
+        }
+        $stmt->execute();
+
+        $entries = [];
+        if ($return_as_array === true) {
+            while ($rslt = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $entry = $this->convertAssocToEntry($rslt);
+                $entry->tags = $this->tag_repository->findTagsByEntries($entry);
+                $entries[] = $entry->toArray();
+            }
+        } else {
+            while ($rslt = $stmt->fetch(PDO::FETCH_ASSOC)) {
+                $entry = $this->convertAssocToEntry($rslt);
+                $entry->tags = $this->tag_repository->findTagsByEntries($entry);
+                $entries[] = $entry;
+            }
+        }
+
+        return $entries;
+    }
 }
