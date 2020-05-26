@@ -171,7 +171,7 @@ class EntryRepository extends Model
      *                      <p><i>Notice:</i> Entry must at least contain a <b>title</b> and a <b>slug</b>,
      *                      otherwise an exception will be called.
      *
-     * @return bool <b>TRUE</b> if successful, <b>FALSE</b> on failure
+     * @return bool  <b>TRUE</b> if successful, <b>FALSE</b> on failure
      * @throws Exception
      */
     public function updateBySlug(string $slug, Entry $entry): bool
@@ -308,7 +308,7 @@ class EntryRepository extends Model
      *
      * @param Entry $entry The entry of which all tag relationships should be removed.
      *
-     * @return Entry|null <p><b>Entry</b> on success, same entry as submitted via @param <tt>$entry</tt> but without any
+     * @return Entry|null  <p><b>Entry</b> on success, same entry as submitted via @param <tt>$entry</tt> but without any
      *                    tags.
      *                    <p>If this entry doesn't have any associated tags in the database, nothing will be deleted
      *                    and the entry will be returned without a error.
