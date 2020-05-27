@@ -315,6 +315,27 @@ ul.autocomplete li:last-child {
   border-bottom: 1px solid var(--neutral-500);
 }
 
+/* Search Form */
+form.search input[type=search] {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  width: calc(100% - 40px);
+}
+form.search button[type=submit] {
+  background-color: var(--main-300);
+  border-bottom-left-radius: 0;
+  border-top-left-radius: 0;
+  border: 1px solid var(--main-300);
+  font-family: 'Segoe MDL2 Assets';
+  padding-left: 0;
+  padding-right: 0;
+  width: 40px;
+}
+form.search button[type=submit]:hover {
+  background-color: var(--main-200);
+  border: 1px solid var(--main-200);
+}
+
 /* Tags */
 .wrapper-input ul {
   list-style: none;
@@ -395,11 +416,12 @@ body > header::before {
   }
 }
 
-body > header .button {
+body > header .button, body > header button {
   background-color: var(--main-300);
+  transition: background-color 50ms, border 50ms;
 }
 
-body > header .button:hover {
+body > header .button:hover, body > header button:hover {
   background-color: var(--main-200);
 }
 
@@ -490,11 +512,16 @@ article.entry > p {
   padding-bottom: .25rem;
 }
 
+article.entry > ol, article.entry > ul {
+  padding-left: 1.5rem;
+}
+
 article.entry ul.tags {
   list-style: none;
   display: flex;
   flex-flow: row wrap;
   line-height: 2rem;
+  padding-left: 0;
 }
 
 article.entry ul.tags li {
@@ -549,11 +576,13 @@ pre > code {
 
 p > code {
   background-color: var(--neutral-100);
-  padding: .15rem .35rem;
+  border: 1px solid var(--neutral-300);
+  padding: 0 .35rem;
   font-size: .875rem;
+  line-height: 1.7;
 }
 
-kbd, pre, samp, code {
+kbd, pre, samp, code, kbd *, pre *, samp *, code * {
   -moz-osx-font-smoothing: auto;
   -webkit-font-smoothing: subpixel-antialiased;
   font-family: "Fira Code", "Consolas", Liberation Mono, Menlo, Courier, monospace !important;

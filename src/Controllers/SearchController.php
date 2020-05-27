@@ -35,6 +35,11 @@ class SearchController extends Controller
     /**
      * @param Request  $request
      * @param Response $response
+     *
+     * @return Response
+     * @throws \Twig\Error\LoaderError
+     * @throws \Twig\Error\RuntimeError
+     * @throws \Twig\Error\SyntaxError
      */
     public function search(Request $request, Response $response): Response
     {
@@ -71,9 +76,9 @@ class SearchController extends Controller
         $data = ['entries' => $entries, 'heading' => 'Search results for ›' . $query . '‹'];
 
         $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
+        $data['search_query'] = $params['q'];
 
         $this->twig->render($response, 'entrylist.twig', $data);
         return $response;
-//        */
     }
 }

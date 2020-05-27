@@ -66,7 +66,7 @@ class TagRepository extends Model
      *
      * @param string $title User-readable title to look for in the database
      *
-     * @return Tag <b>Tag</b> with id und slug if title was found in database
+     * @return Tag  <b>Tag</b> with id und slug if title was found in database
      * @throws TagNotFoundException If query doesn't return any rows, TagNotFoundException is thrown.
      */
     public function fetchTagByTitle(string $title): Tag
@@ -109,7 +109,7 @@ class TagRepository extends Model
      * @param Tag $tag Instance of Tag with title and slug filled. Tag id is ignored. The slug must not already exist.
      *                 If it already exists this method will throw an Exception.
      *
-     * @return bool <b>TRUE</b> if tag was created without SQL error, <b>FALSE</b> on error.
+     * @return bool  <b>TRUE</b> if tag was created without SQL error, <b>FALSE</b> on error.
      * @throws DuplicateKeyException Slug included in <tt>$tag</tt> already exists in database.
      * @throws Exception On any other error of the sql statement, including duplicate tag title.
      *
@@ -148,7 +148,7 @@ class TagRepository extends Model
      *
      * @param string $slug Slug to look up in the database
      *
-     * @return bool <b>TRUE</b> if tag with this slug already exists, <b>FALSE</b> if no tag with this slug exists.
+     * @return bool  <b>TRUE</b> if tag with this slug already exists, <b>FALSE</b> if no tag with this slug exists.
      */
     public
     function checkIfSlugExists(
