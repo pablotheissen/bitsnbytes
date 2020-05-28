@@ -9,7 +9,7 @@
         {% else %}
         <h3>{{ entry.title }}</h3>
         {% endif %}
-        <span class="meta date">{{ entry.date_formatted }}</span>
+        <span class="meta date"><a href="{{ url_for('entry', {'slug': entry.slug}) }}">{{ entry.date_formatted }}</a></span>
         {% if entry.url_edit is not empty %}&middot; <span class="meta edit"><a href="{{ entry.url_edit }}">edit</a></span>{% endif %}
     </header>
 {{ entry.text | raw }}

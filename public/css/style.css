@@ -498,7 +498,8 @@ article.entry a:hover {
   color: var(--accentblue-500);
 }
 
-article.entry header span.meta {
+article.entry header span.meta,
+article.entry header span.meta.date a:not(:focus):not(:hover) {
   color: #888888;
   font-size: .875rem;
 }

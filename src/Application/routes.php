@@ -19,7 +19,7 @@ return function (App $app): void {
             $group->get('/new', EntryController::class . ':newform')
                 ->setName('new-entry');
             $group->post('/new', EntryController::class . ':saveEntry');
-            $group->get('/{slug}', EntryController::class . ':showBySlug');
+            $group->get('/{slug}', EntryController::class . ':showBySlug')->setName('entry');
             $group->get('/{slug}/edit', EntryController::class . ':editformBySlug')
                 ->setName('edit-entry');
             $group->post('/{slug}/edit', EntryController::class . ':saveEntry');
