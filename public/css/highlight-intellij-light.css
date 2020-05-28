@@ -1,0 +1,71 @@
+/**
+ * IntelliJ Light
+ * Author : Pablo Theissen
+ */
+
+/* not used
+.hljs, .hljs-strong, .hljs-emphasis, .hljs-selector-class {}
+*/
+
+.hljs-comment {
+  color: #8C8C8C;
+}
+
+.hljs-variable,
+.hljs-params,
+.hljs-template-variable {
+  color: #660000;
+}
+
+.hljs-built_in,
+.hljs-keyword,
+.hljs-literal,
+.hljs-meta,
+.hljs-name,
+.hljs-section,
+.hljs-selector-attr,
+.hljs-selector-id,
+.hljs-selector-pseudo,
+.hljs-selector-tag,
+.hljs-symbol,
+.hljs-type {
+  color: #0033B3;
+}
+
+.hljs-tag {
+  color: #333333;
+}
+
+.hljs-title {
+  color: #00627A;
+}
+
+.hljs-attr,
+.hljs-attribute {
+  color: #174AD4;
+}
+
+.hljs-addition {
+  background-color: #E5F5E5;
+}
+
+.hljs-deletion {
+  background-color: #FFEEEB;
+}
+
+.hljs-link {
+  text-decoration: underline;
+}
+
+.hljs-number {
+  color: #1750EB;
+}
+
+.hljs-string,
+.hljs-quote {
+  color: #067D17;
+}
+
+.hljs-doctag {
+  color: #999999;
+}
