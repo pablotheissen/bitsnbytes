@@ -513,8 +513,15 @@ article.entry > p {
   padding-bottom: .25rem;
 }
 
-article.entry > ol, article.entry > ul {
-  padding-left: 1.5rem;
+article.entry li {
+  padding-left: .5rem;
+  margin-left: 1rem;
+}
+article.entry ul {
+  list-style-type: square;
+}
+article.entry ul li::marker {
+  content: "–";
 }
 
 article.entry ul.tags {
@@ -527,6 +534,10 @@ article.entry ul.tags {
 
 article.entry ul.tags li {
   margin: 0 .5rem 0 0;
+  padding: 0;
+}
+article.entry ul.tags li::marker {
+  content: "";
 }
 
 article.entry ul.tags li a, article.entry ul.tags li span {
@@ -572,7 +583,7 @@ pre > code {
   border: 0;
   padding: 0;
   display: block;
-  line-height: 19px;
+  line-height: 1.4;
 }
 
 p > code {
