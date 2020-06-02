@@ -69,3 +69,65 @@
 .hljs-doctag {
   color: #999999;
 }
+
+
+@media (prefers-color-scheme: dark) {
+  .hljs-comment {
+    color: #59626f;
+  }
+
+  .hljs-variable,
+  .hljs-params,
+  .hljs-template-variable {
+    color: #E06C75;
+  }
+
+  .hljs-built_in,
+  .hljs-keyword,
+  .hljs-literal,
+  .hljs-meta,
+  .hljs-name,
+  .hljs-section,
+  .hljs-selector-attr,
+  .hljs-selector-id,
+  .hljs-selector-pseudo,
+  .hljs-selector-tag,
+  .hljs-symbol,
+  .hljs-type {
+    color: #C679DD;
+  }
+
+  .hljs-tag {
+    color: #f07178;
+  }
+
+  .hljs-title {
+    color: #61aeef;
+  }
+
+  .hljs-attr,
+  .hljs-attribute {
+    color: #e5c17c;
+  }
+
+  .hljs-addition {
+    background-color: #374B2C;
+  }
+
+  .hljs-deletion {
+    background-color: #4E2727;
+  }
+
+  .hljs-number {
+    color: #d19a66;
+  }
+
+  .hljs-string,
+  .hljs-quote {
+    color: #98c379;
+  }
+
+  .hljs-doctag {
+    color: #abb2bf;
+  }
+}

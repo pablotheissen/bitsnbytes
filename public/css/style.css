@@ -140,7 +140,7 @@ input[type=text], input[type=url], input[type=search], input[type=date], input[t
   box-shadow: 0 0 0 1px var(--accentred-500);
 }
 
-input[type=text]:focus, input[type=search]:focus, input[type=date]:focus, input[type=time]:focus, textarea:focus {
+input[type=text]:focus, input[type=url]:focus, input[type=search]:focus, input[type=date]:focus, input[type=time]:focus, textarea:focus {
   outline: 0 !important;
   border-color: var(--neutral-500);
   background-color: #FFFFFF;
@@ -599,4 +599,91 @@ kbd, pre, samp, code, kbd *, pre *, samp *, code * {
   -webkit-font-smoothing: subpixel-antialiased;
   font-family: "Fira Code", "Consolas", Liberation Mono, Menlo, Courier, monospace !important;
   line-height: 19px;
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    color: var(--neutral-200);
+    background-color: var(--main-700);
+    scrollbar-color: dark;
+  }
+  article.entry ul.tags li a, article.entry ul.tags li span {
+    color: var(--neutral-400);
+    background-color: var(--main-500);
+  }
+  article.entry ul.tags li a:hover, article.entry ul.tags li span:hover {
+    color: var(--neutral-400);
+    background-color: var(--main-400);
+  }
+  article.entry header span.meta, article.entry header span.meta.date a:not(:focus):not(:hover) {
+    color: var(--neutral-500);
+  }
+  pre {
+    background-color: var(--main-600);
+    border-color: var(--main-400);
+    scrollbar-color: dark;
+  }
+  p > code {
+    background-color: var(--main-600);
+    border-color: var(--main-400);
+  }
+  article.entry a {
+    color: var(--accentblue-400);
+  }
+  article.entry a:hover {
+    color: var(--accentblue-300);
+  }
+  body > header::before {
+    background: var(--main-600);
+  }
+  input[type=text], input[type=url], input[type=search], input[type=date], input[type=time], textarea {
+    border-color: var(--main-400);
+    background: var(--main-500);
+    color: var(--neutral-300);
+  }
+  input[type=text]:focus, input[type=url]:focus, input[type=search]:focus, input[type=date]:focus, input[type=time]:focus, textarea:focus {
+    border-color: var(--main-300);
+    background-color: var(--main-400);
+    color: var(--neutral-100);
+  }
+  .wrapper-input ul input {
+    border-bottom-color: var(--main-400);
+    border-top-color: var(--main-400);
+  }
+  .wrapper-input ul li:last-child input {
+    border-bottom-color: var(--main-400);
+  }
+  .wrapper-input ul li input:focus {
+    border-color: var(--main-300);
+  }
+  input[type=text].autocomplete-open, input[type=text].autocomplete-open:focus {
+    border-color: var(--main-300);
+    background-color: var(--main-400);
+  }
+  ul.autocomplete {
+    background-color: var(--main-400);
+  }
+  ul.autocomplete li {
+    border-left-color: var(--main-300);
+    border-right-color: var(--main-300);
+  }
+  ul.autocomplete li:hover {
+    background-color: var(--main-300);
+  }
+  ul.autocomplete li:last-child {
+    border-bottom-color: var(--main-300);
+  }
+  .wrapper-collapsible {
+    background-color: var(--main-600);
+    border-bottom-color: var(--main-400);
+    border-top-color: var(--main-400);
+  }
+
+  .error label, .error-message {
+    color: var(--accentred-400);
+  }
+  .error input[type=text], .error input[type=url], .error input[type=search], .error input[type=date], .error input[type=time], .error textarea, .error input[type=text]:focus, .error input[type=url]:focus, .error input[type=search]:focus, .error input[type=date]:focus, .error input[type=time]:focus, .error textarea:focus {
+    border-color: var(--accentred-400);
+    box-shadow: 0 0 0 1px var(--accentred-400);
+  }
 }
