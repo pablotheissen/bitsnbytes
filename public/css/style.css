@@ -385,14 +385,14 @@ body > header {
 
 body > header::before {
   background: var(--main-400);
-  position: absolute;
+  position: fixed;
   display: block;
   top: 0;
   left: 0;
   content: "";
   transform: skewX(-3deg);
   transform-origin: 0 0;
-  right: 0;
+  width: 38.2%;
   bottom: 0;
   outline: 1px solid transparent;
   backface-visibility: hidden;
@@ -413,6 +413,9 @@ body > header::before {
     /*display: none;*/
     transform: skewY(-3deg) translateY(25px);
     margin-top: -25px;
+    width: 100%;
+    position: absolute;
+    right: 0;
   }
 }
 
