@@ -124,18 +124,19 @@ input, button, textarea, .button {
   border-radius: var(--border-radius-input);
   line-height: 1.25;
   padding: .5rem .75rem;
+  margin-bottom: .5rem;
   text-decoration: none;
   transition: background-color 50ms, border-color 50ms, box-shadow 50ms;
 }
 
-input[type=text], input[type=url], input[type=search], input[type=date], input[type=time], textarea {
+input[type=text], input[type=url], input[type=search], input[type=date], input[type=time], input[type=password], textarea {
   border: 1px solid var(--neutral-200);
   background: var(--neutral-200);
   width: 100%;
 }
 
-.error input[type=text], .error input[type=url], .error input[type=search], .error input[type=date], .error input[type=time], .error textarea,
-.error input[type=text]:focus, .error input[type=url]:focus, .error input[type=search]:focus, .error input[type=date]:focus, .error input[type=time]:focus, .error textarea:focus {
+.error input[type=text], .error input[type=url], .error input[type=search], .error input[type=date], .error input[type=time], .error input[type=password], .error textarea,
+.error input[type=text]:focus, .error input[type=url]:focus, .error input[type=search]:focus, .error input[type=date]:focus, .error input[type=time]:focus, .error input[type=password]:focus, .error textarea:focus {
   border-color: var(--accentred-500);
   box-shadow: 0 0 0 1px var(--accentred-500);
 }
@@ -404,13 +405,10 @@ body > header::before {
   }
 
   body > header {
-    /*background: var(--main-400);*/
     margin-bottom: 25px;
   }
 
   body > header::before {
-    /*content: none;*/
-    /*display: none;*/
     transform: skewY(-3deg) translateY(25px);
     margin-top: -25px;
     width: 100%;

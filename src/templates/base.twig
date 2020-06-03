@@ -30,7 +30,8 @@
             <button type="submit">&#xE721;</button>
         </div>
     </form>
-    {% if url_newentry is not empty %}<a href="{{ url_newentry }}" class="button">New Entry</a>{% endif %}
+    <a href="{{ url_for('new-entry') }}" class="button">New Entry</a>
+    <a href="{{ url_for('login') }}" class="button">Login</a>
 </header>
 <main>
 {% block content %}{% endblock %}

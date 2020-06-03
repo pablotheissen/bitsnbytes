@@ -1,0 +1,18 @@
+{% extends "base.twig" %}
+
+{% block content %}
+
+    {% if heading is not empty %}<h2>{{ heading }}</h2>{% endif %}
+
+    <form action="{{ url_for('login') }}" method="POST">
+        <div class="wrapper-input wrapper-username{% if error_username is not empty %} error{% endif %}">
+            <label for="inpt-username">Username</label>{% if error_message_username is not empty %}
+            <span class="error-message error-message-username">{{ error_message_username | raw }}</span>{% endif %}
+            <input id="inpt-username" type="text" name="username" value="{{ username }}" placeholder="Username" required>
+            <label for="inpt-password">Password</label>
+            <input id="inpt-password" type="password" name="password" value="{{ password }}" placeholder="Password" required>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+
+{% endblock %}

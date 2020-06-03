@@ -6,6 +6,7 @@ use Bitsnbytes\Controllers\EntryController;
 use Bitsnbytes\Controllers\ErrorController;
 use Bitsnbytes\Controllers\RemoteController;
 use Bitsnbytes\Controllers\SearchController;
+use Bitsnbytes\Controllers\SessionController;
 use Bitsnbytes\Controllers\TagController;
 use Bitsnbytes\Controllers\UpdateController;
 use Slim\App;
@@ -30,6 +31,7 @@ return function (App $app): void {
     $app->get('/search/tag', TagController::class . ':searchTag');
     $app->get('/fetch', RemoteController::class . ':fetchTitleAndDescription');
     $app->get('/update', UpdateController::class . ':update');
+    $app->get('/login', SessionController::class . ':login')->setName('login');
 
     /**
      * Catch-all route to serve a 404 Not Found page if none of the routes match
