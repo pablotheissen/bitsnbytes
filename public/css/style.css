@@ -141,7 +141,7 @@ input[type=text], input[type=url], input[type=search], input[type=date], input[t
   box-shadow: 0 0 0 1px var(--accentred-500);
 }
 
-input[type=text]:focus, input[type=url]:focus, input[type=search]:focus, input[type=date]:focus, input[type=time]:focus, textarea:focus {
+input[type=text]:focus, input[type=url]:focus, input[type=search]:focus, input[type=date]:focus, input[type=time]:focus, input[type=password]:focus, textarea:focus {
   outline: 0 !important;
   border-color: var(--neutral-500);
   background-color: #FFFFFF;
