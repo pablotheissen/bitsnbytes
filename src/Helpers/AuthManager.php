@@ -66,6 +66,29 @@ class AuthManager
     }
 
     /**
+     * If user is logged in, retrieve uid of logged in user. Otherwise return <b>NULL</b>.
+     *
+     * @return int|null
+     */
+    public function getCurrentUid(): ?int
+    {
+        if ($this->loggedIn() === true) {
+            return $_SESSION['user_id'];
+        }
+        return -1;
+    }
+
+    /**
+     * Check if a user is logged in
+     *
+     * @return bool
+     */
+    public function loggedIn(): bool
+    {
+        return isset($_SESSION['user_id']) === true and $_SESSION['user_id'] > 0;
+    }
+
+    /**
      * Safely hash password with state of the art security.
      *
      * @param string $password
@@ -75,7 +98,7 @@ class AuthManager
     private function hashPassword(string $password): ?string
     {
         $hash = password_hash($this->prehashPassword($password), PASSWORD_DEFAULT);
-        if($hash === false) {
+        if ($hash === false) {
             return null;
         }
         return $hash;

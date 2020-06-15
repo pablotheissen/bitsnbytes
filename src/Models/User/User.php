@@ -25,4 +25,16 @@ class User
         $this->username = $username;
         $this->password_hash = $password_hash;
     }
+
+    /**
+     * @return array<int|string>
+     */
+    public function toArray(): array
+    {
+        return [
+            'uid' => $this->uid,
+            'username' => $this->username,
+            'password_hash' => $this->password_hash,
+        ];
+    }
 }

@@ -42,6 +42,10 @@
             {% endif %}
         </ul>
     </div>
+    <div class="wrapper-input wrapper-private">
+        <label for="inpt-private">Private</label>
+        <input id="inpt-private" type="checkbox" name="private"{% if private is not empty %} checked{% endif %}>
+    </div>
     <div class="wrapper-input wrapper-collapsible opened">
         <span class="collapsible-opener">Metadata</span>
         <div class="collapsible-content">

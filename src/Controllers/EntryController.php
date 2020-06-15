@@ -4,11 +4,14 @@ declare(strict_types=1);
 
 namespace Bitsnbytes\Controllers;
 
+use Bitsnbytes\Helpers\AuthManager;
 use Bitsnbytes\Models\Entry\Entry;
 use Bitsnbytes\Models\Entry\EntryNotFoundException;
 use Bitsnbytes\Models\Entry\EntryRepository;
 use Bitsnbytes\Models\Tag\TagNotFoundException;
 use Bitsnbytes\Models\Tag\TagRepository;
+use Bitsnbytes\Models\User\UserNotFoundException;
+use Bitsnbytes\Models\User\UserRepository;
 use DateTimeInterface;
 use Erusev\Parsedown\Parsedown;
 use Exception;
@@ -26,10 +29,14 @@ class EntryController extends Controller
 {
     private EntryRepository $entry_repository;
     private TagRepository $tag_repository;
+    private UserRepository $user_repository;
+    private AuthManager $auth_manager;
 
     public function __construct(
         EntryRepository $entry_repository,
         TagRepository $tag_repository,
+        UserRepository $user_repository,
+        AuthManager $auth_manager,
         Parsedown $parsedown,
         Twig $twig,
         RouteParserInterface $route_parser
@@ -37,6 +44,8 @@ class EntryController extends Controller
         parent::__construct($parsedown, $twig, $route_parser);
         $this->entry_repository = $entry_repository;
         $this->tag_repository = $tag_repository;
+        $this->user_repository = $user_repository;
+        $this->auth_manager = $auth_manager;
     }
 
     /**
@@ -79,7 +88,7 @@ class EntryController extends Controller
      * @throws LoaderError
      * @throws RuntimeError
      * @throws SyntaxError
- */
+     */
     public function showByTag(Request $request, Response $response, array $args = []): Response
     {
         try {
@@ -178,7 +187,6 @@ class EntryController extends Controller
     public function newform(Request $request, Response $response, array $args = []): Response
     {
         $data = [];
-        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
         $this->twig->render($response, 'editentry.twig', $data);
         return $response;
@@ -235,6 +243,18 @@ class EntryController extends Controller
             $error_fields[] = 'date';
             $error_fields[] = 'time';
         }
+        $uid = $this->auth_manager->getCurrentUid();
+        try {
+            $new_user = $this->user_repository->fetchUserByID($uid);
+        } catch (UserNotFoundException $exception) {
+            return $this->redirectToRoute($response, 'login');
+        }
+
+        $new_private = false;
+        if(isset($data['private']) AND $data['private'] === 'on') {
+            $new_private = true;
+        }
+
         // TODO: parse/filter tags
         $new_tags = array_filter($data['tags']);
 
@@ -251,7 +271,7 @@ class EntryController extends Controller
             );
         }
 
-        $entry = new Entry(null, $new_title, $new_slug, $new_url, $new_text, $new_datetime);
+        $entry = new Entry(null, $new_title, $new_slug, $new_url, $new_text, $new_datetime, $new_user, $new_private);
 
         if (isset($args['slug'])) { // UPDATE existing entry
             // TODO catch exception when error during update occurs

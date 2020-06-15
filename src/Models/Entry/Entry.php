@@ -5,6 +5,7 @@ namespace Bitsnbytes\Models\Entry;
 
 
 use Bitsnbytes\Models\Tag\Tag;
+use Bitsnbytes\Models\User\User;
 use DateTime;
 use DateTimeInterface;
 
@@ -16,6 +17,8 @@ class Entry
     public ?string $url;
     public ?string $text;
     public ?DateTime $date;
+    public ?User $user;
+    public bool $private;
     /** @var array<Tag> */
     public array $tags;
 
@@ -28,6 +31,8 @@ class Entry
      * @param string|null   $url
      * @param string|null   $text
      * @param DateTime|null $date
+     * @param User|null     $user
+     * @param bool          $private
      * @param array<Tag>    $tags
      */
     public function __construct(
@@ -37,6 +42,8 @@ class Entry
         ?string $url,
         ?string $text,
         ?DateTime $date,
+        ?User $user,
+        bool $private,
         array $tags = []
     ) {
         $this->eid = $eid;
@@ -45,11 +52,13 @@ class Entry
         $this->url = $url;
         $this->text = $text;
         $this->date = $date;
+        $this->user = $user;
+        $this->private = $private;
         $this->tags = $tags;
     }
 
     /**
-     * @return array<int|string|DateTime|array<array<int|string|null>>|null>
+     * @return array<string,array<array<int|string|null>|int|string>|bool|DateTime|int|string|null>
      */
     public function toArray(): array
     {
@@ -61,6 +70,12 @@ class Entry
             }
         );
 
+        if($this->user instanceof User) {
+            $user_array = $this->user->toArray();
+        } else {
+            $user_array = null;
+        }
+
         return [
             'eid' => $this->eid,
             'title' => $this->title,
@@ -68,6 +83,8 @@ class Entry
             'url' => $this->url,
             'text' => $this->text,
             'date' => $this->date,
+            'user' => $user_array,
+            'private' => $this->private,
             'tags' => $tags_array,
         ];
     }

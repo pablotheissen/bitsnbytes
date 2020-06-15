@@ -4,10 +4,13 @@ declare(strict_types=1);
 
 namespace Bitsnbytes\Models\Entry;
 
+use Bitsnbytes\Helpers\AuthManager;
 use Bitsnbytes\Models\Model;
 use Bitsnbytes\Models\Tag\Tag;
 use Bitsnbytes\Models\Tag\TagNotFoundException;
 use Bitsnbytes\Models\Tag\TagRepository;
+use Bitsnbytes\Models\User\User;
+use Bitsnbytes\Models\User\UserRepository;
 use DateTime;
 use DateTimeInterface;
 use Exception;
@@ -16,11 +19,19 @@ use PDO;
 class EntryRepository extends Model
 {
     private TagRepository $tag_repository;
+    private AuthManager $auth_manager;
+    private UserRepository $user_repository;
 
-    public function __construct(TagRepository $tag_repository, PDO $pdo)
-    {
+    public function __construct(
+        TagRepository $tag_repository,
+        UserRepository $user_repository,
+        PDO $pdo,
+        AuthManager $auth_manager
+    ) {
         parent::__construct($pdo);
         $this->tag_repository = $tag_repository;
+        $this->auth_manager = $auth_manager;
+        $this->user_repository = $user_repository;
     }
 
     /**
@@ -35,8 +46,22 @@ class EntryRepository extends Model
      */
     public function fetchEntryBySlug(string $slug): Entry
     {
-        $stmt = $this->pdo->prepare('SELECT eid, title, slug, url, text, date FROM entries WHERE slug = :slug');
+        $sql =
+            'SELECT
+                eid, title, slug, url, text, date, uid, private
+            FROM
+                entries
+            WHERE
+                slug = :slug';
+
+        $uid = $this->auth_manager->getCurrentUid();
+        if ($uid !== null) {
+            $sql .= ' AND (private = 0 OR (private = 1 AND uid = :uid))';
+        }
+
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':slug', $slug, PDO::PARAM_STR);
+        $stmt->bindParam(':uid', $uid, PDO::PARAM_INT);
         $stmt->execute();
         $rslt = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -54,32 +79,42 @@ class EntryRepository extends Model
     /**
      * Convert the associative array returned from PDOStatement::fetch into an instance of <tt>Entry</tt>.
      *
-     * @param array<string> $query_result <p>Result from PDOStatement::fetch which <i>must</i> contain the keys
-     *                                    <p><b>eid</b> ID of tag
-     *                                    <p><b>slug</b> Slug of entry
-     *                                    <p><b>title</b> User-readable title
-     *                                    <p><b>url</b> URL to which entry links
-     *                                    <p><b>text</b> Main content of entry
-     *                                    <p>Result <i>may</i> contain the key
-     *                                    <p><b>date</b> [optional] DateTime string in format
-     *                                    YYYY-MM-DD<i>T</i>HH:MM:SS+00:00
+     * @param array<string|null> $query_result <p>Result from PDOStatement::fetch which <i>must</i> contain the keys
+     *                                         <p><b>eid</b> ID of tag
+     *                                         <p><b>slug</b> Slug of entry
+     *                                         <p><b>title</b> User-readable title
+     *                                         <p><b>url</b> URL to which entry links
+     *                                         <p><b>text</b> Main content of entry
+     *                                         <p><b>uid</b> User ID
+     *                                         <p>Result <i>may</i> contain the key
+     *                                         <p><b>date</b> [optional] DateTime string in format
+     *                                         YYYY-MM-DD<i>T</i>HH:MM:SS+00:00
      *
      * @return Entry Valid entry with unchanged <tt>$query_result</tt> data
      * @throws Exception
      */
     private function convertAssocToEntry(array $query_result): Entry
     {
-        $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+e', $query_result['date']);
+        $datetime = DateTime::createFromFormat('Y-m-d\TH:i:s+e', (string)$query_result['date']);
         if ($datetime === false) {
             $datetime = new DateTime("now");
         }
+        $uid = null;
+        if ($query_result['uid'] !== null) {
+            // intval(null) == 0, but 0 is not a valid user id and would throw an exception
+            $uid = intval($query_result['uid']);
+        }
+        $user = $this->user_repository->fetchUserByID($uid);
+
         return new Entry(
             intval($query_result['eid']),
             $query_result['title'],
             $query_result['slug'],
             $query_result['url'],
             $query_result['text'],
-            $datetime
+            $datetime,
+            $user,
+            boolval($query_result['private'])
         );
     }
 
@@ -88,20 +123,31 @@ class EntryRepository extends Model
      *
      * @param bool $returnAsArray If <b>true</b>, <tt>Entry::toArray()</tt> is called for each entry returned.
      *
-     * @return array<int,array<array<array<int|string|null>>|DateTime|int|string|null>|Entry> List of valid entries
-     *                                                                                        inlcuding tags. If
-     *                                                                                        <tt>$returnAsArray</tt>
-     *                                                                                        is <b>true</b> this will
-     *                                                                                        return a nested array,
-     *                                                                                        otherwise it will return
-     *                                                                                        <b>array&lt;Entry&gt;</b>
+     * @return array<int, array<string,array<array<int|string|null>|int|string>|bool|DateTime|int|string|null>|Entry>
+     *                    List of valid entries inlcuding tags. If <tt>$returnAsArray</tt> is <b>true</b> this will
+     *                    return a nested array, otherwise it will return <b>array&lt;Entry&gt;</b>
      * @throws Exception
      *
      * @todo Add limit to number of entries or date or both
      */
     public function fetchLatestEntries(bool $returnAsArray = false): array
     {
-        $stmt = $this->pdo->prepare('SELECT eid, title, slug, url, text, date FROM entries ORDER BY date DESC');
+        $sql =
+            'SELECT
+                eid, title, slug, url, text, date, uid, private
+            FROM entries
+            ';
+
+        $uid = $this->auth_manager->getCurrentUid();
+        if ($uid !== null) {
+            $sql .= 'WHERE (private = 0 OR (private = 1 AND uid = :uid))';
+        }
+
+        $sql .= '
+            ORDER BY date DESC';
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->bindParam(':uid', $uid, PDO::PARAM_INT);
         $stmt->execute();
 
         $entries = [];
@@ -128,19 +174,31 @@ class EntryRepository extends Model
      * @param Tag  $tag
      * @param bool $returnAsArray
      *
-     * @return array<int,array<array<array<int|string|null>>|DateTime|int|string|null>|Entry>
+     * @return array<int, array<string,array<array<int|string|null>|int|string>|bool|DateTime|int|string|null>|Entry>
      * @throws Exception
      */
     public function fetchEntriesByTag(Tag $tag, bool $returnAsArray = false): array
     {
-        $stmt = $this->pdo->prepare(
-            'SELECT entries.eid, title, slug, url, text, date
-            FROM entries
-            LEFT JOIN entry_tag et on entries.eid = et.eid
-            WHERE et.tid = :tid
-            ORDER BY date DESC'
-        );
+        $sql =
+            'SELECT
+                entries.eid, title, slug, url, text, date, uid, private
+            FROM
+                entries
+            LEFT JOIN
+                entry_tag et on entries.eid = et.eid
+            WHERE
+                et.tid = :tid
+                ';
+        $uid = $this->auth_manager->getCurrentUid();
+        if ($uid !== null) {
+            $sql .= ' AND (private = 0 OR (private = 1 AND uid = :uid))';
+        }
+        $sql .= '
+            ORDER BY date DESC';
+
+        $stmt = $this->pdo->prepare($sql);
         $stmt->bindParam(':tid', $tag->tid, PDO::PARAM_INT);
+        $stmt->bindParam(':uid', $uid, PDO::PARAM_INT);
         $stmt->execute();
 
         $entries = [];
@@ -183,7 +241,9 @@ class EntryRepository extends Model
                 slug = :slug,
                 url = :url,
                 text = :text,
-                date = :date
+                date = :date,
+                uid = :uid,
+                private = :private
             WHERE slug = :oldslug';
         return $this->writeEntryDataToDatabase($sql, $entry, $slug);
     }
@@ -215,6 +275,12 @@ class EntryRepository extends Model
             $date_atom = (new DateTime('now'))->format(DateTimeInterface::ATOM);
         }
         $stmt->bindParam(':date', $date_atom, PDO::PARAM_STR);
+        $uid = null;
+        if ($entry->user instanceof User) {
+            $uid = $entry->user->uid;
+        }
+        $stmt->bindParam(':uid', $uid, PDO::PARAM_INT);
+        $stmt->bindParam(':private', $entry->private, PDO::PARAM_BOOL);
         $stmt->execute();
 
         if ($stmt->errorInfo()[0] === '00000') {
@@ -239,9 +305,9 @@ class EntryRepository extends Model
     {
         $sql =
             'INSERT INTO entries
-                (title, slug, url, text, date)
+                (title, slug, url, text, date, uid, private)
             VALUES
-                (:title, :slug, :url, :text, :date)';
+                (:title, :slug, :url, :text, :date, :uid, :private)';
         return $this->writeEntryDataToDatabase($sql, $entry);
     }
 
@@ -308,8 +374,8 @@ class EntryRepository extends Model
      *
      * @param Entry $entry The entry of which all tag relationships should be removed.
      *
-     * @return Entry|null  <p><b>Entry</b> on success, same entry as submitted via @param <tt>$entry</tt> but without any
-     *                    tags.
+     * @return Entry|null  <p><b>Entry</b> on success, same entry as submitted via @param <tt>$entry</tt> but without
+     *                    any tags.
      *                    <p>If this entry doesn't have any associated tags in the database, nothing will be deleted
      *                    and the entry will be returned without a error.
      *                    <p><b>NULL</b> on error in case of any SQL/database error.
@@ -340,12 +406,21 @@ class EntryRepository extends Model
             // return empty array if there aren't any tags to look for
             return [];
         }
-        $sql = 'SELECT entries.eid, title, slug, url, text, date
+        $sql = 'SELECT entries.eid, title, slug, url, text, date, uid, private
             FROM entries
             LEFT JOIN entry_tag et on entries.eid = et.eid
-            WHERE ';
-        $where = [];
+            WHERE 
+                (';
+
         $tag_ids = [];
+        $where = [];
+
+        $uid = $this->auth_manager->getCurrentUid();
+        if ($uid !== null) {
+            $sql .= '(private = 0) OR (private = 1 AND uid = :uid)) AND (';
+            $tag_ids[':uid'] = $uid;
+        }
+
         $i = 0;
         foreach ($tags as $tag) {
             $where[] = 'et.tid = :tid' . strval($i);
@@ -357,7 +432,7 @@ class EntryRepository extends Model
         } else {
             $sql .= implode(' AND ', $where);
         }
-        $sql .= "
+        $sql .= " )
             GROUP BY entries.eid
             ORDER BY date DESC";
         // TODO: Order by number of matching entries with OR
@@ -407,7 +482,7 @@ class EntryRepository extends Model
             return [];
         }
         $query_segments = explode(' ', trim($query));
-        $sql = 'SELECT eid, title, slug, url, text, date
+        $sql = 'SELECT eid, title, slug, url, text, date, uid, private
             FROM entries
             WHERE ';
         $where = [];

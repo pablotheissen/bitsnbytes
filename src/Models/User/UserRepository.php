@@ -52,4 +52,29 @@ class UserRepository extends Model
             $query_result['password']
         );
     }
+
+    /**
+     * Fetch a single user from the database by searching for the user id. Throws an <tt>UserNotFoundException</tt>
+     *
+     * @param int $uid
+     *
+     * @return User
+     * @throws UserNotFoundException
+     */
+    public function fetchUserByID(?int $uid): User
+    {
+        if($uid === null) {
+            return new User(-1, 'Anonymous', 'xxxxx');
+        }
+        $stmt = $this->pdo->prepare('SELECT uid, username, password FROM users WHERE uid = :uid');
+        $stmt->bindParam(':uid', $uid, PDO::PARAM_INT);
+        $stmt->execute();
+        $rslt = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($rslt === false) {
+            throw new UserNotFoundException();
+        }
+
+        return $this->convertAssocToUser($rslt);
+    }
 }
