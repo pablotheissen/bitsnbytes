@@ -237,7 +237,7 @@ class TagRepository extends Model
             $query_strings = explode(' ', trim($query));
             array_walk(
                 $query_strings,
-                function (&$value) {
+                function (&$value): void {
                     $value = '%' . $value . '%';
                 }
             );

@@ -9,7 +9,6 @@ use DateTime;
 use Erusev\Parsedown\Parsedown;
 use Exception;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\ServerRequestInterface;
 use Slim\Interfaces\RouteParserInterface;
 use Slim\Views\Twig;
 use Transliterator;
@@ -160,6 +159,32 @@ abstract class Controller
             return null;
         }
         return $datetime;
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param string            $route_name
+     *
+     * @return ResponseInterface
+     */
+    public function redirectToRoute(
+        ResponseInterface $response,
+        string $route_name
+    ): ResponseInterface {
+        return $this->redirect($response, $this->route_parser->urlFor($route_name));
+    }
+
+    /**
+     * @param ResponseInterface $response
+     * @param string            $path
+     *
+     * @return ResponseInterface
+     */
+    public function redirect(
+        ResponseInterface $response,
+        string $path
+    ): ResponseInterface {
+        return $response->withHeader('Location', $path);
     }
 
     /**

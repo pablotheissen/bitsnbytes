@@ -13,7 +13,7 @@ use Slim\App;
 use Slim\Interfaces\RouteCollectorProxyInterface as Group;
 
 return function (App $app): void {
-    $app->get('/', EntryController::class . ':showLatest');
+    $app->get('/', EntryController::class . ':showLatest')->setName('home');
     $app->group(
         '/entry',
         function (Group $group): void {
@@ -31,7 +31,8 @@ return function (App $app): void {
     $app->get('/search/tag', TagController::class . ':searchTag');
     $app->get('/fetch', RemoteController::class . ':fetchTitleAndDescription');
     $app->get('/update', UpdateController::class . ':update');
-    $app->get('/login', SessionController::class . ':login')->setName('login');
+    $app->get('/login', SessionController::class . ':loginForm')->setName('login');
+    $app->post('/login', SessionController::class . ':checkCredentials');
 
     /**
      * Catch-all route to serve a 404 Not Found page if none of the routes match

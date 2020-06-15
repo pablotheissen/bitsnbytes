@@ -66,8 +66,6 @@ class EntryController extends Controller
             $data['entry']['date_formatted'] = $entry->date->format('d.m.Y'); // TODO: use config date
         }
 
-        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
-
         $this->twig->render($response, 'entry.twig', $data);
         return $response;
     }
@@ -105,8 +103,6 @@ class EntryController extends Controller
 
         $data = ['entries' => $entries, 'heading' => 'Entries tagged as ›' . $tag->title . '‹'];
 
-        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
-
         $this->twig->render($response, 'entrylist.twig', $data);
         return $response;
     }
@@ -136,8 +132,6 @@ class EntryController extends Controller
         );
         $data['entries'] = $entries;
 
-        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
-
         $this->twig->render($response, 'entrylist.twig', $data);
         return $response;
     }
@@ -166,8 +160,6 @@ class EntryController extends Controller
             $data['date_atom_date'] = $entry->date->format('Y-m-d');
             $data['date_atom_time'] = $entry->date->format('H:i');
         }
-
-        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
         $this->twig->render($response, 'editentry.twig', $data);
         return $response;
@@ -368,7 +360,6 @@ class EntryController extends Controller
             $data['error_' . $field] = true;
             $data['error_message_' . $field] = $error_messages[$field] ?? '';
         }
-        $data['url_newentry'] = $this->route_parser->urlFor('new-entry');
 
         $this->twig->render($response, 'editentry.twig', $data);
         return $response;

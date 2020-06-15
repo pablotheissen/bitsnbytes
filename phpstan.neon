@@ -1,5 +1,0 @@
-parameters:
-	ignoreErrors:
-	autoload_files:
-		- config/config.php
-		- src/Application/helper.php

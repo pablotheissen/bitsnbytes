@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Bitsnbytes;
 
 use Bitsnbytes\Helpers\Configuration;
+use Bitsnbytes\Helpers\SessionManager;
+use Bitsnbytes\Helpers\SessionMiddleware;
 use DI\ContainerBuilder;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface;
@@ -90,6 +92,11 @@ $app->add(
 
 // Twig-View Middleware
 $app->add(TwigMiddleware::class);
+
+// Session Middleware
+$sessionManager = new SessionManager($config);
+$sessionMiddleware = new SessionMiddleware($sessionManager);
+$app->add($sessionMiddleware);
 
 // Register routes
 $routes = require __DIR__ . '/Application/routes.php';
