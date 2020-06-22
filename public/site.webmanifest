@@ -16,6 +16,7 @@
     ],
     "theme_color": "#2c3e50",
     "background_color": "#2c3e50",
-    "start_url": "https://bitsbytes.pablo.io/",
-    "display": "standalone"
+    "start_url": "/",
+    "display": "standalone",
+    "description": "Take short notes and save links for the future."
 }
