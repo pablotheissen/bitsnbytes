@@ -63,9 +63,12 @@ class Remote
         curl_setopt($curl_handle, CURLOPT_SSL_VERIFYHOST, false);
         curl_setopt($curl_handle, CURLOPT_CONNECTTIMEOUT, 1);
         curl_setopt($curl_handle, CURLOPT_TIMEOUT, 2);
+        curl_setopt($curl_handle, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($curl_handle, CURLOPT_MAXREDIRS, 3);
         $buffer = curl_exec($curl_handle);
         curl_close($curl_handle);
         if (is_bool($buffer)) {
+            // curl_exec returns false on failure, data on success (flag CURLOPT_RETURNTRANSFER set to true)
             return null;
         }
         return $buffer;
