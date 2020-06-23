@@ -353,6 +353,7 @@ ul.autocomplete li:last-child {
   border-radius: var(--border-radius-input);
   border: 1px solid var(--neutral-400);
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  max-width: 100%;
 }
 
 .overwrite:after {
