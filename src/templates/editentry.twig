@@ -91,6 +91,9 @@
 
     <script>
         document.querySelector('#inpt-url').addEventListener('blur', function (e) {
+            if(this.value === '') {
+                return;
+            }
             window.fetch('/fetch?url=' + encodeURIComponent(this.value), {method: 'get'/*, signal: signal*/}).then(response => {
                 fetchActive = false;
                 if (response.ok)
