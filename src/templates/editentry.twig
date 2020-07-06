@@ -90,12 +90,13 @@
     </form>
 
     <script>
-        document.querySelector('#inpt-url').addEventListener('blur', function (e) {
-            if(this.value === '') {
+        fetchRemoteTitleAndDescriptionFromInputURL = function() {
+            let inputURL = document.querySelector('#inpt-url');
+
+            if(inputURL.value === '') {
                 return;
             }
-            window.fetch('/fetch?url=' + encodeURIComponent(this.value), {method: 'get'/*, signal: signal*/}).then(response => {
-                fetchActive = false;
+            window.fetch('/fetch?url=' + encodeURIComponent(inputURL.value), {method: 'get'/*, signal: signal*/}).then(response => {
                 if (response.ok)
                     return response.json();
                 else
@@ -116,7 +117,9 @@
             }).catch(function (err) {
                 // catch errors, e.g. when fetch was aborted
             });
-        });
+        };
+        document.querySelector('#inpt-url').addEventListener('blur', fetchRemoteTitleAndDescriptionFromInputURL);
+
         document.querySelector('.collapsible-opener').style.display = 'block';
         document.querySelector('.wrapper-collapsible').classList.remove('opened');
         document.querySelector('.collapsible-opener').addEventListener('click', function (e) {
@@ -330,13 +333,34 @@
         let initAddTagInputFields = function () {
             document.querySelector('.wrapper-tags li.li-tag:last-of-type input').addEventListener('keydown', function (event) {
                 if (document.querySelector('.wrapper-tags li.li-tag:last-of-type input').value !== "") {
-                    let copy = document.querySelector('.wrapper-tags li.li-tag:first-of-type').cloneNode(true);
-                    copy.querySelector('input').value = '';
-                    document.querySelector('.wrapper-tags > ul').appendChild(copy);
-                    initAddTagInputFields();
+                    appendTagInputField();
                 }
             }, false);
         }
+        let appendTagInputField = function() {
+            let copy = document.querySelector('.wrapper-tags li.li-tag:first-of-type').cloneNode(true);
+            copy.querySelector('input').value = '';
+            document.querySelector('.wrapper-tags > ul').appendChild(copy);
+            initAddTagInputFields();
+        }
+
+        let initFillURLFromQueryString = function() {
+            let url = new URL(window.location.href);
+            if(url.searchParams.has("url")) {
+                document.querySelector('#inpt-url').value = url.searchParams.get("url");
+                fetchRemoteTitleAndDescriptionFromInputURL();
+            }
+
+            let i = 1;
+            for(let entry of url.searchParams.entries()) { // each 'entry' is a [key, value]
+                if(entry[0] !== 'tag') {
+                    continue;
+                }
+                document.querySelector('.wrapper-tags li.li-tag:nth-of-type('+i+') input').value = entry[1];
+                appendTagInputField();
+                i++;
+            }
+        };
 
         function DOMready(fn) {
             if (document.readyState != 'loading') {
@@ -351,6 +375,7 @@
             if (document.body.contains(document.querySelector('form.edit-entry'))) {
                 initTagLiveSearch();
                 initAddTagInputFields();
+                initFillURLFromQueryString();
             }
         });
 
