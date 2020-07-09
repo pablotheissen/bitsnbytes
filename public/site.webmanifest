@@ -19,6 +19,15 @@
   "start_url": "/",
   "display": "standalone",
   "description": "Take short notes and save links for the future.",
+  "share_target": {
+    "action": "/entry/new",
+    "method": "GET",
+    "params": {
+      "url": "url",
+      "title": "title",
+      "text": "text"
+    }
+  },
   "shortcuts": [
     {
       "name": "Add new entry",

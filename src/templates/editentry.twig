@@ -346,8 +346,21 @@
 
         let initFillURLFromQueryString = function() {
             let url = new URL(window.location.href);
+            let paramUrl = '';
             if(url.searchParams.has("url")) {
-                document.querySelector('#inpt-url').value = url.searchParams.get("url");
+                paramUrl = url.searchParams.get("url");
+            }
+
+            // look for URL in text param (usually submitted via PWA shared with method)
+            if(paramUrl === '' && url.searchParams.has("text")) {
+                let matches = url.searchParams.get("text").match(/\bhttps?:\/\/\S+/gi);
+                if(matches !== null && matches.length > 0) {
+                    paramUrl = matches[0];
+                }
+            }
+
+            if(paramUrl !== '') {
+                document.querySelector('#inpt-url').value = paramUrl;
                 fetchRemoteTitleAndDescriptionFromInputURL();
             }
 
