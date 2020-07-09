@@ -18,5 +18,19 @@
   "background_color": "#2c3e50",
   "start_url": "/",
   "display": "standalone",
-  "description": "Take short notes and save links for the future."
+  "description": "Take short notes and save links for the future.",
+  "shortcuts": [
+    {
+      "name": "Add new entry",
+      "short_name": "New",
+      "description": "Add a new entry to Bits’n’Bytes",
+      "url": "/entry/new",
+      "icons": [
+        {
+          "src": "/android-chrome-192x192.png",
+          "sizes": "192x192"
+        }
+      ]
+    }
+  ]
 }
