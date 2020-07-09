@@ -50,6 +50,10 @@
     "run-dev": [
       "Composer\\Config::disableProcessTimeout",
       "php -S localhost:8080 -t public"
+    ],
+    "run-dev-lan": [
+      "Composer\\Config::disableProcessTimeout",
+      "php -S 0.0.0.0:8080 -t public"
     ]
   }
 }
