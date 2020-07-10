@@ -619,6 +619,8 @@ article.entry header span.meta.url {
 article.entry > p {
   line-height: 1.25;
   padding-bottom: .25rem;
+  max-width: 100%;
+  overflow: scroll;
 }
 
 article.entry li {
